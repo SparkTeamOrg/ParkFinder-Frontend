@@ -35,7 +35,7 @@ ParkFinder je mobilna aplikacija koja omogućava korisnicima da brzo i jednostav
 
 ## Prototip 📱
 
-:link: **Link do Figma prototipa**: [link](https://www.figma.com/proto/xXv5mbWfKTTxSLpWvze5JW/Park-Finder-Prototip?node-id=58-407&node-type=canvas&t=6acenGwvyjv9ePPf-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=58%3A407&share=1)
+:link: **Link do Figma prototipa**: [link](https://www.figma.com/proto/xXv5mbWfKTTxSLpWvze5JW/Park-Finder-Prototip?node-id=58-407&node-type=canvas&t=6acenGwvyjv9ePPf-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=58%3A407&share=1)  
 :lock: **Password za prototip**: spark-2024-parkfinder
 
 [Back to Top](#sadržaj)
