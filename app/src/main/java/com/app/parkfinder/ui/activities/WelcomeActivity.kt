@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,11 +39,13 @@ class WelcomeActivity: ComponentActivity() {
     }
 
     private fun navigateToLogin() {
-        // Navigate to login screen
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToRegister() {
-        // Navigate to register screen
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
     }
 }
 
