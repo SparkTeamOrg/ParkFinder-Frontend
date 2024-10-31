@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.material3.Text
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -68,7 +70,7 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
             Image(
                 painter = painterResource(id = R.drawable.park_finder_logo),
                 contentDescription = "Logo",
-                modifier = Modifier.size(150.dp)    // Set the size of the logo
+                modifier = Modifier.size(170.dp)    // Set the size of the logo
             )
             // Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -76,22 +78,45 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight(700),
                 fontSize = 20.sp,
-                color = Color(0xFFFFFFFF)
+                color = Color(0xFFFFFFFF),
+                modifier = Modifier.shadow(
+                    elevation = 10.dp,
+                    shape = RoundedCornerShape(4.dp),
+                    clip = false
+                )
             )
-            Spacer(modifier = Modifier.height(300.dp))
-            Row {
+            Spacer(modifier = Modifier.height(250.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Button(
                     onClick = onLoginClick,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF),
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text(text = "Login")
+                    Text(
+                        text = "Login",
+                        fontSize = 20.sp
+                    )
                 }
-                Spacer(modifier = Modifier.width(70.dp))
                 Button(
                     onClick = onRegisterClick,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.size(width = 150.dp, height = 50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF),
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text(text = "Register")
+                    Text(
+                        text = "Register",
+                        fontSize = 20.sp
+                    )
                 }
             }
         }
