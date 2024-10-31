@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -40,12 +41,14 @@ class WelcomeActivity: ComponentActivity() {
 
     private fun navigateToLogin() {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 
     private fun navigateToRegister() {
         val intent = Intent(this, RegisterActivity::class.java)
-        startActivity(intent)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 }
 
