@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,12 +100,14 @@ fun LoginScreen(onBackClick: () -> Unit) {
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email") },
+                    shape = RoundedCornerShape(30.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password") },
+                    shape = RoundedCornerShape(30.dp),
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
