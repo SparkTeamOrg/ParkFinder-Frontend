@@ -2,12 +2,11 @@ package com.app.parkfinder.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +28,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 fun LoginScreen(onBackClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
 
     Column(
         modifier = Modifier
@@ -49,7 +50,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
                     .background(Color(0xFF293038), shape = CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.White
                 )
@@ -63,7 +64,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
             // Has to be transparent to not be visible
             // Has to have the same size as the back button
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Dummy",
                 tint = Color.Transparent,
                 modifier = Modifier.size(60.dp)
@@ -108,7 +109,19 @@ fun LoginScreen(onBackClick: () -> Unit) {
                     onValueChange = { password = it },
                     label = { Text("Password") },
                     shape = RoundedCornerShape(30.dp),
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        if (password.isNotEmpty()) {
+                            val image = if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(id = image),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Button(
