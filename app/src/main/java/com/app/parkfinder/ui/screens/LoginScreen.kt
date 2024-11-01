@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +27,11 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun LoginScreen(onBackClick: () -> Unit) {
+fun LoginScreen(
+    onBackClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    onRegisterClick: () -> Unit
+    ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
@@ -83,7 +89,7 @@ fun LoginScreen(onBackClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, RoundedCornerShape(8.dp))
-                .background(Color(29, 37, 53, 20))
+                .background(Color(36, 45, 64))
                 .padding(16.dp)
         ) {
             Column(
@@ -124,14 +130,44 @@ fun LoginScreen(onBackClick: () -> Unit) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
+                Text(
+                    text = "Forgot password?",
+                    color = Color.White,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .clickable { onForgotPasswordClick() }
+                )
                 Button(
                     onClick = { /* Handle login */ },
                     shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.width(200.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF),
+                        contentColor = Color.White
+                    )
                 ) {
                     Text("Login")
                 }
             }
+        }
+
+        // Already have an account? Register
+        Spacer(modifier = Modifier.height(32.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Don't have an account? ",
+                color = Color.White
+            )
+            Text(
+                text = "Register",
+                color = Color(0xFF0FCFFF),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable { onRegisterClick() }
+            )
         }
     }
 }
@@ -140,6 +176,6 @@ fun LoginScreen(onBackClick: () -> Unit) {
 @Composable
 fun LoginScreenPreview() {
     ParkFinderTheme {
-        LoginScreen(onBackClick = {})
+        LoginScreen(onBackClick = {}, onForgotPasswordClick = {}, onRegisterClick = {})
     }
 }
