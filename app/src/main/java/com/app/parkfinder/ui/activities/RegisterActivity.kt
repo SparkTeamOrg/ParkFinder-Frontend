@@ -11,7 +11,9 @@ class RegisterActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ParkFinderTheme {
-                RegisterScreen()
+                RegisterScreen(
+                    onBackClick = { finish() }
+                )
             }
         }
     }
