@@ -23,7 +23,7 @@ class VerificationCodeActivity : ComponentActivity() {
         }
     }
     private fun navigateToEnterNewPassword() {
-        val intent = Intent(this, EnterNewPasswordActivity::class.java)
+        val intent = Intent(this, RegisterUserDataActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
