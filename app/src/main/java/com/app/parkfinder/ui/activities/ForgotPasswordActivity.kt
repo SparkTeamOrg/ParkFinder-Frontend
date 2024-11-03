@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.app.parkfinder.ui.screens.ForgotPasswordScreen
-import com.app.parkfinder.ui.screens.LoginScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 class ForgotPasswordActivity : ComponentActivity(){
@@ -14,7 +13,7 @@ class ForgotPasswordActivity : ComponentActivity(){
             ParkFinderTheme {
                 ForgotPasswordScreen(
                     onBackClick = { finish() },
-                    onSendClick = {}
+                    onSendClick = {/* TODO */}
                 )
             }
         }
