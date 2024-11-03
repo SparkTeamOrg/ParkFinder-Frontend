@@ -16,7 +16,7 @@ class LoginActivity: ComponentActivity() {
             ParkFinderTheme {
                 LoginScreen(
                     onBackClick = { finish() },
-                    onForgotPasswordClick = { /* TODO */ },
+                    onForgotPasswordClick = { navigateToForgotPassword() },
                     onRegisterClick = { navigateToRegister() }
                 )
             }
@@ -25,6 +25,12 @@ class LoginActivity: ComponentActivity() {
 
     private fun navigateToRegister() {
         val intent = Intent(this, RegisterActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+    private fun navigateToForgotPassword()
+    {
+        val intent = Intent(this, ForgotPasswordActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
