@@ -49,16 +49,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun RegisterScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    onNextClick: () -> Unit,
+    isValidEmail: (String) -> ValidationResult,
+    isValidPassword: (String, String) -> ValidationResult
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmedPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var emailValidation by remember { mutableStateOf(ValidationResult()) }
+    var passwordValidation by remember { mutableStateOf(ValidationResult()) }
 
     Column(
         modifier = Modifier
@@ -130,29 +140,58 @@ fun RegisterScreen(
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(36, 45, 64),
                         unfocusedBorderColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White
                     ),
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.Email,
                             contentDescription = "emailIcon",
-                            tint = Color.White) },
+                            tint = if(emailError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (emailError) {
+                            Text(
+                                text = emailValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
                     value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email", color = Color.White ) },
+                    onValueChange = {
+                        email = it
+                        emailError = false },
+                    isError = emailError,
+                    label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(36, 45, 64),
-                        unfocusedBorderColor = Color.White),
+                        unfocusedBorderColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White),
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.Lock,
                             contentDescription = "LockIcon",
-                            tint = Color.White) },
+                            tint = if(passwordError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (passwordError) {
+                            Text(
+                                text = passwordValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
                     value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password", color = Color.White) },
+                    onValueChange = {
+                        password = it
+                        passwordError = false},
+                    isError = passwordError,
+                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -173,14 +212,29 @@ fun RegisterScreen(
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(36, 45, 64),
-                        unfocusedBorderColor = Color.White),
+                        unfocusedBorderColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White),
                     leadingIcon = {
                         Icon(imageVector = Icons.Default.Lock,
                             contentDescription = "LockIcon",
-                            tint = Color.White) },
+                            tint = if(passwordError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (passwordError) {
+                            Text(
+                                text = passwordValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
                     value = confirmedPassword,
-                    onValueChange = { confirmedPassword = it },
-                    label = { Text("Confirm password", color = Color.White) },
+                    onValueChange = {
+                        confirmedPassword = it
+                        passwordError = false},
+                    isError = passwordError,
+                    label = { Text("Confirm password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -200,7 +254,22 @@ fun RegisterScreen(
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Button(
-                    onClick = { /* Handle move to next step */ },
+                    onClick = {
+                        emailValidation = isValidEmail(email)
+                        passwordValidation = isValidPassword(password, confirmedPassword)
+                        if(emailValidation.success && passwordValidation.success) {
+                            onNextClick()
+                        } else{
+                            if(!emailValidation.success){
+                                email = ""
+                                emailError = true
+                            }
+                            if(!passwordValidation.success) {
+                                password = ""
+                                confirmedPassword = ""
+                                passwordError = true
+                            }
+                        }},
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -230,9 +299,7 @@ fun RegisterScreen(
                         append("Login")
                     }
                 },
-                onClick = { offset ->
-                    // Handle click event for login here
-                }
+                onClick = { onLoginClick() }
             )
         }
     }
@@ -242,6 +309,15 @@ fun RegisterScreen(
 @Composable
 fun RegisterScreenPreview() {
     ParkFinderTheme {
-        RegisterScreen(onBackClick = {})
+        val isEmailValid: (String) -> ValidationResult = { ValidationResult() }
+        val isPasswordValid: (String, String) -> ValidationResult = { _, _ -> ValidationResult() }
+
+        RegisterScreen(
+            onBackClick = {},
+            onLoginClick = {},
+            isValidEmail = isEmailValid,
+            isValidPassword = isPasswordValid,
+            onNextClick = {}
+        )
     }
 }
