@@ -19,8 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
@@ -43,13 +41,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -57,9 +52,16 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 @Composable
 fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
+    isNameValid: (String) -> ValidationResult,
+    isPhoneValid: (String) -> ValidationResult
 ) {
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+
+    var nameError by remember { mutableStateOf(false) }
+    var phoneError by remember { mutableStateOf(false) }
+    var nameValidation by remember { mutableStateOf(ValidationResult()) }
+    var phoneValidation by remember { mutableStateOf(ValidationResult()) }
 
     Column(
         modifier = Modifier
@@ -171,12 +173,25 @@ fun RegisterUserDataScreen(
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "personIcon",
-                            tint = Color.White
+                            tint = if(nameError) Color.Red else Color.White
                         )
                     },
+                    placeholder = {
+                        if (nameError) {
+                            Text(
+                                text = nameValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
+                    isError = nameError,
                     value = fullName,
-                    onValueChange = { fullName = it },
-                    label = { Text("Full Name", color = Color.White) },
+                    onValueChange = {
+                        fullName = it
+                        nameError = false },
+                    label = { Text("Full Name", color = if (nameError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -191,12 +206,25 @@ fun RegisterUserDataScreen(
                         Icon(
                             imageVector = Icons.Default.Phone,
                             contentDescription = "phoneIcon",
-                            tint = Color.White
+                            tint = if(phoneError) Color.Red else Color.White
                         )
                     },
+                    placeholder = {
+                        if (phoneError) {
+                            Text(
+                                text = phoneValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
+                    isError = phoneError,
                     value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
-                    label = { Text("Phone Number", color = Color.White) },
+                    onValueChange = {
+                        phoneNumber = it
+                        phoneError = false},
+                    label = { Text("Phone Number", color = if (phoneError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -205,7 +233,24 @@ fun RegisterUserDataScreen(
         }
         Spacer(modifier = Modifier.height(60.dp))
         Button(
-            onClick = TODO(),
+            onClick = {
+                nameValidation = isNameValid(fullName)
+                phoneValidation = isPhoneValid(phoneNumber)
+
+                if(nameValidation.success && phoneValidation.success){
+                    // TO DO
+                }
+                else{
+                    if(!nameValidation.success){
+                        fullName = ""
+                        nameError = true
+                    }
+                    if(!phoneValidation.success){
+                        phoneNumber = ""
+                        phoneError = true
+                    }
+                }
+            },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(
@@ -221,9 +266,14 @@ fun RegisterUserDataScreen(
 @Preview(showBackground = true)
 @Composable
 fun RegisterUserDataScreenPreview() {
+    val isNameValid: (String) -> ValidationResult = { ValidationResult() }
+    val isNumValid: (String) -> ValidationResult = { ValidationResult() }
+
     ParkFinderTheme {
         RegisterUserDataScreen(
             onBackClick = {},
+            isNameValid = isNameValid,
+            isPhoneValid = isNumValid
         )
     }
 }
