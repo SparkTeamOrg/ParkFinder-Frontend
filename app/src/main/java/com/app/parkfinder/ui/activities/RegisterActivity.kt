@@ -27,7 +27,7 @@ class RegisterActivity: ComponentActivity() {
     }
 
     private fun navigateToVerificationPage(){
-        val intent = Intent(this, VerificationPageActivity::class.java)
+        val intent = Intent(this, VerificationCodeActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

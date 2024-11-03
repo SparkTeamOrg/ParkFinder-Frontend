@@ -6,31 +6,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.screens.LoginScreen
+import com.app.parkfinder.ui.screens.ForgotPasswordScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-class LoginActivity: ComponentActivity() {
+class ForgotPasswordActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ParkFinderTheme {
-                LoginScreen(
+                ForgotPasswordScreen(
                     onBackClick = { finish() },
-                    onForgotPasswordClick = { navigateToForgotPassword() },
-                    onRegisterClick = { navigateToRegister() }
+                    onSendClick = {navigateToVerificationCode()}
                 )
             }
         }
     }
-
-    private fun navigateToRegister() {
-        val intent = Intent(this, RegisterActivity::class.java)
-        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
-        startActivity(intent, options.toBundle())
-    }
-    private fun navigateToForgotPassword()
-    {
-        val intent = Intent(this, ForgotPasswordActivity::class.java)
+    private fun navigateToVerificationCode() {
+        val intent = Intent(this, VerificationCodeActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

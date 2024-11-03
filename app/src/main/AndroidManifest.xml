@@ -32,7 +32,17 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.VerificationPageActivity"
+            android:name=".ui.activities.ForgotPasswordActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.VerificationCodeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.EnterNewPasswordActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
