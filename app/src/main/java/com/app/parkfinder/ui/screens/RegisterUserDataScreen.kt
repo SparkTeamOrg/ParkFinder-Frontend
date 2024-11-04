@@ -53,7 +53,8 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
     isNameValid: (String) -> ValidationResult,
-    isPhoneValid: (String) -> ValidationResult
+    isPhoneValid: (String) -> ValidationResult,
+    onNextClick: () -> Unit
 ) {
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
@@ -238,7 +239,7 @@ fun RegisterUserDataScreen(
                 phoneValidation = isPhoneValid(phoneNumber)
 
                 if(nameValidation.success && phoneValidation.success){
-                    // TO DO
+                    onNextClick()
                 }
                 else{
                     if(!nameValidation.success){
@@ -273,7 +274,8 @@ fun RegisterUserDataScreenPreview() {
         RegisterUserDataScreen(
             onBackClick = {},
             isNameValid = isNameValid,
-            isPhoneValid = isNumValid
+            isPhoneValid = isNumValid,
+            onNextClick = {}
         )
     }
 }
