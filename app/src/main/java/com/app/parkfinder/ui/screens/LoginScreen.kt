@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -23,15 +25,24 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.UserLoginDto
+import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun LoginScreen(
     onBackClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
     ) {
+
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
@@ -139,7 +150,13 @@ fun LoginScreen(
                         .clickable { onForgotPasswordClick() }
                 )
                 Button(
-                    onClick = { /* Handle login */ },
+                    onClick = { viewModel.login(UserLoginDto(email,password)){ response ->
+
+                        val intent = Intent(context, MainActivity::class.java).apply {
+                            putExtra("token",response.data)
+                        }
+                        context.startActivity(intent)
+                    } },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -171,7 +188,6 @@ fun LoginScreen(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
