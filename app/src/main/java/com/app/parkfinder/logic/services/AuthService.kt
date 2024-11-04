@@ -1,0 +1,18 @@
+package com.app.parkfinder.logic.services
+
+import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.UserLoginDto
+import com.app.parkfinder.logic.models.dtos.UserRegisterDto
+import retrofit2.Response
+import retrofit2.http.*
+
+interface AuthService {
+    @POST("login")
+    suspend fun login(@Body login: UserLoginDto): Response<BackResponse<String>>
+
+    @POST("register")
+    suspend fun register(@Body register: UserRegisterDto): Response<BackResponse<String>>
+
+    @POST("EmailVerificationCode")
+    suspend fun emailVerification(@Body email: String): Response<BackResponse<String>>
+}
