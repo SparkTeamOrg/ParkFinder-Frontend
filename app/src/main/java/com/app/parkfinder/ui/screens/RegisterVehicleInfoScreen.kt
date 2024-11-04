@@ -54,15 +54,26 @@ import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.runtime.LaunchedEffect
+import com.app.parkfinder.ui.ValidationResult
 
 @Composable
 fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
+    onNextClick: () -> Unit,
+    isRegisterNumberValid: (String) -> ValidationResult
 ) {
-//    var selectedBrand by remember { mutableStateOf("") }
-//    var selectedModel by remember { mutableStateOf("") }
-//    var selectedColor by remember { mutableStateOf("") }
-    var licencePlate by remember { mutableStateOf("") }
+    var selectedBrand by remember { mutableStateOf("") }
+    var selectedModel by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf("") }
+    var registrationNumber by remember { mutableStateOf("") }
+
+    var brandError by remember { mutableStateOf(false) }
+    var modelError by remember { mutableStateOf(false) }
+    var colorError by remember { mutableStateOf(false) }
+    var regNumError by remember { mutableStateOf(false) }
+    var regNumValidation by remember { mutableStateOf(ValidationResult()) }
+
     val colorNames = mapOf(Color.Red to "red",
         Color.Green to "green",
         Color.Blue to "blue",
@@ -159,18 +170,24 @@ fun RegisterUserDataScreen(
                     selectedText = "Select a brand",
                     options = listOf("audi", "bmw"),
                     icon = Icons.Default.DirectionsCar,
+                    isError =  brandError,
+                    onOptionSelected = { option -> selectedBrand = option }
                 )
                 OutlinedDropdownMenu(
                     label = "Model",
                     selectedText = "Select a model",
                     options = listOf("A3", "X5"),
                     icon = Icons.Default.DirectionsCar,
+                    isError = modelError,
+                    onOptionSelected = { option -> selectedModel = option }
                 )
                 OutlinedDropdownMenu(
                     label = "Color",
                     selectedText = "Select a color",
                     options = colorNames.values.toList(),
                     icon = Icons.Default.ColorLens,
+                    isError = colorError,
+                    onOptionSelected = { option -> selectedColor = option }
                 )
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
@@ -183,22 +200,47 @@ fun RegisterUserDataScreen(
                         Icon(
                             imageVector = Icons.Default.AddCard,
                             contentDescription = "plateIcon",
-                            tint = White
+                            tint = if(regNumError) Color.Red else White
                         )
                     },
-                    value = licencePlate,
-                    onValueChange = { licencePlate = it },
-                    label = { Text("Registration Number", color = White) },
+                    placeholder = {
+                        if (regNumError) {
+                            Text(
+                                text = regNumValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
+                    isError = regNumError,
+                    value = registrationNumber,
+                    onValueChange = {
+                        registrationNumber = it
+                        regNumError = false },
+                    label = { Text("Registration Number", color = if (regNumError) Color.Red else White) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
-
             }
         }
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
+                brandError = selectedBrand.isEmpty()
+                modelError = selectedModel.isEmpty()
+                colorError = selectedColor.isEmpty()
+                regNumValidation = isRegisterNumberValid(registrationNumber)
 
+                if (!brandError && !modelError && !colorError && regNumValidation.success) {
+                    onNextClick()
+                }
+                else{
+                    if (!regNumValidation.success){
+                        registrationNumber = ""
+                        regNumError = true
+                    }
+                }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.width(200.dp),
@@ -219,36 +261,45 @@ fun OutlinedDropdownMenu(
     selectedText: String,
     options: List<String>,
     icon: ImageVector,
+    isError: Boolean,
+    onOptionSelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("") }
+    var showText by remember { mutableStateOf(selectedText) }
+    var errorOccured by remember { mutableStateOf(isError) }
+
+    LaunchedEffect(isError) {
+        errorOccured = isError
+    }
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedText,
+            value = showText,
             onValueChange = {},
+            isError = errorOccured,
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color(36, 45, 64),
                 unfocusedBorderColor = White,
                 unfocusedTextColor = White,
-                focusedTextColor = White
+                focusedTextColor = White,
+                errorTextColor = Color.Red
             ),
             leadingIcon = {
                 Icon(
                     imageVector = icon,
                     contentDescription = "Car Icon",
-                    tint = White
+                    tint = if(errorOccured) Color.Red else White
                 )
             },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Dropdown Icon",
-                    tint = White
+                    tint = if(errorOccured) Color.Red else White
                 )
             },
-            label = { Text(label, color = White) },
+            label = { Text(label, color = if (errorOccured) Color.Red else White) },
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -266,7 +317,9 @@ fun OutlinedDropdownMenu(
                     text = { Text(option, color = White) },
                     onClick = {
                         expanded = false
-                        selectedOption = option
+                        onOptionSelected(option)
+                        showText = option
+                        errorOccured = false
                     },
                     modifier = Modifier.background(Color(36, 45, 64))
                 )
@@ -279,8 +332,11 @@ fun OutlinedDropdownMenu(
 @Composable
 fun RegisterVehicleInfoScreenPreview() {
     ParkFinderTheme {
+        val checkNumber : (String) -> ValidationResult = { ValidationResult() }
         RegisterUserDataScreen(
             onBackClick = {},
+            onNextClick = {},
+            isRegisterNumberValid = checkNumber
         )
     }
 }
