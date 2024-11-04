@@ -47,11 +47,20 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.RegisterUserDataActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.RegisterVehicleInfoActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
-
     </application>
 
 </manifest>
