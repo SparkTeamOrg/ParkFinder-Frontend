@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,8 +43,8 @@ fun VerificationCodeScreen(
     activityIntent : Intent
 ) {
     var otpValues = remember { mutableStateOf(List(4) { "" }) }
-    var context = LocalContext.current
-    var email = activityIntent.getStringExtra("email")!!
+    val context = LocalContext.current
+    val email = activityIntent.getStringExtra("email")!!
     var code = activityIntent.getStringExtra("verificationCode")!!
     Column(
         modifier = Modifier
@@ -150,9 +151,8 @@ fun VerificationCodeScreen(
                 viewModel.sendVerificationCode(email,code){ response ->
                     if(response.isSuccessful) {
                         val intent = Intent(context, RegisterUserDataActivity::class.java)
-                        intent.putExtra("email",activityIntent.getStringExtra("email"))
-                        intent.putExtra("password",activityIntent.getStringExtra("password"))
-                        intent.putExtra("verificationCode",activityIntent.getStringExtra("verificationCode"))
+                        val incoming_data = activityIntent.extras
+                        intent.putExtras(incoming_data ?: Bundle())
                         val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
                         context.startActivity(intent, options.toBundle())
                     }

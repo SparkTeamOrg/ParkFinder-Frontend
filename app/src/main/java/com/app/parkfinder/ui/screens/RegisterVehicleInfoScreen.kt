@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,8 +56,12 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.models.dtos.UserRegisterDto
+import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
+import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 import com.app.parkfinder.ui.ValidationResult
 
 @Composable
@@ -64,11 +69,26 @@ fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
     isRegisterNumberValid: (String) -> ValidationResult,
-    viewVehicleBrandModel: VehicleBrandViewModel = viewModel()
+    viewVehicleBrandModel: VehicleBrandViewModel = viewModel(),
+    viewVehicleModel: VehicleModelViewModel = viewModel(),
+    viewAuth: AuthViewModel = viewModel(),
+    activityIntent: Intent
 ) {
-    var selectedBrand by remember { mutableStateOf("") }
-    var selectedModel by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        viewVehicleBrandModel.getAllVehicleBrands()
+    }
+
+    var email = activityIntent.getStringExtra("email")!!
+    var fs = activityIntent.getStringExtra("firstname")!!
+    var ls = activityIntent.getStringExtra("lastname")!!
+    var pass = activityIntent.getStringExtra("password")!!
+    var code = activityIntent.getStringExtra("verificationCode")!!
+    var phone = activityIntent.getStringExtra("phone")!!
+    var profileImage =activityIntent.getStringExtra("profilePicture")!!
+
+    var selectedBrand by remember { mutableIntStateOf(0) }
+    var selectedModel by remember { mutableIntStateOf(0) }
+    var selectedColor by remember { mutableIntStateOf(0) }
     var registrationNumber by remember { mutableStateOf("") }
 
     var brandError by remember { mutableStateOf(false) }
@@ -77,14 +97,14 @@ fun RegisterUserDataScreen(
     var regNumError by remember { mutableStateOf(false) }
     var regNumValidation by remember { mutableStateOf(ValidationResult()) }
 
-    val colorNames = mapOf(Color.Red to "red",
-        Color.Green to "green",
-        Color.Blue to "blue",
-        Color.Yellow to "yellow",
-        Color.Cyan to "cyan",
-        Color.Magenta to "magenta",
-        Color.Gray to "gray",
-        Color.Black to "black"
+    val colorNames = mapOf(1 to "Red",
+        2 to "Green",
+        3 to "Blue",
+        4 to "Yellow",
+        5 to "Cyan",
+        6 to "Magenta",
+        7 to "Gray",
+        8 to "Black"
     )
 
     Column(
@@ -171,15 +191,21 @@ fun RegisterUserDataScreen(
                 OutlinedDropdownMenu(
                     label = "Brand",
                     selectedText = "Select a brand",
-                    options = listOf("audi", "bmw"),
+                    options = viewVehicleBrandModel.brands.value,
                     icon = Icons.Default.DirectionsCar,
                     isError =  brandError,
-                    onOptionSelected = { option -> selectedBrand = option }
+                    onOptionSelected = {
+                        option ->
+                        run {
+                            selectedBrand = option
+                            viewVehicleModel.getAllVehicleModelsByBrand(option)
+                        }
+                    }
                 )
                 OutlinedDropdownMenu(
                     label = "Model",
                     selectedText = "Select a model",
-                    options = listOf("A3", "X5"),
+                    options = viewVehicleModel.vehicle_models.value,
                     icon = Icons.Default.DirectionsCar,
                     isError = modelError,
                     onOptionSelected = { option -> selectedModel = option }
@@ -187,7 +213,7 @@ fun RegisterUserDataScreen(
                 OutlinedDropdownMenu(
                     label = "Color",
                     selectedText = "Select a color",
-                    options = colorNames.values.toList(),
+                    options = colorNames,
                     icon = Icons.Default.ColorLens,
                     isError = colorError,
                     onOptionSelected = { option -> selectedColor = option }
@@ -230,13 +256,25 @@ fun RegisterUserDataScreen(
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
-                brandError = selectedBrand.isEmpty()
-                modelError = selectedModel.isEmpty()
-                colorError = selectedColor.isEmpty()
+                brandError = selectedBrand == 0
+                modelError = selectedModel == 0
+                colorError = selectedColor == 0
                 regNumValidation = isRegisterNumberValid(registrationNumber)
 
                 if (!brandError && !modelError && !colorError && regNumValidation.success) {
                     onNextClick()
+                    viewAuth.register(UserRegisterDto(
+                        email = email,
+                        password = pass,
+                        firstName = fs,
+                        mobilePhone = phone,
+                        profileImage = profileImage,
+                        lastName = ls,
+                        licencePlate = registrationNumber,
+                        color = colorNames.get(selectedColor)!!,
+                        modelId = selectedBrand,
+                        verificationCode = code,
+                    ))
                 }
                 else{
                     if (!regNumValidation.success){
@@ -252,7 +290,7 @@ fun RegisterUserDataScreen(
                 contentColor = White
             )
         ) {
-            Text("Next")
+            Text("Finish")
         }
     }
 }
@@ -262,14 +300,15 @@ fun RegisterUserDataScreen(
 fun OutlinedDropdownMenu(
     label: String,
     selectedText: String,
-    options: List<String>,
+    options: Map<Int,String>,
     icon: ImageVector,
     isError: Boolean,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showText by remember { mutableStateOf(selectedText) }
     var errorOccured by remember { mutableStateOf(isError) }
+
 
     LaunchedEffect(isError) {
         errorOccured = isError
@@ -317,11 +356,11 @@ fun OutlinedDropdownMenu(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option, color = White) },
+                    text = { Text(option.value, color = White) },
                     onClick = {
                         expanded = false
-                        onOptionSelected(option)
-                        showText = option
+                        onOptionSelected(option.key)
+                        showText = option.value
                         errorOccured = false
                     },
                     modifier = Modifier.background(Color(36, 45, 64))
@@ -339,7 +378,8 @@ fun RegisterVehicleInfoScreenPreview() {
         RegisterUserDataScreen(
             onBackClick = {},
             onNextClick = {},
-            isRegisterNumberValid = checkNumber
+            isRegisterNumberValid = checkNumber,
+            activityIntent = Intent()
         )
     }
 }

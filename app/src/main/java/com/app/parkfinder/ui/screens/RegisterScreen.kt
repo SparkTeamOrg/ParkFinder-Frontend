@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -266,7 +267,6 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(5.dp))
                 Button(
                     onClick = {
-                        onNextClick(email)
                         emailValidation = isValidEmail(email)
                         passwordValidation = isValidPassword(password, confirmedPassword)
                         if(emailValidation.success && passwordValidation.success) {
