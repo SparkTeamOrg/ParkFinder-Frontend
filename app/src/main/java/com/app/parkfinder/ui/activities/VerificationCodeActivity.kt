@@ -17,7 +17,8 @@ class VerificationCodeActivity : ComponentActivity() {
                 VerificationCodeScreen(
                     onResendClick = {},
                     onBackClick = {finish()},
-                    onNextClick = {navigateToEnterNewPassword()}
+                    onNextClick = {navigateToEnterNewPassword()},
+                    activityIntent = intent
                 )
             }
         }

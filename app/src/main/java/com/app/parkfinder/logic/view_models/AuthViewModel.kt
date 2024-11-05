@@ -16,7 +16,33 @@ class AuthViewModel: ViewModel() {
                 res_b?.let(navigateToLandingPage)
             }
             else
-                println("request je neuspesan")
+                println("bad request")
+        }
+    }
+
+    fun sendVerificationCode(email:String, code:String, navigateToVerifyCodePage : (BackResponse<String>) -> Unit)
+    {
+        viewModelScope.launch {
+            val response = RetrofitConfig.authService.emailVerification(email,code)
+            if(response.isSuccessful){
+                val res_b = response.body()
+                res_b?.let(navigateToVerifyCodePage)
+            }
+            else
+                println("bad request")
+        }
+    }
+
+    fun verifyEmail(email:String, navigateToUserInfo : (BackResponse<String>) -> Unit)
+    {
+        viewModelScope.launch {
+            val response = RetrofitConfig.authService.verificationCodeRegister(email)
+            if(response.isSuccessful){
+                val res_b = response.body()
+                res_b?.let(navigateToUserInfo)
+            }
+            else
+                println("bad request")
         }
     }
 

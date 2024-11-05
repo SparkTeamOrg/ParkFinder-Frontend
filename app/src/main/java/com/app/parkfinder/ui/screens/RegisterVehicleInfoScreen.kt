@@ -55,13 +55,16 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
 import com.app.parkfinder.ui.ValidationResult
 
 @Composable
 fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    isRegisterNumberValid: (String) -> ValidationResult
+    isRegisterNumberValid: (String) -> ValidationResult,
+    viewVehicleBrandModel: VehicleBrandViewModel = viewModel()
 ) {
     var selectedBrand by remember { mutableStateOf("") }
     var selectedModel by remember { mutableStateOf("") }

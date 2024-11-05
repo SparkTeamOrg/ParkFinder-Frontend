@@ -12,7 +12,9 @@ interface AuthService {
 
     @POST("register")
     suspend fun register(@Body register: UserRegisterDto): Response<BackResponse<String>>
+    @POST("code/register")
+    suspend fun verificationCodeRegister(@Query("email") email:String): Response<BackResponse<String>>
 
-    @POST("EmailVerificationCode")
-    suspend fun emailVerification(@Body email: String): Response<BackResponse<String>>
+    @POST("verify")
+    suspend fun emailVerification(@Query("email") email: String, @Query("code") verificationCode: String): Response<BackResponse<String>>
 }

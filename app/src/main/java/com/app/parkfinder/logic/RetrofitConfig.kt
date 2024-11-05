@@ -14,7 +14,7 @@ object RetrofitConfig {
     val authService: AuthService by lazy {
         Retrofit
             .Builder()
-            .baseUrl(back_url+"Auth/")
+            .baseUrl(back_url+"auth/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthService::class.java)

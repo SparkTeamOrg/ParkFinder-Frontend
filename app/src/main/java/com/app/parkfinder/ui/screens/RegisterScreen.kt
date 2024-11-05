@@ -1,5 +1,7 @@
 package com.app.parkfinder.ui.screens
 
+import android.app.ActivityOptions
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,8 +51,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.models.dtos.UserLoginDto
+import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.ValidationResult
+import com.app.parkfinder.ui.activities.RegisterActivity
+import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -58,8 +67,10 @@ fun RegisterScreen(
     onLoginClick: () -> Unit,
     onNextClick: () -> Unit,
     isValidEmail: (String) -> ValidationResult,
-    isValidPassword: (String, String) -> ValidationResult
+    isValidPassword: (String, String) -> ValidationResult,
+    viewModel: AuthViewModel = viewModel()
 ) {
+    var context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmedPassword by remember { mutableStateOf("") }
@@ -258,7 +269,17 @@ fun RegisterScreen(
                         emailValidation = isValidEmail(email)
                         passwordValidation = isValidPassword(password, confirmedPassword)
                         if(emailValidation.success && passwordValidation.success) {
-                            onNextClick()
+                            viewModel.verifyEmail(email){ response ->
+                                if(response.isSuccessful) {
+                                    val intent = Intent(context, VerificationCodeActivity::class.java).apply {
+                                        putExtra("email", email)
+                                        putExtra("password", password)
+                                        putExtra("verificationCode", response.data)
+                                    }
+                                    val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
+                                    context.startActivity(intent, options.toBundle())
+                                }
+                            }
                         } else{
                             if(!emailValidation.success){
                                 email = ""
