@@ -19,7 +19,8 @@ class RegisterUserDataActivity : ComponentActivity() {
                     onBackClick = { finish() },
                     onNextClick = { navigateToVehicleInfoEntry() },
                     isNameValid = { fullName -> isNameValid(fullName) },
-                    isPhoneValid = { phoneNumber -> isPhoneValid(phoneNumber) }
+                    isPhoneValid = { phoneNumber -> isPhoneValid(phoneNumber) },
+                    activityIntent = intent
                 )
             }
         }

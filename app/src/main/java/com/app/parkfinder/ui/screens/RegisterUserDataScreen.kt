@@ -1,5 +1,8 @@
 package com.app.parkfinder.ui.screens
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.ValidationResult
+import com.app.parkfinder.ui.activities.RegisterVehicleInfoActivity
+import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -54,7 +60,8 @@ fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
     isNameValid: (String) -> ValidationResult,
     isPhoneValid: (String) -> ValidationResult,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    activityIntent: Intent
 ) {
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
@@ -63,7 +70,7 @@ fun RegisterUserDataScreen(
     var phoneError by remember { mutableStateOf(false) }
     var nameValidation by remember { mutableStateOf(ValidationResult()) }
     var phoneValidation by remember { mutableStateOf(ValidationResult()) }
-
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -238,8 +245,21 @@ fun RegisterUserDataScreen(
                 nameValidation = isNameValid(fullName)
                 phoneValidation = isPhoneValid(phoneNumber)
 
+
                 if(nameValidation.success && phoneValidation.success){
-                    onNextClick()
+                    //OnNextClick
+                    val split = fullName.split(" ")
+                    val intent = Intent(context, RegisterVehicleInfoActivity::class.java)
+
+                    val incoming_data = activityIntent.extras//previous intent data
+                    intent.putExtras(incoming_data ?: Bundle())
+                    intent.putExtra("firstname",split[0])
+                    intent.putExtra("lastname",split[1])
+                    intent.putExtra("profilePicture","") //TODO - user image
+                    intent.putExtra("phone",phoneNumber)
+
+                    val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
+                    context.startActivity(intent, options.toBundle())
                 }
                 else{
                     if(!nameValidation.success){
@@ -275,7 +295,8 @@ fun RegisterUserDataScreenPreview() {
             onBackClick = {},
             isNameValid = isNameValid,
             isPhoneValid = isNumValid,
-            onNextClick = {}
+            onNextClick = {},
+            activityIntent = Intent()
         )
     }
 }

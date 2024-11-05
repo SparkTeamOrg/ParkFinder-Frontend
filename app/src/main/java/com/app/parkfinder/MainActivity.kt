@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             ParkFinderTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = intent.getStringExtra("token").toString(),
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
