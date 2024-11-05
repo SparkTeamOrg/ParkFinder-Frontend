@@ -18,7 +18,7 @@ class RegisterActivity: ComponentActivity() {
                 RegisterScreen(
                     onBackClick = { finish() },
                     onLoginClick = { navigateToLogin() },
-                    onNextClick = { navigateToVerificationPage() },
+                    onNextClick = { email -> navigateToVerificationPage(email) },
                     isValidEmail = { email -> isValidEmail(email) },
                     isValidPassword = { password, repeatedPassword -> isValidPasswords(password, repeatedPassword)}
                 )
@@ -26,8 +26,10 @@ class RegisterActivity: ComponentActivity() {
         }
     }
 
-    private fun navigateToVerificationPage(){
-        val intent = Intent(this, VerificationCodeActivity::class.java)
+    private fun navigateToVerificationPage(email: String) {
+        val intent = Intent(this, VerificationCodeActivity::class.java).apply {
+            putExtra("email", email)
+        }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

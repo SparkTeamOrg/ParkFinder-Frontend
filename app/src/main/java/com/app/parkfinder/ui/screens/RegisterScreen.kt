@@ -65,7 +65,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 fun RegisterScreen(
     onBackClick: () -> Unit,
     onLoginClick: () -> Unit,
-    onNextClick: () -> Unit,
+    onNextClick: (String) -> Unit,
     isValidEmail: (String) -> ValidationResult,
     isValidPassword: (String, String) -> ValidationResult,
     viewModel: AuthViewModel = viewModel()
@@ -266,6 +266,7 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(5.dp))
                 Button(
                     onClick = {
+                        onNextClick(email)
                         emailValidation = isValidEmail(email)
                         passwordValidation = isValidPassword(password, confirmedPassword)
                         if(emailValidation.success && passwordValidation.success) {

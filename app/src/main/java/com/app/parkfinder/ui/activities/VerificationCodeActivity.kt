@@ -12,6 +12,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 class VerificationCodeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val email = intent.getStringExtra("email")
         setContent {
             ParkFinderTheme {
                 VerificationCodeScreen(
