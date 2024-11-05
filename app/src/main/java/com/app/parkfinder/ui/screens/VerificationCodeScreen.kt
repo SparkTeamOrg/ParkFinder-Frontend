@@ -31,7 +31,7 @@ fun VerificationCodeScreen(
     onNextClick: () -> Unit,
     onResendClick: () -> Unit,
     title: String = "Verification Code",
-    email: String = "srdjanfilipovic80@gmail.com"
+    email: String = ""
 ) {
     var otpValues = remember { mutableStateOf(List(4) { "" }) }
 
