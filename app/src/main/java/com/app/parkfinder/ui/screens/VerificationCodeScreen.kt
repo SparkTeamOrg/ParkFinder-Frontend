@@ -1,5 +1,8 @@
 package com.app.parkfinder.ui.screens
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +26,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.view_models.AuthViewModel
+import com.app.parkfinder.ui.activities.RegisterUserDataActivity
+import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -31,10 +39,13 @@ fun VerificationCodeScreen(
     onNextClick: () -> Unit,
     onResendClick: () -> Unit,
     title: String = "Verification Code",
-    email: String = "srdjanfilipovic80@gmail.com"
+    viewModel: AuthViewModel = viewModel(),
+    activityIntent : Intent
 ) {
     var otpValues = remember { mutableStateOf(List(4) { "" }) }
-
+    val context = LocalContext.current
+    val email = activityIntent.getStringExtra("email")!!
+    var code = activityIntent.getStringExtra("verificationCode")!!
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -123,14 +134,30 @@ fun VerificationCodeScreen(
             text = "Resend",
             fontSize = 16.sp,
             color = Color(0xFF0FCFFF),
-            modifier = Modifier.clickable { onResendClick() },
+            modifier = Modifier.clickable {
+                viewModel.verifyEmail(email){ response ->
+                    if(response.isSuccessful) {
+                        code = response.data
+                    }
+                }
+            },
             textDecoration = TextDecoration.Underline
         )
         Spacer(modifier = Modifier.height(40.dp))
 
         // Next Button
         Button(
-            onClick = { onNextClick() },
+            onClick = {
+                viewModel.sendVerificationCode(email,code){ response ->
+                    if(response.isSuccessful) {
+                        val intent = Intent(context, RegisterUserDataActivity::class.java)
+                        val incoming_data = activityIntent.extras
+                        intent.putExtras(incoming_data ?: Bundle())
+                        val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
+                        context.startActivity(intent, options.toBundle())
+                    }
+                }
+            },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -184,7 +211,8 @@ fun VerificationCodeScreenPreview() {
         VerificationCodeScreen(
             onBackClick = {},
             onNextClick = {},
-            onResendClick = {}
+            onResendClick = {},
+            activityIntent = Intent()
         )
     }
 }

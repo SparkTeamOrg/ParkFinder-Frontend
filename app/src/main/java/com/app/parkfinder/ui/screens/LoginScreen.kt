@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,12 +9,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -23,19 +27,32 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.models.dtos.UserLoginDto
+import com.app.parkfinder.logic.view_models.AuthViewModel
+import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun LoginScreen(
     onBackClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
     ) {
+
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
 
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var emailValidation by remember { mutableStateOf(ValidationResult()) }
+    var passwordValidation by remember { mutableStateOf(ValidationResult()) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -103,22 +120,68 @@ fun LoginScreen(
                     color = Color.White,
                     modifier = Modifier.align(Alignment.Start)
                 )
-                TextField(
+                OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(36, 45, 64),
+                        unfocusedBorderColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White
+                    ),
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Email,
+                            contentDescription = "emailIcon",
+                            tint = if(emailError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (emailError) {
+                            Text(
+                                text = emailValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
                     value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    shape = RoundedCornerShape(30.dp),
+                    onValueChange = {
+                        email = it
+                        emailError = false },
+                    isError = emailError,
+                    label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
+                    shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
-                TextField(
+                OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(36, 45, 64),
+                        unfocusedBorderColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White),
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Lock,
+                            contentDescription = "LockIcon",
+                            tint = if(passwordError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (passwordError) {
+                            Text(
+                                text = passwordValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
+                        }
+                    },
                     value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    shape = RoundedCornerShape(30.dp),
+                    onValueChange = {
+                        password = it
+                        passwordError = false},
+                    isError = passwordError,
+                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
+                    shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         if (password.isNotEmpty()) {
-                            val image = if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
+                            val image =
+                                if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
                                     painter = painterResource(id = image),
@@ -139,7 +202,15 @@ fun LoginScreen(
                         .clickable { onForgotPasswordClick() }
                 )
                 Button(
-                    onClick = { /* Handle login */ },
+                    onClick = { viewModel.login(UserLoginDto(email,password)){ response ->
+                        if(response.isSuccessful) {
+                            val intent = Intent(context, MainActivity::class.java).apply {
+                                putExtra("token", response.data)
+                            }
+                            context.startActivity(intent)
+                        }
+                    } },
+                    enabled = validateEmail(email),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -171,11 +242,16 @@ fun LoginScreen(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     ParkFinderTheme {
         LoginScreen(onBackClick = {}, onForgotPasswordClick = {}, onRegisterClick = {})
     }
+}
+
+fun validateEmail(email: String): Boolean {
+
+    val emailRegex = "^[\\w-.]+@[\\w-]+\\.[a-z]{2,3}$".toRegex(RegexOption.IGNORE_CASE)
+    return emailRegex.matches(email)
 }
