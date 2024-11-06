@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -39,15 +38,16 @@ fun LoginScreen(
         onForgotPasswordClick: () -> Unit,
         onRegisterClick: () -> Unit,
         login: () -> Unit,
-        validateEmail: (String) -> Boolean
+        validateEmail: (String) -> Boolean,
+        validatePassword: (String) -> Boolean
     ) {
 
     var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
 
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-    val emailValidation by remember { mutableStateOf(ValidationResult()) }
-    val passwordValidation by remember { mutableStateOf(ValidationResult()) }
+    var emailValidationMessage by remember { mutableStateOf("") }
+    var passwordValidationMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -130,7 +130,7 @@ fun LoginScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = emailValidation.message,
+                                text = emailValidationMessage,
                                 color = Color.Red,
                             )
                         } else {
@@ -138,7 +138,11 @@ fun LoginScreen(
                         }
                     },
                     value = email,
-                    onValueChange = onEmailChange,
+                    onValueChange = {
+                        onEmailChange(it)
+                        emailError = !validateEmail(it)
+                        emailValidationMessage = if (emailError) "Invalid email address" else ""
+                    },
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
                     shape = RoundedCornerShape(10.dp),
@@ -157,7 +161,7 @@ fun LoginScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = passwordValidation.message,
+                                text = passwordValidationMessage,
                                 color = Color.Red,
                             )
                         } else {
@@ -165,7 +169,11 @@ fun LoginScreen(
                         }
                     },
                     value = password,
-                    onValueChange = onPasswordChange,
+                    onValueChange = {
+                        onPasswordChange(it)
+                        passwordError = !validatePassword(it)
+                        passwordValidationMessage = if (passwordError) "Invalid password format" else ""
+                    },
                     isError = passwordError,
                     label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
@@ -194,8 +202,16 @@ fun LoginScreen(
                         .clickable { onForgotPasswordClick() }
                 )
                 Button(
-                    onClick = login,
-                    enabled = validateEmail(email),
+                    onClick = {
+                        val isEmailValid = validateEmail(email)
+                        val isPasswordValid = validatePassword(password)
+                        emailError = !isEmailValid
+                        passwordError = !isPasswordValid
+                        if (isEmailValid && isPasswordValid) {
+                            login()
+                        }
+                    },
+                    enabled = validateEmail(email) && validatePassword(password),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -240,7 +256,8 @@ fun LoginScreenPreview() {
             onForgotPasswordClick = {},
             onRegisterClick = {},
             login = {},
-            validateEmail = { true }
+            validateEmail = { true },
+            validatePassword = { true }
         )
     }
 }
