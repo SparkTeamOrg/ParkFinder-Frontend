@@ -58,8 +58,7 @@ class LoginActivity: ComponentActivity() {
     }
 
     private fun validateEmail(email: String): Boolean {
-        val emailRegex = "^[\\w-.]+@[\\w-]+\\.[a-z]{2,3}$".toRegex(RegexOption.IGNORE_CASE)
-        return emailRegex.matches(email)
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun loginUser(email: String, password: String) {
