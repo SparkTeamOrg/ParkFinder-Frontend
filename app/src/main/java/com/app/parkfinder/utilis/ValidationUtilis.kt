@@ -1,8 +1,7 @@
 package com.app.parkfinder.utilis
 
 fun validateEmail(email: String): Boolean {
-    val emailRegex = "^[\\w-.]+@[\\w-]+\\.[a-z]{2,3}$".toRegex(RegexOption.IGNORE_CASE)
-    return emailRegex.matches(email)
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
 fun validatePassword(password: String): Boolean {
