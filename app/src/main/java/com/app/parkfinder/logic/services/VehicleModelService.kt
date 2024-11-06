@@ -7,6 +7,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface VehicleModelService {
-    @GET("GetByBrandId/{brandId}")
-    suspend fun GetAllVehicleModelByBrandId(@Path("brandId") brandId: Int): Response<BackResponse<List<VehicleModel>>>
+
+    @GET("api/VehicleModel/GetByBrandId/{brandId}")
+    suspend fun getAllVehicleModelByBrandId(
+        @Path("brandId") brandId: Int
+    ): Response<BackResponse<List<VehicleModel>>>
 }

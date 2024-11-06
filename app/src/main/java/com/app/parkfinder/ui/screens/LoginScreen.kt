@@ -1,6 +1,5 @@
 package com.app.parkfinder.ui.screens
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -27,32 +25,30 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.models.dtos.UserLoginDto
-import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun LoginScreen(
-    onBackClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
-    onRegisterClick: () -> Unit,
-    viewModel: AuthViewModel = viewModel()
+        email: String,
+        onEmailChange: (String) -> Unit,
+        password: String,
+        onPasswordChange: (String) -> Unit,
+        onBackClick: () -> Unit,
+        onForgotPasswordClick: () -> Unit,
+        onRegisterClick: () -> Unit,
+        login: () -> Unit,
+        validateEmail: (String) -> Boolean
     ) {
 
-    val context = LocalContext.current
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
 
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-    var emailValidation by remember { mutableStateOf(ValidationResult()) }
-    var passwordValidation by remember { mutableStateOf(ValidationResult()) }
+    val emailValidation by remember { mutableStateOf(ValidationResult()) }
+    val passwordValidation by remember { mutableStateOf(ValidationResult()) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -142,9 +138,7 @@ fun LoginScreen(
                         }
                     },
                     value = email,
-                    onValueChange = {
-                        email = it
-                        emailError = false },
+                    onValueChange = onEmailChange,
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
                     shape = RoundedCornerShape(10.dp),
@@ -171,9 +165,7 @@ fun LoginScreen(
                         }
                     },
                     value = password,
-                    onValueChange = {
-                        password = it
-                        passwordError = false},
+                    onValueChange = onPasswordChange,
                     isError = passwordError,
                     label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
@@ -202,14 +194,7 @@ fun LoginScreen(
                         .clickable { onForgotPasswordClick() }
                 )
                 Button(
-                    onClick = { viewModel.login(UserLoginDto(email,password)){ response ->
-                        if(response.isSuccessful) {
-                            val intent = Intent(context, MainActivity::class.java).apply {
-                                putExtra("token", response.data)
-                            }
-                            context.startActivity(intent)
-                        }
-                    } },
+                    onClick = login,
                     enabled = validateEmail(email),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
@@ -246,12 +231,16 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     ParkFinderTheme {
-        LoginScreen(onBackClick = {}, onForgotPasswordClick = {}, onRegisterClick = {})
+        LoginScreen(
+            email = "",
+            onEmailChange = {},
+            password = "",
+            onPasswordChange = {},
+            onBackClick = {},
+            onForgotPasswordClick = {},
+            onRegisterClick = {},
+            login = {},
+            validateEmail = { true }
+        )
     }
-}
-
-fun validateEmail(email: String): Boolean {
-
-    val emailRegex = "^[\\w-.]+@[\\w-]+\\.[a-z]{2,3}$".toRegex(RegexOption.IGNORE_CASE)
-    return emailRegex.matches(email)
 }

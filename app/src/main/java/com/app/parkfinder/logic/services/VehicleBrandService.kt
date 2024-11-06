@@ -6,6 +6,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 
 interface VehicleBrandService {
-    @GET("GetAll")
+
+    @GET("vehicleBrand/GetAll")
     suspend fun getAllCarBrands(): Response<BackResponse<List<VehicleBrand>>>
 }

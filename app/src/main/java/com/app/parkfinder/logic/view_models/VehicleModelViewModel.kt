@@ -4,15 +4,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
-import com.app.parkfinder.logic.models.VehicleModel
+import com.app.parkfinder.logic.services.VehicleModelService
 import kotlinx.coroutines.launch
 
 class VehicleModelViewModel : ViewModel() {
-
+    private val vehicleModelService = RetrofitConfig.createService(VehicleModelService::class.java)
     var vehicle_models = mutableStateOf<Map<Int,String>>(mapOf())
+
     fun getAllVehicleModelsByBrand(brandId:Int) {
         viewModelScope.launch {
-            val response = RetrofitConfig.vehicleModelService.GetAllVehicleModelByBrandId(brandId)
+            val response = vehicleModelService.getAllVehicleModelByBrandId(brandId)
             if(response.isSuccessful){
                 val body = response.body()
                 for(brand in body?.data!!)
