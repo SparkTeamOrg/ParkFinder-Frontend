@@ -16,9 +16,11 @@ class AuthViewModel: ViewModel() {
     private val authService = RetrofitConfig.createService(AuthService::class.java)
     private val _loginResult = MutableLiveData<BackResponse<String>>()
     private val _sendingVerificationCodeForRegistrationResult = MutableLiveData<BackResponse<String>>()
+    private val _verifyingCodeResult = MutableLiveData<BackResponse<String>>()
 
     val loginResult: LiveData<BackResponse<String>> = _loginResult
     val sendingVerificationCodeForRegistrationResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForRegistrationResult
+    val verifyingCodeResult: LiveData<BackResponse<String>> = _verifyingCodeResult
 
     fun login(loginDto: UserLoginDto) {
         viewModelScope.launch {
@@ -64,8 +66,7 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun sendVerificationCodeForRegistration(email:String)
-    {
+    fun sendVerificationCodeForRegistration(email:String) {
         viewModelScope.launch {
             try {
                 val response = authService.sendVerificationCodeForRegistration(email)
@@ -134,6 +135,7 @@ class AuthViewModel: ViewModel() {
 
     fun verifyVerificationCode(email:String, verificationCode: String)
     {
+        Logger.getLogger("AuthViewModel").info("Verifying code $verificationCode for $email")
         viewModelScope.launch {
             try {
                 val response = authService.verifyVerificationCode(email, verificationCode)
@@ -146,7 +148,7 @@ class AuthViewModel: ViewModel() {
                                 messages = responseBody.messages,
                                 data = ""
                             ).let {
-                                _sendingVerificationCodeForRegistrationResult.postValue(
+                                _verifyingCodeResult.postValue(
                                     it
                                 )
                             }
@@ -157,7 +159,7 @@ class AuthViewModel: ViewModel() {
                                 messages = responseBody.messages,
                                 data = ""
                             ).let {
-                                _sendingVerificationCodeForRegistrationResult.postValue(
+                                _verifyingCodeResult.postValue(
                                     it
                                 )
                             }
@@ -169,7 +171,7 @@ class AuthViewModel: ViewModel() {
                             messages = listOf("An error occurred"),
                             data = ""
                         ).let {
-                            _sendingVerificationCodeForRegistrationResult.postValue(
+                            _verifyingCodeResult.postValue(
                                 it
                             )
                         }
@@ -181,7 +183,7 @@ class AuthViewModel: ViewModel() {
                         messages = listOf("An error occurred"),
                         data = ""
                     ).let {
-                        _sendingVerificationCodeForRegistrationResult.postValue(
+                        _verifyingCodeResult.postValue(
                             it
                         )
                     }
@@ -192,7 +194,7 @@ class AuthViewModel: ViewModel() {
                     messages = listOf(e.message ?: "An error occurred"),
                     data = ""
                 ).let {
-                    _sendingVerificationCodeForRegistrationResult.postValue(
+                    _verifyingCodeResult.postValue(
                         it
                     )
                 }
