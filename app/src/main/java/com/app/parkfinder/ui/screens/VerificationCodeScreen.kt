@@ -1,8 +1,6 @@
 package com.app.parkfinder.ui.screens
 
-import android.app.ActivityOptions
 import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,23 +27,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.activities.RegisterUserDataActivity
-import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun VerificationCodeScreen(
+    email: String = "",
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
     onResendClick: () -> Unit,
-    title: String = "Verification Code",
     viewModel: AuthViewModel = viewModel(),
     activityIntent : Intent
 ) {
     var otpValues = remember { mutableStateOf(List(4) { "" }) }
     val context = LocalContext.current
-    val email = activityIntent.getStringExtra("email")!!
-    var code = activityIntent.getStringExtra("verificationCode")!!
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,7 +80,7 @@ fun VerificationCodeScreen(
         Spacer(modifier = Modifier.height(80.dp))
 
         Text(
-            text = title,
+            text = "Verification Code",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -134,13 +128,7 @@ fun VerificationCodeScreen(
             text = "Resend",
             fontSize = 16.sp,
             color = Color(0xFF0FCFFF),
-            modifier = Modifier.clickable {
-                viewModel.verifyEmail(email){ response ->
-                    if(response.isSuccessful) {
-                        code = response.data
-                    }
-                }
-            },
+            modifier = Modifier.clickable { onResendClick() },
             textDecoration = TextDecoration.Underline
         )
         Spacer(modifier = Modifier.height(40.dp))
@@ -148,15 +136,15 @@ fun VerificationCodeScreen(
         // Next Button
         Button(
             onClick = {
-                viewModel.sendVerificationCode(email,code){ response ->
-                    if(response.isSuccessful) {
-                        val intent = Intent(context, RegisterUserDataActivity::class.java)
-                        val incoming_data = activityIntent.extras
-                        intent.putExtras(incoming_data ?: Bundle())
-                        val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
-                        context.startActivity(intent, options.toBundle())
-                    }
-                }
+//                viewModel.sendVerificationCode(email,code){ response ->
+//                    if(response.isSuccessful) {
+//                        val intent = Intent(context, RegisterUserDataActivity::class.java)
+//                        val incoming_data = activityIntent.extras
+//                        intent.putExtras(incoming_data ?: Bundle())
+//                        val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
+//                        context.startActivity(intent, options.toBundle())
+//                    }
+//                }
             },
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -209,6 +197,7 @@ fun OTPBox(value: String, onValueChange: (String) -> Unit) {
 fun VerificationCodeScreenPreview() {
     ParkFinderTheme {
         VerificationCodeScreen(
+            email = "email@example.com",
             onBackClick = {},
             onNextClick = {},
             onResendClick = {},

@@ -140,8 +140,8 @@ fun LoginScreen(
                     value = email,
                     onValueChange = {
                         onEmailChange(it)
-                        emailError = !validateEmail(it)
-                        emailValidationMessage = if (emailError) "Invalid email address" else ""
+                        emailError = it.isNotEmpty() && !validateEmail(it)
+                        emailValidationMessage = if (emailError) "Invalid format for email address" else ""
                     },
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
