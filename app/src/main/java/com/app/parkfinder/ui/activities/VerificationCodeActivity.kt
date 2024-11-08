@@ -1,11 +1,14 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.VerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -13,27 +16,28 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 class VerificationCodeActivity : ComponentActivity() {
 
     private lateinit var email: String
+    private lateinit var password: String
 
     private val authViewModel: AuthViewModel by viewModels()
     private val otpValues = mutableStateOf(List(4) { "" })
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         email = intent.getStringExtra("email") ?: ""
+        password = intent.getStringExtra("password") ?: ""
 
         setContent {
             ParkFinderTheme {
                 VerificationCodeScreen(
-                    email = email ?: "",
+                    email = email,
                     otpValues = otpValues.value,
                     onOtpValueChange = { newOtpValues ->
                         otpValues.value = newOtpValues
                     },
                     onBackClick = {finish()},
                     onNextClick = { verifyVerificationCode() },
-                    onResendClick = { sendVerificationCode(email ?: "") }
+                    onResendClick = { sendVerificationCode(email) }
                 )
             }
         }
@@ -56,7 +60,14 @@ class VerificationCodeActivity : ComponentActivity() {
     }
 
     private fun navigateToNextScreen() {
-        // navigate to RegisterUserDataActivity with email, password and verification code as extras
+        val intent = Intent(this, RegisterUserDataActivity::class.java).apply {
+            putExtra("email", email)
+            putExtra("password", password)
+            putExtra("code", otpValues.value.joinToString(""))
+        }
+
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 
     private fun verifyVerificationCode() {

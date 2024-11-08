@@ -17,10 +17,12 @@ class AuthViewModel: ViewModel() {
     private val _loginResult = MutableLiveData<BackResponse<String>>()
     private val _sendingVerificationCodeForRegistrationResult = MutableLiveData<BackResponse<String>>()
     private val _verifyingCodeResult = MutableLiveData<BackResponse<String>>()
+    private val _registrationResult = MutableLiveData<BackResponse<String>>()
 
     val loginResult: LiveData<BackResponse<String>> = _loginResult
     val sendingVerificationCodeForRegistrationResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForRegistrationResult
     val verifyingCodeResult: LiveData<BackResponse<String>> = _verifyingCodeResult
+    val registrationResult: LiveData<BackResponse<String>> = _registrationResult
 
     fun login(loginDto: UserLoginDto) {
         viewModelScope.launch {
@@ -133,8 +135,7 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun verifyVerificationCode(email:String, verificationCode: String)
-    {
+    fun verifyVerificationCode(email:String, verificationCode: String) {
         Logger.getLogger("AuthViewModel").info("Verifying code $verificationCode for $email")
         viewModelScope.launch {
             try {
@@ -202,14 +203,58 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun register(registerm: UserRegisterDto){
+    fun register(registerModel: UserRegisterDto){
         viewModelScope.launch {
-            val response = authService.register(registerm)
+            val response = authService.register(registerModel)
             if(response.isSuccessful){
-                println("good request")
+                val responseBody = response.body()
+                if (responseBody != null) {
+                    if(responseBody.isSuccessful) {
+                        BackResponse(
+                            isSuccessful = true,
+                            messages = responseBody.messages,
+                            data = ""
+                        ).let {
+                            _registrationResult.postValue(
+                                it
+                            )
+                        }
+                    }
+                    else {
+                        BackResponse(
+                            isSuccessful = false,
+                            messages = responseBody.messages,
+                            data = ""
+                        ).let {
+                            _registrationResult.postValue(
+                                it
+                            )
+                        }
+                    }
+                }
+                else {
+                    BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = ""
+                    ).let {
+                        _registrationResult.postValue(
+                            it
+                        )
+                    }
+                }
             }
-            else
-                println("bad request")
+            else {
+                BackResponse(
+                    isSuccessful = false,
+                    messages = listOf("An error occurred"),
+                    data = ""
+                ).let {
+                    _registrationResult.postValue(
+                        it
+                    )
+                }
+            }
         }
     }
 }

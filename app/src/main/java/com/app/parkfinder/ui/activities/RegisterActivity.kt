@@ -8,7 +8,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.ValidationResult
@@ -60,6 +59,7 @@ class RegisterActivity: ComponentActivity() {
     private fun navigateToVerificationPage(email: String) {
         val intent = Intent(this, VerificationCodeActivity::class.java).apply {
             putExtra("email", email)
+            putExtra("password", password.value)
         }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
