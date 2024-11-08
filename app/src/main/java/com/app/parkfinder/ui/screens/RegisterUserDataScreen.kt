@@ -1,8 +1,5 @@
 package com.app.parkfinder.ui.screens
 
-import android.app.ActivityOptions
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,26 +47,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.ValidationResult
-import com.app.parkfinder.ui.activities.RegisterVehicleInfoActivity
-import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun RegisterUserDataScreen(
+    fullName: String,
+    onFullNameChange: (String) -> Unit,
+    phoneNumber: String,
+    onPhoneNumberChange: (String) -> Unit,
     onBackClick: () -> Unit,
     isNameValid: (String) -> ValidationResult,
     isPhoneValid: (String) -> ValidationResult,
-    onNextClick: () -> Unit,
-    activityIntent: Intent
+    onNextClick: () -> Unit
 ) {
-    var fullName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-
     var nameError by remember { mutableStateOf(false) }
     var phoneError by remember { mutableStateOf(false) }
     var nameValidation by remember { mutableStateOf(ValidationResult()) }
     var phoneValidation by remember { mutableStateOf(ValidationResult()) }
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -164,7 +157,7 @@ fun RegisterUserDataScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Personal Informations",
+                    text = "Personal Information",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -197,8 +190,9 @@ fun RegisterUserDataScreen(
                     isError = nameError,
                     value = fullName,
                     onValueChange = {
-                        fullName = it
-                        nameError = false },
+                        onFullNameChange(it)
+                        nameError = isNameValid(it).success.not()
+                    },
                     label = { Text("Full Name", color = if (nameError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -230,8 +224,9 @@ fun RegisterUserDataScreen(
                     isError = phoneError,
                     value = phoneNumber,
                     onValueChange = {
-                        phoneNumber = it
-                        phoneError = false},
+                        onPhoneNumberChange(it)
+                        phoneError = isPhoneValid(it).success.not()
+                    },
                     label = { Text("Phone Number", color = if (phoneError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -245,29 +240,16 @@ fun RegisterUserDataScreen(
                 nameValidation = isNameValid(fullName)
                 phoneValidation = isPhoneValid(phoneNumber)
 
-
                 if(nameValidation.success && phoneValidation.success){
-                    //OnNextClick
-                    val split = fullName.split(" ")
-                    val intent = Intent(context, RegisterVehicleInfoActivity::class.java)
-
-                    val incoming_data = activityIntent.extras//previous intent data
-                    intent.putExtras(incoming_data ?: Bundle())
-                    intent.putExtra("firstname",split[0])
-                    intent.putExtra("lastname",split[1])
-                    intent.putExtra("profilePicture","") //TODO - user image
-                    intent.putExtra("phone",phoneNumber)
-
-                    val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
-                    context.startActivity(intent, options.toBundle())
+                    onNextClick()
                 }
                 else{
                     if(!nameValidation.success){
-                        fullName = ""
+                        onFullNameChange("")
                         nameError = true
                     }
                     if(!phoneValidation.success){
-                        phoneNumber = ""
+                        onPhoneNumberChange("")
                         phoneError = true
                     }
                 }
@@ -292,11 +274,14 @@ fun RegisterUserDataScreenPreview() {
 
     ParkFinderTheme {
         RegisterUserDataScreen(
+            fullName = "",
+            onFullNameChange = {},
+            phoneNumber = "",
+            onPhoneNumberChange = {},
             onBackClick = {},
             isNameValid = isNameValid,
             isPhoneValid = isNumValid,
-            onNextClick = {},
-            activityIntent = Intent()
+            onNextClick = {}
         )
     }
 }

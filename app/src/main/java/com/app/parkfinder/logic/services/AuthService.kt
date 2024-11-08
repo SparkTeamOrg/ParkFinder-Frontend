@@ -19,12 +19,12 @@ interface AuthService {
     ): Response<BackResponse<String>>
 
     @POST("auth/code/register")
-    suspend fun verificationCodeRegister(
+    suspend fun sendVerificationCodeForRegistration(
         @Query("email") email:String
     ): Response<BackResponse<String>>
 
     @POST("auth/verify")
-    suspend fun emailVerification(
+    suspend fun verifyVerificationCode(
         @Query("email") email: String,
         @Query("code") verificationCode: String
     ): Response<BackResponse<String>>
