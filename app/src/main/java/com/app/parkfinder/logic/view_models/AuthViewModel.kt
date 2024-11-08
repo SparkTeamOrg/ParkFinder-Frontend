@@ -10,7 +10,6 @@ import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.services.AuthService
 import kotlinx.coroutines.launch
-import java.util.logging.Logger
 
 class AuthViewModel: ViewModel() {
     private val authService = RetrofitConfig.createService(AuthService::class.java)
@@ -30,9 +29,7 @@ class AuthViewModel: ViewModel() {
                 val response = authService.login(loginDto)
 
                 if(response.isSuccessful) {
-                    Logger.getLogger("AuthViewModel").info("Login successful")
                     response.body()?.let {
-                        Logger.getLogger("AuthViewModel").info("Login result: $it")
                         _loginResult.postValue(it)
                     }
                 }
@@ -136,7 +133,6 @@ class AuthViewModel: ViewModel() {
     }
 
     fun verifyVerificationCode(email:String, verificationCode: String) {
-        Logger.getLogger("AuthViewModel").info("Verifying code $verificationCode for $email")
         viewModelScope.launch {
             try {
                 val response = authService.verifyVerificationCode(email, verificationCode)
