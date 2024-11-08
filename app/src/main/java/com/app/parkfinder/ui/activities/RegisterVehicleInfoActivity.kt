@@ -15,7 +15,6 @@ import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.screens.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
-import java.util.logging.Logger
 
 class RegisterVehicleInfoActivity: ComponentActivity() {
 
@@ -34,7 +33,8 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
     private var selectedColor: Int = 0
     private var licencePlate = mutableStateOf("")
 
-    private val colorNames = mapOf(1 to "Red",
+    private val colorNames = mapOf(
+        1 to "Red",
         2 to "Green",
         3 to "Blue",
         4 to "Yellow",
@@ -76,6 +76,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
 
         authViewModel.registrationResult.observe(this) { result ->
             if (result.isSuccessful) {
+                Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
                 navigateToLogin()
             }
             else {
@@ -85,7 +86,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
     }
 
     private fun registerUser() {
-        val userModel: UserRegisterDto = UserRegisterDto(
+        val userModel = UserRegisterDto(
             email = email,
             password = password,
             verificationCode = verificationCode,
@@ -97,7 +98,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
             color = colorNames[selectedColor] ?: "",
             licencePlate = licencePlate.value
         )
-        Logger.getLogger("RegisterVehicleInfoActivity").info("Registering user: $userModel")
+
         authViewModel.register(userModel)
     }
 
