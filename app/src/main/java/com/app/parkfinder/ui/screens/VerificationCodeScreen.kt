@@ -1,8 +1,5 @@
 package com.app.parkfinder.ui.screens
 
-import android.app.ActivityOptions
-import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,36 +13,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.activities.RegisterUserDataActivity
-import com.app.parkfinder.ui.activities.VerificationCodeActivity
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun VerificationCodeScreen(
+    email: String = "",
+    otpValues:  List<String> = List(4) { "" },
+    onOtpValueChange: (List<String>) -> Unit,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    onResendClick: () -> Unit,
-    title: String = "Verification Code",
-    viewModel: AuthViewModel = viewModel(),
-    activityIntent : Intent
+    onResendClick: () -> Unit
 ) {
-    var otpValues = remember { mutableStateOf(List(4) { "" }) }
-    val context = LocalContext.current
-    val email = activityIntent.getStringExtra("email")!!
-    var code = activityIntent.getStringExtra("verificationCode")!!
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,7 +73,7 @@ fun VerificationCodeScreen(
         Spacer(modifier = Modifier.height(80.dp))
 
         Text(
-            text = title,
+            text = "Verification Code",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -114,14 +101,14 @@ fun VerificationCodeScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            otpValues.value.forEachIndexed { index, _ ->
+            otpValues.forEachIndexed { index, _ ->
                 OTPBox(
-                    value = otpValues.value[index],
+                    value = otpValues[index],
                     onValueChange = { newValue ->
                         if (newValue.length <= 1) {
-                            otpValues.value = otpValues.value.toMutableList().apply {
-                                this[index] = newValue
-                            }
+                            val newOtpValues = otpValues.toMutableList()
+                            newOtpValues[index] = newValue
+                            onOtpValueChange(newOtpValues)
                         }
                     }
                 )
@@ -134,30 +121,14 @@ fun VerificationCodeScreen(
             text = "Resend",
             fontSize = 16.sp,
             color = Color(0xFF0FCFFF),
-            modifier = Modifier.clickable {
-                viewModel.verifyEmail(email){ response ->
-                    if(response.isSuccessful) {
-                        code = response.data
-                    }
-                }
-            },
+            modifier = Modifier.clickable { onResendClick() },
             textDecoration = TextDecoration.Underline
         )
         Spacer(modifier = Modifier.height(40.dp))
 
         // Next Button
         Button(
-            onClick = {
-                viewModel.sendVerificationCode(email,code){ response ->
-                    if(response.isSuccessful) {
-                        val intent = Intent(context, RegisterUserDataActivity::class.java)
-                        val incoming_data = activityIntent.extras
-                        intent.putExtras(incoming_data ?: Bundle())
-                        val options = ActivityOptions.makeCustomAnimation(context, R.anim.slide_in_right, R.anim.slide_out_left)
-                        context.startActivity(intent, options.toBundle())
-                    }
-                }
-            },
+            onClick = onNextClick,
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -176,7 +147,10 @@ fun VerificationCodeScreen(
 }
 
 @Composable
-fun OTPBox(value: String, onValueChange: (String) -> Unit) {
+fun OTPBox(
+    value: String, 
+    onValueChange: (String) -> Unit,
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -186,7 +160,6 @@ fun OTPBox(value: String, onValueChange: (String) -> Unit) {
             color = Color.White,
             textAlign = TextAlign.Center
         ),
-        visualTransformation = PasswordVisualTransformation(),
         singleLine = true,
         shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
@@ -209,10 +182,12 @@ fun OTPBox(value: String, onValueChange: (String) -> Unit) {
 fun VerificationCodeScreenPreview() {
     ParkFinderTheme {
         VerificationCodeScreen(
+            email = "email@example.com",
+            otpValues = List(4) { "" },
+            onOtpValueChange = {},
             onBackClick = {},
             onNextClick = {},
-            onResendClick = {},
-            activityIntent = Intent()
+            onResendClick = {}
         )
     }
 }
