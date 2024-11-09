@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
+import com.app.parkfinder.logic.models.dtos.TokenDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.services.AuthService
@@ -14,14 +15,14 @@ import kotlinx.coroutines.launch
 
 class AuthViewModel: ViewModel() {
     private val authService = RetrofitConfig.createService(AuthService::class.java)
-    private val _loginResult = MutableLiveData<BackResponse<String>>()
+    private val _loginResult = MutableLiveData<BackResponse<TokenDto>>()
     private val _sendingVerificationCodeForRegistrationResult = MutableLiveData<BackResponse<String>>()
     private val _sendingVerificationCodeForPasswordResetResult = MutableLiveData<BackResponse<String>>()
     private val _verifyingCodeResult = MutableLiveData<BackResponse<String>>()
     private val _registrationResult = MutableLiveData<BackResponse<String>>()
     private val _passwordResetResult = MutableLiveData<BackResponse<String>>()
 
-    val loginResult: LiveData<BackResponse<String>> = _loginResult
+    val loginResult: LiveData<BackResponse<TokenDto>> = _loginResult
     val sendingVerificationCodeForRegistrationResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForRegistrationResult
     val sendingVerificationCodeForPasswordResetResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForPasswordResetResult
     val verifyingCodeResult: LiveData<BackResponse<String>> = _verifyingCodeResult
@@ -42,7 +43,7 @@ class AuthViewModel: ViewModel() {
                     BackResponse(
                         isSuccessful = false,
                         messages = listOf("An error occurred"),
-                        data = ""
+                        data = TokenDto("", "")
                     ).let {
                         _loginResult.postValue(
                             it
@@ -63,7 +64,11 @@ class AuthViewModel: ViewModel() {
                     data = ""
                 ).let {
                     _loginResult.postValue(
-                        it
+                        BackResponse(
+                            isSuccessful = false,
+                            messages = listOf(e.message ?: "An error occurred"),
+                            data = TokenDto("", "")
+                        )
                     )
                 }
             }

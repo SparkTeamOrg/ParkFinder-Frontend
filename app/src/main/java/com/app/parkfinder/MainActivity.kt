@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.app.parkfinder.ui.activities.LoginActivity
 import com.app.parkfinder.ui.activities.TempActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.auth0.android.jwt.JWT
