@@ -1,10 +1,11 @@
 package com.app.parkfinder.logic
 
+import com.app.parkfinder.BuildConfig
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitConfig {
-    private const val BACK_URL = "http://10.0.2.2:5009/"
+    private const val BACK_URL = BuildConfig.BACKEND_URL
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
