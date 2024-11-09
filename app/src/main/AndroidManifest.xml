@@ -47,6 +47,11 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.ResetPasswordVerificationCodeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name=".ui.activities.EnterNewPasswordActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">

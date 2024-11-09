@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,10 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -46,12 +41,15 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun ForgotPasswordScreen(
+fun ForgotPasswordScreen (
+    email: String,
+    onEmailChange: (String) -> Unit,
     onBackClick: () -> Unit,
     onSendClick: () -> Unit
 )
 {
-    var email by remember { mutableStateOf("") }
+    var emailError: Boolean = false
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +130,7 @@ fun ForgotPasswordScreen(
                 Spacer(Modifier.padding(10.dp))
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = { onEmailChange(it) },
                     placeholder = {
                         Text(
                             text = "Enter your email",
@@ -164,7 +162,9 @@ fun ForgotPasswordScreen(
                 )
                 Spacer(Modifier.padding(20.dp))
                 Button(
-                    onClick = {onSendClick()},
+                    onClick = {
+                        onSendClick()
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -187,6 +187,11 @@ fun ForgotPasswordScreen(
 @Composable
 fun ForgotPassScreenPreview() {
     ParkFinderTheme {
-        ForgotPasswordScreen(onBackClick = {}, onSendClick = {})
+        ForgotPasswordScreen(
+            email = "",
+            onEmailChange = {},
+            onBackClick = {},
+            onSendClick = {}
+        )
     }
 }
