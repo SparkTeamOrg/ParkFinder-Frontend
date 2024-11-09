@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Lock
@@ -48,13 +50,17 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun EnterNewPasswordScreen(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    confirmPassword: String,
+    onConfirmPasswordChange: (String) -> Unit,
+    onBackClick: () -> Unit,
     onFinishClick: () -> Unit
 )
 {
-    var newPassword by remember { mutableStateOf("") }
-    var newPasswordConfirm by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var passwordConfirmVisible by remember { mutableStateOf(false) }
+    var passwordError: String by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,16 +72,37 @@ fun EnterNewPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color(0xFF293038), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
             Image(
                 painter = painterResource(id = R.drawable.park_finder_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier.fillMaxWidth(0.5f)
             )
-
+            // Dummy icon in order to align the logo center
+            // Has to be transparent to not be visible
+            // Has to have the same size as the back button
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Dummy",
+                tint = Color.Transparent,
+                modifier = Modifier.size(60.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(100.dp))
+
         Text(
             text = "Forgot password",
             fontSize = 24.sp,
@@ -90,7 +117,7 @@ fun EnterNewPasswordScreen(
             fontSize = 20.sp,
             color = Color.White,
             textAlign = TextAlign.Center,
-            modifier = Modifier.width(150.dp)
+            modifier = Modifier.width(300.dp)
         )
         Spacer(modifier = Modifier.height(34.dp))
         Box(
@@ -115,8 +142,8 @@ fun EnterNewPasswordScreen(
                 )
                 Spacer(Modifier.padding(10.dp))
                 OutlinedTextField(
-                    value = newPassword,
-                    onValueChange = { newPassword = it },
+                    value = password,
+                    onValueChange = { onPasswordChange(it) },
                     placeholder = {
                         Text(
                             text = "Password",
@@ -156,8 +183,8 @@ fun EnterNewPasswordScreen(
                         .padding(16.dp)
                 )
                 OutlinedTextField(
-                    value = newPasswordConfirm,
-                    onValueChange = { newPasswordConfirm = it },
+                    value = confirmPassword,
+                    onValueChange = { onConfirmPasswordChange(it) },
                     placeholder = {
                         Text(
                             text = "Confirm Password",
@@ -172,8 +199,8 @@ fun EnterNewPasswordScreen(
                         )
                     },
                     trailingIcon = {
-                        val visibilityIcon = if (passwordConfirmVisible) Icons.Default.Visibility  else Icons.Default.VisibilityOff
-                        IconButton(onClick = { passwordConfirmVisible = !passwordConfirmVisible }) {
+                        val visibilityIcon = if (passwordVisible) Icons.Default.Visibility  else Icons.Default.VisibilityOff
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = visibilityIcon,
                                 contentDescription = if (passwordVisible) "Hide password" else "Show password",
@@ -181,7 +208,7 @@ fun EnterNewPasswordScreen(
                             )
                         }
                     },
-                    visualTransformation = if (passwordConfirmVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = Color(0xFF2E3341),
                         unfocusedContainerColor = Color(0xFF2E3341),
@@ -198,7 +225,7 @@ fun EnterNewPasswordScreen(
                 )
                 Spacer(Modifier.padding(20.dp))
                 Button(
-                    onClick = {onFinishClick()},
+                    onClick = { onFinishClick() },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -221,6 +248,13 @@ fun EnterNewPasswordScreen(
 @Composable
 fun EnterNewPasswordScreenPreview() {
     ParkFinderTheme {
-        EnterNewPasswordScreen(onFinishClick = {})
+        EnterNewPasswordScreen(
+            password = "",
+            onPasswordChange = {},
+            confirmPassword = "",
+            onConfirmPasswordChange = {},
+            onBackClick = {},
+            onFinishClick = {}
+        )
     }
 }

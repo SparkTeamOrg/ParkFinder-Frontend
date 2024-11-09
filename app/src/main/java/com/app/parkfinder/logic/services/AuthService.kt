@@ -1,6 +1,7 @@
 package com.app.parkfinder.logic.services
 
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import retrofit2.Response
@@ -23,9 +24,19 @@ interface AuthService {
         @Query("email") email:String
     ): Response<BackResponse<String>>
 
+    @POST("auth/code/reset")
+    suspend fun sendVerificationCodeForPasswordReset(
+        @Query("email") email:String
+    ): Response<BackResponse<String>>
+
     @POST("auth/verify")
     suspend fun verifyVerificationCode(
         @Query("email") email: String,
         @Query("code") verificationCode: String
+    ): Response<BackResponse<String>>
+
+    @POST("auth/password/reset")
+    suspend fun resetPassword(
+        @Body resetPasswordDto: ResetPasswordDto
     ): Response<BackResponse<String>>
 }
