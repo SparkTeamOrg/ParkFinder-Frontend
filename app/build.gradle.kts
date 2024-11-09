@@ -76,4 +76,5 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
+    implementation("com.auth0.android:jwtdecode:2.0.0")
 }

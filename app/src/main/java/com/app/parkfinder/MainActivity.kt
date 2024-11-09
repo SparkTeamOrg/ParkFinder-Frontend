@@ -1,47 +1,50 @@
 package com.app.parkfinder
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.ui.activities.LoginActivity
+import com.app.parkfinder.ui.activities.TempActivity
+import com.app.parkfinder.ui.activities.WelcomeActivity
+import com.auth0.android.jwt.JWT
+import java.util.logging.Logger
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ParkFinderTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = intent.getStringExtra("token").toString(),
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        val accessToken = sharedPreferences.getString("access_token", null)
+        val refreshToken = sharedPreferences.getString("refresh_token", null)
+
+        Logger.getLogger("MainActivity").info("Access token: $accessToken")
+
+        if(accessToken != null && !isTokenExpired(accessToken)) {
+            // User is logged in and token is not expired
+            Logger.getLogger("MainActivity").info("User is logged in")
+            val intent = Intent(this, TempActivity::class.java)
+            val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+            startActivity(intent, options.toBundle())
+        } else if(refreshToken != null) {
+            // Optionally, use the refresh token to get a new access token
+        } else {
+            navigateToLogin()
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun navigateToLogin() {
+        val intent = Intent(this, WelcomeActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ParkFinderTheme {
-        Greeting("Android")
+    private fun isTokenExpired(token: String): Boolean {
+        return try {
+            val jwt = JWT(token)
+            jwt.isExpired(10)   // 10 seconds lee-way to account for clock skew
+        } catch (e: Exception) {
+            true    // If there is an exception, the token is invalid
+        }
     }
 }
