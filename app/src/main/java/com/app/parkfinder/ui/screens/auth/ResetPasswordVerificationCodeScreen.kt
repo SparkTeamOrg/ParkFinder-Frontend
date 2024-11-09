@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens
+package com.app.parkfinder.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextAlign
@@ -22,10 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.composables.OTPBox
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun VerificationCodeScreen(
+fun ResetPasswordVerificationCodeScreen(
     email: String = "",
     otpValues:  List<String> = List(4) { "" },
     onOtpValueChange: (List<String>) -> Unit,
@@ -63,6 +63,9 @@ fun VerificationCodeScreen(
                 contentDescription = "App Logo",
                 modifier = Modifier.fillMaxWidth(0.5f)
             )
+            // Dummy icon in order to align the logo center
+            // Has to be transparent to not be visible
+            // Has to have the same size as the back button
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Dummy",
@@ -70,7 +73,7 @@ fun VerificationCodeScreen(
                 modifier = Modifier.size(60.dp)
             )
         }
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         Text(
             text = "Verification Code",
@@ -146,40 +149,9 @@ fun VerificationCodeScreen(
     }
 }
 
-@Composable
-fun OTPBox(
-    value: String, 
-    onValueChange: (String) -> Unit,
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        textStyle = TextStyle(
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            textAlign = TextAlign.Center
-        ),
-        singleLine = true,
-        shape = RoundedCornerShape(16.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFF2E3341),
-            unfocusedContainerColor = Color(0xFF2E3341),
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            focusedBorderColor = Color.White,
-            unfocusedBorderColor = Color.White,
-            cursorColor = Color.White
-        ),
-        modifier = Modifier
-            .size(56.dp)
-            .background(Color(0xFF2E3341), RoundedCornerShape(16.dp))
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun VerificationCodeScreenPreview() {
+fun ResetPasswordVerificationCodeScreen() {
     ParkFinderTheme {
         VerificationCodeScreen(
             email = "email@example.com",

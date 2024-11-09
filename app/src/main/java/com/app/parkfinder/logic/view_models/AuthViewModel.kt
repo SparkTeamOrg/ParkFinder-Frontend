@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.services.AuthService
@@ -15,13 +16,17 @@ class AuthViewModel: ViewModel() {
     private val authService = RetrofitConfig.createService(AuthService::class.java)
     private val _loginResult = MutableLiveData<BackResponse<String>>()
     private val _sendingVerificationCodeForRegistrationResult = MutableLiveData<BackResponse<String>>()
+    private val _sendingVerificationCodeForPasswordResetResult = MutableLiveData<BackResponse<String>>()
     private val _verifyingCodeResult = MutableLiveData<BackResponse<String>>()
     private val _registrationResult = MutableLiveData<BackResponse<String>>()
+    private val _passwordResetResult = MutableLiveData<BackResponse<String>>()
 
     val loginResult: LiveData<BackResponse<String>> = _loginResult
     val sendingVerificationCodeForRegistrationResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForRegistrationResult
+    val sendingVerificationCodeForPasswordResetResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForPasswordResetResult
     val verifyingCodeResult: LiveData<BackResponse<String>> = _verifyingCodeResult
     val registrationResult: LiveData<BackResponse<String>> = _registrationResult
+    val passwordResetResult: LiveData<BackResponse<String>> = _passwordResetResult
 
     fun login(loginDto: UserLoginDto) {
         viewModelScope.launch {
@@ -125,6 +130,73 @@ class AuthViewModel: ViewModel() {
                     data = ""
                 ).let {
                     _sendingVerificationCodeForRegistrationResult.postValue(
+                        it
+                    )
+                }
+            }
+        }
+    }
+
+    fun sendVerificationCodeForPasswordReset(email: String) {
+        viewModelScope.launch {
+            try {
+                val response = authService.sendVerificationCodeForPasswordReset(email)
+                if(response.isSuccessful){
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        if(responseBody.isSuccessful) {
+                            BackResponse(
+                                isSuccessful = true,
+                                messages = responseBody.messages,
+                                data = ""
+                            ).let {
+                                _sendingVerificationCodeForPasswordResetResult.postValue(
+                                    it
+                                )
+                            }
+                        }
+                        else {
+                            BackResponse(
+                                isSuccessful = false,
+                                messages = responseBody.messages,
+                                data = ""
+                            ).let {
+                                _sendingVerificationCodeForPasswordResetResult.postValue(
+                                    it
+                                )
+                            }
+                        }
+                    }
+                    else {
+                        BackResponse(
+                            isSuccessful = false,
+                            messages = listOf("An error occurred"),
+                            data = ""
+                        ).let {
+                            _sendingVerificationCodeForPasswordResetResult.postValue(
+                                it
+                            )
+                        }
+                    }
+                }
+                else {
+                    BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = ""
+                    ).let {
+                        _sendingVerificationCodeForPasswordResetResult.postValue(
+                            it
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                BackResponse(
+                    isSuccessful = false,
+                    messages = listOf(e.message ?: "An error occurred"),
+                    data = ""
+                ).let {
+                    _sendingVerificationCodeForPasswordResetResult.postValue(
                         it
                     )
                 }
@@ -247,6 +319,74 @@ class AuthViewModel: ViewModel() {
                     data = ""
                 ).let {
                     _registrationResult.postValue(
+                        it
+                    )
+                }
+            }
+        }
+    }
+
+    fun resetPassword(resetPasswordDto: ResetPasswordDto) {
+        viewModelScope.launch {
+            try {
+                val response = authService.resetPassword(resetPasswordDto)
+
+                if(response.isSuccessful){
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        if(responseBody.isSuccessful) {
+                            BackResponse(
+                                isSuccessful = true,
+                                messages = responseBody.messages,
+                                data = ""
+                            ).let {
+                                _passwordResetResult.postValue(
+                                    it
+                                )
+                            }
+                        }
+                        else {
+                            BackResponse(
+                                isSuccessful = false,
+                                messages = responseBody.messages,
+                                data = ""
+                            ).let {
+                                _passwordResetResult.postValue(
+                                    it
+                                )
+                            }
+                        }
+                    }
+                    else {
+                        BackResponse(
+                            isSuccessful = false,
+                            messages = listOf("An error occurred"),
+                            data = ""
+                        ).let {
+                            _passwordResetResult.postValue(
+                                it
+                            )
+                        }
+                    }
+                }
+                else {
+                    BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = ""
+                    ).let {
+                        _passwordResetResult.postValue(
+                            it
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                BackResponse(
+                    isSuccessful = false,
+                    messages = listOf(e.message ?: "An error occurred"),
+                    data = ""
+                ).let {
+                    _passwordResetResult.postValue(
                         it
                     )
                 }

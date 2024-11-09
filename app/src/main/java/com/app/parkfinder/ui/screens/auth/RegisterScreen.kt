@@ -1,53 +1,87 @@
-package com.app.parkfinder.ui.screens
+package com.app.parkfinder.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun LoginScreen(
-        email: String,
-        onEmailChange: (String) -> Unit,
-        password: String,
-        onPasswordChange: (String) -> Unit,
-        onBackClick: () -> Unit,
-        onForgotPasswordClick: () -> Unit,
-        onRegisterClick: () -> Unit,
-        login: () -> Unit,
-        validateEmail: (String) -> Boolean,
-        validatePassword: (String) -> Boolean
-    ) {
-
-    var passwordVisible by remember { mutableStateOf(false) }   // For toggling password visibility
+fun RegisterScreen(
+    email: String = "",
+    onEmailChange: (String) -> Unit,
+    password: String = "",
+    onPasswordChange: (String) -> Unit,
+    confirmedPassword: String = "",
+    onConfirmedPasswordChange: (String) -> Unit,
+    onBackClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    onNextClick: (String) -> Unit,
+    validateEmail: (String) -> Boolean,
+    validatePasswords: () -> ValidationResult
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
 
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
     var emailValidationMessage by remember { mutableStateOf("") }
-    var passwordValidationMessage by remember { mutableStateOf("") }
+    var passwordValidation by remember { mutableStateOf(ValidationResult()) }
+
+    val annotatedText = buildAnnotatedString {
+        append("Already have an account? ")
+        pushStringAnnotation(tag = "URL", annotation = "login")
+        withStyle(style = SpanStyle(color = Color(0xFF0FCFFF), textDecoration = TextDecoration.Underline, fontSize = 16.sp)) {
+            append("Login")
+        }
+        pop()
+    }
 
     Column(
         modifier = Modifier
@@ -55,7 +89,8 @@ fun LoginScreen(
             .background(Color(0xFF151A24))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    ){
+        // Top bar
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -79,9 +114,6 @@ fun LoginScreen(
                 contentDescription = "App Logo",
                 modifier = Modifier.fillMaxWidth(0.5f)
             )
-            // Dummy icon in order to align the logo center
-            // Has to be transparent to not be visible
-            // Has to have the same size as the back button
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Dummy",
@@ -89,33 +121,35 @@ fun LoginScreen(
                 modifier = Modifier.size(60.dp)
             )
         }
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(60.dp))
         Text(
-            text = "Enter your \ncredentials to Login",
+            text = "Enter your email and \npassword",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(60.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, RoundedCornerShape(8.dp))
-                .background(Color(36, 45, 64))
+                .background(Color(36, 45, 64).copy(alpha = 0.4f))
                 .padding(16.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Spacer(modifier = Modifier.height(1.dp))
                 Text(
-                    text = "Login",
+                    text = "Credentials",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     modifier = Modifier.align(Alignment.Start)
                 )
+                Spacer(modifier = Modifier.height(0.5.dp))
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color(36, 45, 64),
@@ -140,8 +174,8 @@ fun LoginScreen(
                     value = email,
                     onValueChange = {
                         onEmailChange(it)
-                        emailError = it.isNotEmpty() && !validateEmail(it)
-                        emailValidationMessage = if (emailError) "Invalid format for email address" else ""
+                        emailError = email.isNotEmpty() && !validateEmail(email)
+                        emailValidationMessage = "Invalid format for email address"
                     },
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
@@ -161,7 +195,7 @@ fun LoginScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = passwordValidationMessage,
+                                text = passwordValidation.message,
                                 color = Color.Red,
                             )
                         } else {
@@ -171,8 +205,7 @@ fun LoginScreen(
                     value = password,
                     onValueChange = {
                         onPasswordChange(it)
-                        passwordError = !validatePassword(it)
-                        passwordValidationMessage = if (passwordError) "Invalid password format" else ""
+                        passwordError = password.isNotEmpty() && validatePasswords().success.not()
                     },
                     isError = passwordError,
                     label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
@@ -193,71 +226,110 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Text(
-                    text = "Forgot password?",
-                    color = Color.White,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .clickable { onForgotPasswordClick() }
-                )
-                Button(
-                    onClick = {
-                        val isEmailValid = validateEmail(email)
-                        val isPasswordValid = validatePassword(password)
-                        emailError = !isEmailValid
-                        passwordError = !isPasswordValid
-                        if (isEmailValid && isPasswordValid) {
-                            login()
+                OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = Color(36, 45, 64),
+                        unfocusedBorderColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White),
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Lock,
+                            contentDescription = "LockIcon",
+                            tint = if(passwordError) Color.Red else Color.White) },
+                    placeholder = {
+                        if (passwordError) {
+                            Text(
+                                text = passwordValidation.message,
+                                color = Color.Red,
+                            )
+                        } else {
+                            Text("")
                         }
                     },
-                    enabled = validateEmail(email) && validatePassword(password),
+                    value = confirmedPassword,
+                    onValueChange = {
+                        onConfirmedPasswordChange(it)
+                        passwordError = confirmedPassword.isNotEmpty() && validatePasswords().success.not()
+                    },
+                    isError = passwordError,
+                    label = { Text("Confirm password", color = if (passwordError) Color.Red else Color.White) },
+                    shape = RoundedCornerShape(10.dp),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        if (password.isNotEmpty()) {
+                            val image =
+                                if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(id = image),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Button(
+                    onClick = {
+                        val validEmail = validateEmail(email)
+                        passwordValidation = validatePasswords()
+                        if(validEmail && passwordValidation.success) {
+                            onNextClick(email)
+                        } else{
+                            if(!validEmail) {
+                                onEmailChange("")
+                                emailError = true
+                            }
+                            if(!passwordValidation.success) {
+                                onPasswordChange("")
+                                onConfirmedPasswordChange("")
+                                passwordError = true
+                            }
+                        }},
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
+                    enabled = validateEmail(email) && validatePasswords().success,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF0FCFFF),
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Login")
+                    Text("Next")
                 }
             }
         }
-
-        // Already have an account? Register
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Don't have an account? ",
-                color = Color.White
-            )
-            Text(
-                text = "Register",
-                color = Color(0xFF0FCFFF),
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onRegisterClick() }
+                text = annotatedText,
+                modifier = Modifier.clickable { onLoginClick() },
+                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal, color = Color.White)
             )
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegisterScreenPreview() {
     ParkFinderTheme {
-        LoginScreen(
+        RegisterScreen(
             email = "",
             onEmailChange = {},
             password = "",
             onPasswordChange = {},
+            confirmedPassword = "",
+            onConfirmedPasswordChange = {},
             onBackClick = {},
-            onForgotPasswordClick = {},
-            onRegisterClick = {},
-            login = {},
+            onLoginClick = {},
             validateEmail = { true },
-            validatePassword = { true }
+            validatePasswords = { ValidationResult() },
+            onNextClick = {}
         )
     }
 }

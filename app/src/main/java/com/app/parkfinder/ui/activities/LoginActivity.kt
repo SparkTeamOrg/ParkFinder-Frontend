@@ -13,7 +13,7 @@ import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.LoginScreen
+import com.app.parkfinder.ui.screens.auth.LoginScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword
@@ -48,14 +48,9 @@ class LoginActivity: ComponentActivity() {
 
         authViewModel.loginResult.observe(this) { result ->
             if (result.isSuccessful) {
-                val intent = Intent(this, MainActivity::class.java).apply {
-                    putExtra("token", result.data)
-                }
-                val options = ActivityOptions.makeCustomAnimation(
-                    this,
-                    R.anim.slide_in_right,
-                    R.anim.slide_out_left
-                )
+                saveTokens(result.data, "") // TODO: save refresh token
+                val intent = Intent(this, TempActivity::class.java) // TODO: Change to Landing Activity after creating it
+                val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
                 startActivity(intent, options.toBundle())
             } else {
                 Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
@@ -80,4 +75,14 @@ class LoginActivity: ComponentActivity() {
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
+
+    private fun saveTokens(accessToken: String, refreshToken: String) {
+        val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString("access_token", accessToken)
+            putString("refresh_token", refreshToken)
+            apply()
+        }
+    }
+
 }
