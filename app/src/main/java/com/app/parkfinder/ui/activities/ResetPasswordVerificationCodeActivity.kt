@@ -12,7 +12,6 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.ResetPasswordVerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
-import java.util.logging.Logger
 
 class ResetPasswordVerificationCodeActivity : ComponentActivity() {
 
@@ -69,7 +68,6 @@ class ResetPasswordVerificationCodeActivity : ComponentActivity() {
 
     private fun verifyVerificationCode() {
         val code = otpValues.value.joinToString("")
-        Logger.getLogger("ResetPasswordVerificationCodeActivity").info("Verifying code: $code")
         authViewModel.verifyVerificationCode(email, code)
     }
 
