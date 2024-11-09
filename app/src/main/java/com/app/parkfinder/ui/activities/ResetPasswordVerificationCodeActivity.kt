@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.ResetPasswordVerificationCodeScreen
+import com.app.parkfinder.ui.screens.auth.ResetPasswordVerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 class ResetPasswordVerificationCodeActivity : ComponentActivity() {

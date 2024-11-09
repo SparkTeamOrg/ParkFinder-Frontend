@@ -13,7 +13,7 @@ import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.LoginScreen
+import com.app.parkfinder.ui.screens.auth.LoginScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword

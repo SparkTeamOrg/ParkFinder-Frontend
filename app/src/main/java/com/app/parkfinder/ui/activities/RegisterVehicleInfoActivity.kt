@@ -12,7 +12,7 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.ValidationResult
-import com.app.parkfinder.ui.screens.RegisterUserDataScreen
+import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
 

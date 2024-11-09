@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.VerificationCodeScreen
+import com.app.parkfinder.ui.screens.auth.VerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 class VerificationCodeActivity : ComponentActivity() {

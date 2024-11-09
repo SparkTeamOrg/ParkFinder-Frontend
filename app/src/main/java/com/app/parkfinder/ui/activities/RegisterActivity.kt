@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.ValidationResult
-import com.app.parkfinder.ui.screens.RegisterScreen
+import com.app.parkfinder.ui.screens.auth.RegisterScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword

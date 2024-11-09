@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.ValidationResult
-import com.app.parkfinder.ui.screens.RegisterUserDataScreen
+import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validatePhoneNumber
 import com.app.parkfinder.utilis.validateUserName

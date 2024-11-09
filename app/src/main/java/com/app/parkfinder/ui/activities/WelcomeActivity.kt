@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.screens.WelcomeScreen
+import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 
 class WelcomeActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
