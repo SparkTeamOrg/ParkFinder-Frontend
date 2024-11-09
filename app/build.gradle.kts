@@ -63,17 +63,21 @@ dependencies {
 
 
     //Backend API packets
-    implementation("androidx.activity:activity-compose:1.7.0")
-    implementation("androidx.compose.ui:ui:1.5.0")
-    implementation("androidx.compose.material:material:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0")
+    implementation(libs.androidx.activity.compose.v170)
+    implementation(libs.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v260)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Retrofit for API requests
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation(libs.kotlinx.coroutines.android)
+
+
+    //navigation
+    implementation (libs.androidx.navigation.compose.v240alpha01)
 
 }
