@@ -11,7 +11,7 @@ fun validatePassword(password: String): Boolean {
     //      Must contain at least one lowercase letter
     //      Must contain at least one number
     //      Must contain at least one special character from @, $, !, %, *, ?, &, #, _
-    val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#_])[A-Za-z\\d@\$!%*?&#_]{8,20}$".toRegex()
+    val passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#_])[\\p{L}\\p{N}@\$!%*?&#_]{8,20}\$".toRegex()
     return passwordRegex.matches(password)
 }
 
@@ -24,13 +24,13 @@ fun validateUserName(userName: String): Boolean {
     //      Must be between 4 and 50 characters long
     //      Must contain only letters (uppercase and lowercase) and exactly one space
 
-    val userNameRegex = "^[A-Za-z]+\\s[A-Za-z]+$".toRegex()
+    val userNameRegex = "^\\p{Lu}\\p{L}+\\s\\p{Lu}\\p{L}+$".toRegex()
     return userNameRegex.matches(userName)
 }
 
 fun validateLicencePlate(licencePlate: String): Boolean {
     // Licence plate validation logic:
     //      Must be in the format of two uppercase letters, three digits, and two uppercase letters
-    val licencePlateRegex = "^[A-Z]{2}\\d{3}[A-Z]{2}\$".toRegex()
+    val licencePlateRegex = "^\\p{Lu}{2}\\d{3}\\p{Lu}{2}$".toRegex()
     return licencePlateRegex.matches(licencePlate)
 }
