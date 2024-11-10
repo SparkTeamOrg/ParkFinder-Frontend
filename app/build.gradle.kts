@@ -73,10 +73,8 @@ dependencies {
 
 
     //Backend API packets
-    implementation(libs.androidx.activity.compose.v170)
     implementation(libs.ui)
     implementation(libs.androidx.material)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v260)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Retrofit for API requests
@@ -86,9 +84,8 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-
     //navigation
-    implementation (libs.androidx.navigation.compose.v240alpha01)
+    implementation(libs.androidx.navigation.compose)
 
-    implementation("com.auth0.android:jwtdecode:2.0.0")
+    implementation(libs.jwtdecode)
 }
