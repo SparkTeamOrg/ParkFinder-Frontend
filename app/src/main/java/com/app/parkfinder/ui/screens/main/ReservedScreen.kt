@@ -35,11 +35,11 @@ fun ReservedScreenPreview() {
                 Modifier.padding(innerPadding)
             ) {
                 //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen({}) }
+                composable(BottomNavItem.Home.route) { HomeScreen() }
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen() }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

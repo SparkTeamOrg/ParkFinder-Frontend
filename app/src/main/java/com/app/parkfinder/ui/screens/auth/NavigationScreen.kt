@@ -35,11 +35,11 @@ fun NavigationScreen (
             Modifier.padding(innerPadding)
         ) {
             //UI for Home
-            composable(BottomNavItem.Home.route) { HomeScreen(logout) }
+            composable(BottomNavItem.Home.route) { HomeScreen() }
             //UI for Search
             composable(BottomNavItem.Search.route) { SearchScreen() }
             //UI for Profile
-            composable(BottomNavItem.Profile.route) { ProfileScreen() }
+            composable(BottomNavItem.Profile.route) { ProfileScreen(logout) }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){ ReservedScreen() }
         }

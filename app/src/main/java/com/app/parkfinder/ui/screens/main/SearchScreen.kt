@@ -101,7 +101,7 @@ fun SearchScreen() {
 
         // Search Button
         Button(
-            onClick = { /* Handle search action */ },
+            onClick = { /* Handle search action */ },//TODO - Add navigation to the home with shown parking lots
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -127,11 +127,11 @@ fun SearchScreenPreview() {
                 Modifier.padding(innerPadding)
             ) {
                 //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen({}) }
+                composable(BottomNavItem.Home.route) { HomeScreen() }
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen() }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

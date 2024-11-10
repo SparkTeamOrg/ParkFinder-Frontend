@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(
-    logout:() -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -24,14 +23,9 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Temp Screen - You are logged in",
+            text = "Welcome - You are logged in",
             color = Color.White
         )
-        Button(
-            onClick = { logout() },
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("Logout")
-        }
+        //TODO - add map
     }
 }
