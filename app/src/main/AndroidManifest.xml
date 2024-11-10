@@ -72,7 +72,7 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.TempActivity"
+            android:name=".ui.activities.NavigationActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>

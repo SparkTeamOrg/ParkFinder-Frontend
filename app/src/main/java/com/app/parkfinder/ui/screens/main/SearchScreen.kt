@@ -1,8 +1,7 @@
-package com.app.parkfinder.ui.screens
+package com.app.parkfinder.ui.screens.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,14 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,19 +27,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.BottomNavItem
+import com.app.parkfinder.ui.screens.common.BottomNavigationBar
+import com.app.parkfinder.ui.screens.common.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 
 
 @Composable
-fun SearchContent() {
+fun SearchScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,8 +114,27 @@ fun SearchContent() {
 
 @Preview(showBackground = true)
 @Composable
-fun Search() {
+fun SearchScreenPreview() {
     ParkFinderTheme {
-        SearchContent()
+        val navController = rememberNavController()
+        Scaffold(
+            topBar = { ParkFinderLogo() },
+            bottomBar = { BottomNavigationBar(navController = navController) }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = BottomNavItem.Search.route,
+                Modifier.padding(innerPadding)
+            ) {
+                //UI for Home
+                composable(BottomNavItem.Home.route) { HomeScreen({}) }
+                //UI for Search
+                composable(BottomNavItem.Search.route) { SearchScreen() }
+                //UI for Profile
+                composable(BottomNavItem.Profile.route) { ProfileScreen() }
+                //UI for Reserved
+                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
+            }
+        }
     }
 }

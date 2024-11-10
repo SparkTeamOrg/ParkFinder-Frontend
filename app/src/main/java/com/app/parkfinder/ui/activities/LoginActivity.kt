@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.app.parkfinder.MainActivity
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
@@ -49,7 +48,7 @@ class LoginActivity: ComponentActivity() {
         authViewModel.loginResult.observe(this) { result ->
             if (result.isSuccessful) {
                 saveTokens(result.data, "") // TODO: save refresh token
-                val intent = Intent(this, TempActivity::class.java) // TODO: Change to Landing Activity after creating it
+                val intent = Intent(this, NavigationActivity::class.java) // TODO: Change to Landing Activity after creating it
                 val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
                 startActivity(intent, options.toBundle())
             } else {
