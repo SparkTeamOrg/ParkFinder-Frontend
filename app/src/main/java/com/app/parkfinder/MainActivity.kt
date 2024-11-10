@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
             startActivity(intent, options.toBundle())
         } else if(refreshToken != null) {
             // Optionally, use the refresh token to get a new access token
+            navigateToLogin()   // TODO: Implement refresh token logic
         } else {
             navigateToLogin()
         }
