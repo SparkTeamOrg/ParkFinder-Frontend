@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens.auth
+package com.app.parkfinder.ui.screens.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,14 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TempScreen (
-    logout: () -> Unit
+fun HomeScreen(
+    logout:() -> Unit
 ) {
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF151A24))
@@ -32,15 +31,7 @@ fun TempScreen (
             onClick = { logout() },
             modifier = Modifier.padding(top = 16.dp)
         ) {
-             Text("Logout")
+            Text("Logout")
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    TempScreen(
-        logout = {}
-    )
 }

@@ -4,7 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.app.parkfinder.ui.activities.TempActivity
+import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.auth0.android.jwt.JWT
 import java.util.logging.Logger
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         if(accessToken != null && !isTokenExpired(accessToken)) {
             // User is logged in and token is not expired
             Logger.getLogger("MainActivity").info("User is logged in")
-            val intent = Intent(this, TempActivity::class.java)
+            val intent = Intent(this, NavigationActivity::class.java)
             val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
             startActivity(intent, options.toBundle())
         } else if(refreshToken != null) {
