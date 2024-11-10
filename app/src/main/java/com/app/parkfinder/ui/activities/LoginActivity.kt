@@ -47,7 +47,7 @@ class LoginActivity: ComponentActivity() {
 
         authViewModel.loginResult.observe(this) { result ->
             if (result.isSuccessful) {
-                saveTokens(result.data, "") // TODO: save refresh token
+                saveTokens(result.data.accessToken, result.data.refreshToken)
                 val intent = Intent(this, NavigationActivity::class.java) // TODO: Change to Landing Activity after creating it
                 val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
                 startActivity(intent, options.toBundle())
@@ -83,5 +83,4 @@ class LoginActivity: ComponentActivity() {
             apply()
         }
     }
-
 }

@@ -2,6 +2,7 @@ package com.app.parkfinder.logic.services
 
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
+import com.app.parkfinder.logic.models.dtos.TokenDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import retrofit2.Response
@@ -12,7 +13,7 @@ interface AuthService {
     @POST("auth/login")
     suspend fun login(
         @Body login: UserLoginDto
-    ): Response<BackResponse<String>>
+    ): Response<BackResponse<TokenDto>>
 
     @POST("auth/register")
     suspend fun register(
