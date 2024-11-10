@@ -59,6 +59,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 @Composable
 fun ProfileScreen(
     logout : ()->Unit,
+    user: UserDto
 ) {
     Column(
         modifier = Modifier
@@ -107,7 +108,7 @@ fun ProfileScreen(
 
         // User Name
         Text(
-            text = "User: Full name", //TODO - add the actual name
+            text = user.Fullname,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
@@ -115,7 +116,7 @@ fun ProfileScreen(
 
         // Email
         Text(
-            text = "email", //TODO - add the actual email
+            text = user.Email,
             fontSize = 14.sp,
             color = Color.Gray
         )
@@ -218,11 +219,11 @@ fun ProfileScreenPreview() {
                 Modifier.padding(innerPadding)
             ) {
                 //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen() }
+                composable(BottomNavItem.Home.route) { HomeScreen(UserDto()) }
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({}) }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto()) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

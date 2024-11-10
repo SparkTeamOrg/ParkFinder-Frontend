@@ -37,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.screens.common.BottomNavigationBar
 import com.app.parkfinder.ui.screens.common.ParkFinderLogo
@@ -193,11 +194,11 @@ fun ReservedScreenPreview() {
                 Modifier.padding(innerPadding)
             ) {
                 //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen() }
+                composable(BottomNavItem.Home.route) { HomeScreen(UserDto()) }
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({}) }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto()) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

@@ -11,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.app.parkfinder.logic.models.dtos.UserDto
 
 @Composable
 fun HomeScreen(
+    user: UserDto
 ) {
     Column(
         modifier = Modifier
@@ -23,7 +25,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome - You are logged in",
+            text = "Welcome ${user.Fullname} - You are logged in",
             color = Color.White
         )
         //TODO - add map
