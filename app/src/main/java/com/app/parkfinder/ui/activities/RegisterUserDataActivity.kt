@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validatePhoneNumber
@@ -38,8 +37,8 @@ class RegisterUserDataActivity : ComponentActivity() {
                     onPhoneNumberChange = { phoneNumber.value = it },
                     onBackClick = { finish() },
                     onNextClick = { navigateToVehicleInfoEntry() },
-                    isNameValid = { fullName -> isNameValid(fullName) },
-                    isPhoneValid = { phoneNumber -> isPhoneValid(phoneNumber) }
+                    validateUserName = { validateUserName(fullName.value) },
+                    validatePhoneNumber = { validatePhoneNumber(phoneNumber.value) }
                 )
             }
         }
@@ -58,21 +57,5 @@ class RegisterUserDataActivity : ComponentActivity() {
 
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
-    }
-
-    private fun isNameValid(fullName: String): ValidationResult {
-        val validUserName = validateUserName(fullName)
-        if (!validUserName) {
-            return ValidationResult(success = false, message = "Invalid name")
-        }
-        return ValidationResult(success = true, message = "")
-    }
-
-    private fun isPhoneValid(phoneNumber: String): ValidationResult {
-        val validPhoneNumber = validatePhoneNumber(phoneNumber)
-        if (!validPhoneNumber) {
-            return ValidationResult(success = false, message = "Invalid phone number")
-        }
-        return ValidationResult(success = true, message = "")
     }
 }

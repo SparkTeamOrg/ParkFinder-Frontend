@@ -129,7 +129,7 @@ fun LoginScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = "Invalid format for email address",
+                                text = "Invalid email address format",
                                 color = Color.Red,
                                 fontStyle = FontStyle.Italic
                             )

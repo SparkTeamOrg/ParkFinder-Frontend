@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.screens.auth.RegisterScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
@@ -38,7 +37,7 @@ class RegisterActivity: ComponentActivity() {
                     onLoginClick = { navigateToLogin() },
                     onNextClick = { sendVerificationCode(email.value) },
                     validateEmail = { validateEmail(email.value) },
-                    validatePasswords = { isValidPasswords(password.value, confirmedPassword.value) }
+                    validatePassword = { validatePassword(password.value) }
                 )
             }
         }
@@ -69,19 +68,5 @@ class RegisterActivity: ComponentActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
-    }
-
-    private fun isValidPasswords(password: String, confirmedPassword: String): ValidationResult {
-        if(password.isEmpty()){
-            return ValidationResult(success = false, message = "Password cannot be empty")
-        }
-        else if(password != confirmedPassword){
-            return ValidationResult(success = false, message = "Passwords do not match")
-        }
-        else if(!validatePassword(password)){
-            return ValidationResult(success = false, message = "Incorrect password format")
-        }
-
-        return ValidationResult(success = true, message = "")
     }
 }
