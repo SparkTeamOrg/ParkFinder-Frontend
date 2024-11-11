@@ -58,7 +58,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
 import com.app.parkfinder.logic.view_models.VehicleModelViewModel
-import com.app.parkfinder.ui.ValidationResult
 
 @Composable
 fun RegisterUserDataScreen(
@@ -72,10 +71,10 @@ fun RegisterUserDataScreen(
     onLicencePlateChange: (String) -> Unit,
     colorNames: Map<Int, String>,
     onBackClick: () -> Unit,
-    isLicencePlateValid: () -> ValidationResult,
+    validateLicencePlate: (String) -> Boolean,
     viewVehicleBrandModel: VehicleBrandViewModel = viewModel(),
     viewVehicleModel: VehicleModelViewModel = viewModel(),
-    register: () -> Unit
+    register: () -> List<Boolean>
 ) {
     LaunchedEffect(Unit) {
         viewVehicleBrandModel.getAllVehicleBrands()
@@ -85,7 +84,6 @@ fun RegisterUserDataScreen(
     var modelError by remember { mutableStateOf(false) }
     var colorError by remember { mutableStateOf(false) }
     var regNumError by remember { mutableStateOf(false) }
-    var regNumValidation by remember { mutableStateOf(ValidationResult()) }
 
     Column(
         modifier = Modifier
@@ -215,7 +213,7 @@ fun RegisterUserDataScreen(
                     placeholder = {
                         if (regNumError) {
                             Text(
-                                text = regNumValidation.message,
+                                text = "Invalid registration number",
                                 color = Color.Red,
                             )
                         } else {
@@ -226,7 +224,7 @@ fun RegisterUserDataScreen(
                     value = licencePlate,
                     onValueChange = {
                         onLicencePlateChange(it)
-                        regNumError = isLicencePlateValid().success.not()
+                        regNumError = false
                     },
                     label = { Text("Registration Number", color = if (regNumError) Color.Red else White) },
                     shape = RoundedCornerShape(10.dp),
@@ -237,19 +235,13 @@ fun RegisterUserDataScreen(
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
-                brandError = selectedBrand == 0
-                modelError = selectedModel == 0
-                colorError = selectedColor == 0
-                regNumValidation = isLicencePlateValid()
-
-                if (!brandError && !modelError && !colorError && regNumValidation.success) {
-                    register()
-                }
-                else{
-                    if (!regNumValidation.success){
-                        onLicencePlateChange("")
-                        regNumError = true
-                    }
+                val valResults = register()
+                brandError = valResults[0]
+                modelError = valResults[1]
+                colorError = valResults[2]
+                regNumError = valResults[3]
+                if (regNumError){
+                    onLicencePlateChange("")
                 }
             },
             shape = RoundedCornerShape(8.dp),
@@ -277,7 +269,6 @@ fun OutlinedDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
     var showText by remember { mutableStateOf(selectedText) }
     var errorOccurred by remember { mutableStateOf(isError) }
-
 
     LaunchedEffect(isError) {
         errorOccurred = isError
@@ -323,13 +314,13 @@ fun OutlinedDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier.background(Color(36, 45, 64))
         ) {
-            options.forEach { option ->
+            options.forEach { opt ->
                 DropdownMenuItem(
-                    text = { Text(option.value, color = White) },
+                    text = { Text(opt.value, color = White) },
                     onClick = {
                         expanded = false
-                        onOptionSelected(option.key)
-                        showText = option.value
+                        onOptionSelected(opt.key)
+                        showText = opt.value
                         errorOccurred = false
                     },
                     modifier = Modifier.background(Color(36, 45, 64))
@@ -354,8 +345,8 @@ fun RegisterVehicleInfoScreenPreview() {
             onLicencePlateChange = {},
             colorNames = mapOf(),
             onBackClick = {},
-            isLicencePlateValid = { ValidationResult(success = true, message = "") },
-            register = {}
+            validateLicencePlate = { true },
+            register = { List(4){ false } }
         )
     }
 }

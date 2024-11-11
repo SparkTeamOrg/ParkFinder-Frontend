@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -46,8 +47,6 @@ fun LoginScreen(
 
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-    var emailValidationMessage by remember { mutableStateOf("") }
-    var passwordValidationMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -102,7 +101,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, RoundedCornerShape(8.dp))
-                .background(Color(36, 45, 64))
+                .background(Color(36, 45, 64).copy(alpha = 0.4f))
                 .padding(16.dp)
         ) {
             Column(
@@ -130,18 +129,18 @@ fun LoginScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = emailValidationMessage,
+                                text = "Invalid email address format",
                                 color = Color.Red,
+                                fontStyle = FontStyle.Italic
                             )
                         } else {
                             Text("")
                         }
                     },
-                    value = email,
+                    value = if(!emailError) email else "",
                     onValueChange = {
                         onEmailChange(it)
-                        emailError = it.isNotEmpty() && !validateEmail(it)
-                        emailValidationMessage = if (emailError) "Invalid format for email address" else ""
+                        emailError = false
                     },
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
@@ -161,18 +160,18 @@ fun LoginScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = passwordValidationMessage,
+                                text = "Invalid password format",
                                 color = Color.Red,
+                                fontStyle = FontStyle.Italic
                             )
                         } else {
                             Text("")
                         }
                     },
-                    value = password,
+                    value = if(!passwordError) password else "",
                     onValueChange = {
                         onPasswordChange(it)
-                        passwordError = !validatePassword(it)
-                        passwordValidationMessage = if (passwordError) "Invalid password format" else ""
+                        passwordError = false
                     },
                     isError = passwordError,
                     label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
@@ -211,7 +210,6 @@ fun LoginScreen(
                             login()
                         }
                     },
-                    enabled = validateEmail(email) && validatePassword(password),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(

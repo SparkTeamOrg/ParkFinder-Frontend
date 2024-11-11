@@ -26,6 +26,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.validateEmail
 
 @Composable
 fun ForgotPasswordScreen (
@@ -48,7 +53,7 @@ fun ForgotPasswordScreen (
     onSendClick: () -> Unit
 )
 {
-    var emailError: Boolean = false
+    var emailError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -111,7 +116,7 @@ fun ForgotPasswordScreen (
             modifier = Modifier
             .fillMaxWidth()
             .shadow(10.dp, RoundedCornerShape(8.dp))
-            .background(Color(36, 45, 64))
+            .background(Color(36, 45, 64).copy(alpha = 0.4f))
             .padding(16.dp)
         )
         {
@@ -129,21 +134,31 @@ fun ForgotPasswordScreen (
                 )
                 Spacer(Modifier.padding(10.dp))
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { onEmailChange(it) },
+                    value = if(!emailError) email else "",
+                    onValueChange = {
+                        onEmailChange(it)
+                        emailError = false },
                     placeholder = {
-                        Text(
-                            text = "Enter your email",
-                            color = Color.White,
-                            fontStyle = FontStyle.Italic,
-                            fontWeight = FontWeight.Light
-                        )
+                        if(emailError){
+                            Text(
+                                text = "Invalid email address format",
+                                color = Color.Red,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
+                        else{
+                            Text(
+                                text = "Enter your email",
+                                color = Color.White,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Email,
                             contentDescription = "Email Icon",
-                            tint = Color.White
+                            tint = if(emailError) Color.Red else Color.White
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
@@ -156,6 +171,7 @@ fun ForgotPasswordScreen (
                         cursorColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp),
+                    isError = emailError,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -163,7 +179,10 @@ fun ForgotPasswordScreen (
                 Spacer(Modifier.padding(20.dp))
                 Button(
                     onClick = {
-                        onSendClick()
+                        emailError = !validateEmail(email)
+                        if(!emailError){
+                            onSendClick()
+                        }
                     },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),

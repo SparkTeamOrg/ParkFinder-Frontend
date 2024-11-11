@@ -54,12 +54,13 @@ fun EnterNewPasswordScreen(
     onPasswordChange: (String) -> Unit,
     confirmPassword: String,
     onConfirmPasswordChange: (String) -> Unit,
+    validatePassword: (String) -> Boolean,
     onBackClick: () -> Unit,
     onFinishClick: () -> Unit
 )
 {
     var passwordVisible by remember { mutableStateOf(false) }
-    var passwordError: String by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -143,18 +144,33 @@ fun EnterNewPasswordScreen(
                 Spacer(Modifier.padding(10.dp))
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { onPasswordChange(it) },
+                    onValueChange = {
+                        onPasswordChange(it)
+                        passwordError = false
+                    },
                     placeholder = {
-                        Text(
-                            text = "Password",
-                            color = Color.White,
-                            fontWeight = FontWeight.Light,
-                            fontStyle =FontStyle.Italic) },
+                        if(passwordError) {
+                            Text(
+                                text = "Invalid password format",
+                                color = Color.Red,
+                                fontWeight = FontWeight.Light,
+                                fontStyle =FontStyle.Italic
+                            )
+                        }
+                        else {
+                            Text(
+                                text = "Password",
+                                color = Color.White,
+                                fontWeight = FontWeight.Light,
+                                fontStyle =FontStyle.Italic
+                            )
+                        }
+                    },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Lock,
                             contentDescription = "Lock Icon",
-                            tint = Color.White
+                            tint = if(passwordError) Color.Red else Color.White
                         )
                     },
                     trailingIcon = {
@@ -163,7 +179,7 @@ fun EnterNewPasswordScreen(
                             Icon(
                                 imageVector = visibilityIcon,
                                 contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                tint = Color.White
+                                tint = if (passwordError) Color.Red else Color.White
                             )
                         }
                     },
@@ -177,6 +193,8 @@ fun EnterNewPasswordScreen(
                         unfocusedBorderColor = Color.White,
                         cursorColor = Color.White
                     ),
+                    isError = passwordError,
+                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -184,18 +202,33 @@ fun EnterNewPasswordScreen(
                 )
                 OutlinedTextField(
                     value = confirmPassword,
-                    onValueChange = { onConfirmPasswordChange(it) },
+                    onValueChange = {
+                        onConfirmPasswordChange(it)
+                        passwordError = false
+                    },
                     placeholder = {
-                        Text(
-                            text = "Confirm Password",
-                            color = Color.White,
-                            fontWeight = FontWeight.Light,
-                            fontStyle =FontStyle.Italic) },
+                        if(passwordError) {
+                            Text(
+                                text = "Passwords don't match",
+                                color = Color.Red,
+                                fontWeight = FontWeight.Light,
+                                fontStyle =FontStyle.Italic
+                            )
+                        }
+                        else {
+                            Text(
+                                text = "Confirm Password",
+                                color = Color.White,
+                                fontWeight = FontWeight.Light,
+                                fontStyle =FontStyle.Italic
+                            )
+                        }
+                    },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Lock,
                             contentDescription = "Lock Icon",
-                            tint = Color.White
+                            tint = if(passwordError) Color.Red else Color.White
                         )
                     },
                     trailingIcon = {
@@ -204,7 +237,7 @@ fun EnterNewPasswordScreen(
                             Icon(
                                 imageVector = visibilityIcon,
                                 contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                                tint = Color.White
+                                tint = if (passwordError) Color.Red else Color.White
                             )
                         }
                     },
@@ -218,6 +251,8 @@ fun EnterNewPasswordScreen(
                         unfocusedBorderColor = Color.White,
                         cursorColor = Color.White
                     ),
+                    isError = passwordError,
+                    label = { Text("Confirm Password", color = if (passwordError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -225,7 +260,17 @@ fun EnterNewPasswordScreen(
                 )
                 Spacer(Modifier.padding(20.dp))
                 Button(
-                    onClick = { onFinishClick() },
+                    onClick = {
+                        if (password != confirmPassword || !validatePassword(password)) {
+                            passwordError = true
+                            onPasswordChange("")
+                            onConfirmPasswordChange("")
+                        }
+                        else {
+                            passwordError = false
+                            onFinishClick()
+                        }
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -253,6 +298,7 @@ fun EnterNewPasswordScreenPreview() {
             onPasswordChange = {},
             confirmPassword = "",
             onConfirmPasswordChange = {},
+            validatePassword = { true },
             onBackClick = {},
             onFinishClick = {}
         )
