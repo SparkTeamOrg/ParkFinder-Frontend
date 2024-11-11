@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.auth.LoginScreen
@@ -75,12 +76,8 @@ class LoginActivity: ComponentActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun saveTokens(accessToken: String, refreshToken: String) {
-        val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putString("access_token", accessToken)
-            putString("refresh_token", refreshToken)
-            apply()
-        }
+    private fun saveTokens(accessToken: String?, refreshToken: String?) {
+        AppPreferences.accessToken = accessToken
+        AppPreferences.refreshToken = refreshToken
     }
 }
