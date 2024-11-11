@@ -38,6 +38,7 @@ class EnterNewPasswordActivity : ComponentActivity() {
                     onPasswordChange = { password.value = it },
                     confirmPassword = confirmPassword.value,
                     onConfirmPasswordChange = { confirmPassword.value = it },
+                    validatePassword = { validatePassword(it) },
                     onBackClick = { finish() },
                     onFinishClick = { resetPassword() }
                 )
@@ -53,7 +54,6 @@ class EnterNewPasswordActivity : ComponentActivity() {
                 Toast.makeText(this, "Password reset failed", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     private fun resetPassword() {
