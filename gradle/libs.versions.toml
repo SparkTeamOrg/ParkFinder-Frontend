@@ -15,6 +15,7 @@ material = "1.7.5"
 material3Version = "1.4.0-alpha03"
 materialIconsExtended = "1.7.5"
 navigationCompose = "2.8.3"
+osmdroidAndroid = "6.1.14"
 retrofit = "2.9.0"
 ui = "1.7.5"
 
@@ -41,6 +42,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 jwtdecode = { module = "com.auth0.android:jwtdecode", version.ref = "jwtdecode" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 

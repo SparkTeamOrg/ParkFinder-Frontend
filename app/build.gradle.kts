@@ -84,8 +84,13 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-    //navigation
+    //navigation - UI
     implementation(libs.androidx.navigation.compose)
 
+    //token
     implementation(libs.jwtdecode)
+
+    //maps
+    implementation(libs.osmdroid.android)
+
 }
