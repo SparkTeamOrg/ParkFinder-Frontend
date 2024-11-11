@@ -8,11 +8,14 @@ import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.auth0.android.jwt.JWT
+import org.osmdroid.config.Configuration
 
 class NavigationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Configuration.getInstance().userAgentValue = packageName
 
         setContent {
             ParkFinderTheme {
