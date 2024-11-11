@@ -31,9 +31,10 @@ class MainActivity : ComponentActivity() {
         } else if(refreshToken != null) {
             // Optionally, use the refresh token to get a new access token
             val refreshSuccess = refreshToken(accessToken,refreshToken)
-            if(refreshSuccess) navigateToNavigationPage() else navigateToLogin()
+            if(refreshSuccess) navigateToNavigationPage() else logOutUser()
+
         } else {
-            navigateToLogin()
+            logOutUser()
         }
     }
 
@@ -73,5 +74,10 @@ class MainActivity : ComponentActivity() {
             }
         }
         return false
+    }
+
+    private fun logOutUser(){
+        navigateToLogin()
+        AppPreferences.removeTokens()
     }
 }

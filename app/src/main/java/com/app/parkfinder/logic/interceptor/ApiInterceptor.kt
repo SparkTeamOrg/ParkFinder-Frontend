@@ -1,4 +1,4 @@
-package com.app.parkfinder.logic.Interceptor
+package com.app.parkfinder.logic.interceptor
 
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig

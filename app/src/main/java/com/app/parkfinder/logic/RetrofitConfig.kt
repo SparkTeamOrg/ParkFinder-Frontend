@@ -1,7 +1,7 @@
 package com.app.parkfinder.logic
 
 import com.app.parkfinder.BuildConfig
-import com.app.parkfinder.logic.Interceptor.ApiInterceptor
+import com.app.parkfinder.logic.interceptor.ApiInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
