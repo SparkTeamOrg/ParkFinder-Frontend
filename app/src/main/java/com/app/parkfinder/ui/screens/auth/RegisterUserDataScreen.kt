@@ -46,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -56,14 +55,13 @@ fun RegisterUserDataScreen(
     phoneNumber: String,
     onPhoneNumberChange: (String) -> Unit,
     onBackClick: () -> Unit,
-    isNameValid: (String) -> ValidationResult,
-    isPhoneValid: (String) -> ValidationResult,
+    validateUserName: (String) -> Boolean,
+    validatePhoneNumber: (String) -> Boolean,
     onNextClick: () -> Unit
 ) {
     var nameError by remember { mutableStateOf(false) }
     var phoneError by remember { mutableStateOf(false) }
-    var nameValidation by remember { mutableStateOf(ValidationResult()) }
-    var phoneValidation by remember { mutableStateOf(ValidationResult()) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -180,7 +178,7 @@ fun RegisterUserDataScreen(
                     placeholder = {
                         if (nameError) {
                             Text(
-                                text = nameValidation.message,
+                                text = "Invalid full name",
                                 color = Color.Red,
                             )
                         } else {
@@ -191,7 +189,7 @@ fun RegisterUserDataScreen(
                     value = fullName,
                     onValueChange = {
                         onFullNameChange(it)
-                        nameError = isNameValid(it).success.not()
+                        nameError = false
                     },
                     label = { Text("Full Name", color = if (nameError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
@@ -214,7 +212,7 @@ fun RegisterUserDataScreen(
                     placeholder = {
                         if (phoneError) {
                             Text(
-                                text = phoneValidation.message,
+                                text = "Invalid phone number",
                                 color = Color.Red,
                             )
                         } else {
@@ -225,7 +223,7 @@ fun RegisterUserDataScreen(
                     value = phoneNumber,
                     onValueChange = {
                         onPhoneNumberChange(it)
-                        phoneError = isPhoneValid(it).success.not()
+                        phoneError = false
                     },
                     label = { Text("Phone Number", color = if (phoneError) Color.Red else Color.White) },
                     shape = RoundedCornerShape(10.dp),
@@ -237,21 +235,16 @@ fun RegisterUserDataScreen(
         Spacer(modifier = Modifier.height(60.dp))
         Button(
             onClick = {
-                nameValidation = isNameValid(fullName)
-                phoneValidation = isPhoneValid(phoneNumber)
-
-                if(nameValidation.success && phoneValidation.success){
+                nameError = !validateUserName(fullName)
+                phoneError = !validatePhoneNumber(phoneNumber)
+                if(!nameError && !phoneError){
                     onNextClick()
                 }
                 else{
-                    if(!nameValidation.success){
+                    if(nameError)
                         onFullNameChange("")
-                        nameError = true
-                    }
-                    if(!phoneValidation.success){
+                    if(phoneError)
                         onPhoneNumberChange("")
-                        phoneError = true
-                    }
                 }
             },
             shape = RoundedCornerShape(8.dp),
@@ -269,9 +262,6 @@ fun RegisterUserDataScreen(
 @Preview(showBackground = true)
 @Composable
 fun RegisterUserDataScreenPreview() {
-    val isNameValid: (String) -> ValidationResult = { ValidationResult() }
-    val isNumValid: (String) -> ValidationResult = { ValidationResult() }
-
     ParkFinderTheme {
         RegisterUserDataScreen(
             fullName = "",
@@ -279,8 +269,8 @@ fun RegisterUserDataScreenPreview() {
             phoneNumber = "",
             onPhoneNumberChange = {},
             onBackClick = {},
-            isNameValid = isNameValid,
-            isPhoneValid = isNumValid,
+            validateUserName = { true },
+            validatePhoneNumber = { true },
             onNextClick = {}
         )
     }

@@ -11,10 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
+import java.util.logging.Logger
 
 class RegisterVehicleInfoActivity: ComponentActivity() {
 
@@ -68,7 +68,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
                     onBackClick = { finish() },
-                    isLicencePlateValid = { isLicencePlateValid() },
+                    validateLicencePlate = { validateLicencePlate(licencePlate.value) },
                     register = { registerUser() }
                 )
             }
@@ -85,7 +85,17 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
         }
     }
 
-    private fun registerUser() {
+    private fun registerUser() : List<Boolean> {
+
+        val brandError = selectedBrand == 0
+        val modelError = selectedModel == 0
+        val colorError = selectedColor == 0
+        val regNumError = !validateLicencePlate(licencePlate.value)
+
+        if (brandError || modelError || colorError || regNumError) {
+            return listOf(brandError, modelError, colorError, regNumError)
+        }
+
         val userModel = UserRegisterDto(
             email = email,
             password = password,
@@ -100,19 +110,12 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
         )
 
         authViewModel.register(userModel)
+        return List(4){false}
     }
 
     private fun navigateToLogin() {
         val intent = Intent(this, WelcomeActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
-    }
-
-    private fun isLicencePlateValid(): ValidationResult {
-        val validLicencePlate = validateLicencePlate(licencePlate.value)
-        if (!validLicencePlate) {
-            return ValidationResult(success = false, message = "Invalid format of licence plate")
-        }
-        return ValidationResult(success = true, message = "")
     }
 }

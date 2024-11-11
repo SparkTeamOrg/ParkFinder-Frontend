@@ -50,7 +50,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.ValidationResult
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
@@ -65,14 +64,13 @@ fun RegisterScreen(
     onLoginClick: () -> Unit,
     onNextClick: (String) -> Unit,
     validateEmail: (String) -> Boolean,
-    validatePasswords: () -> ValidationResult
+    validatePassword: (String) -> Boolean
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-    var emailValidationMessage by remember { mutableStateOf("") }
-    var passwordValidation by remember { mutableStateOf(ValidationResult()) }
+    var passwordErrorMessage by remember { mutableStateOf("") }
 
     val annotatedText = buildAnnotatedString {
         append("Already have an account? ")
@@ -164,7 +162,7 @@ fun RegisterScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = emailValidationMessage,
+                                text = "Invalid email address format",
                                 color = Color.Red,
                             )
                         } else {
@@ -174,8 +172,7 @@ fun RegisterScreen(
                     value = email,
                     onValueChange = {
                         onEmailChange(it)
-                        emailError = email.isNotEmpty() && !validateEmail(email)
-                        emailValidationMessage = "Invalid format for email address"
+                        emailError = false
                     },
                     isError = emailError,
                     label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
@@ -195,7 +192,7 @@ fun RegisterScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = passwordValidation.message,
+                                text = passwordErrorMessage,
                                 color = Color.Red,
                             )
                         } else {
@@ -205,7 +202,7 @@ fun RegisterScreen(
                     value = password,
                     onValueChange = {
                         onPasswordChange(it)
-                        passwordError = password.isNotEmpty() && validatePasswords().success.not()
+                        passwordError = false
                     },
                     isError = passwordError,
                     label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
@@ -239,7 +236,7 @@ fun RegisterScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = passwordValidation.message,
+                                text = passwordErrorMessage,
                                 color = Color.Red,
                             )
                         } else {
@@ -249,7 +246,7 @@ fun RegisterScreen(
                     value = confirmedPassword,
                     onValueChange = {
                         onConfirmedPasswordChange(it)
-                        passwordError = confirmedPassword.isNotEmpty() && validatePasswords().success.not()
+                        passwordError = false
                     },
                     isError = passwordError,
                     label = { Text("Confirm password", color = if (passwordError) Color.Red else Color.White) },
@@ -273,24 +270,31 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(5.dp))
                 Button(
                     onClick = {
-                        val validEmail = validateEmail(email)
-                        passwordValidation = validatePasswords()
-                        if(validEmail && passwordValidation.success) {
+                        emailError = !validateEmail(email)
+                        val passwordFormatError = !validatePassword(password)
+                        val passwordMatchError = password != confirmedPassword
+
+                        passwordError = passwordFormatError || passwordMatchError
+                        passwordErrorMessage = when{
+                            passwordFormatError -> "Invalid password format"
+                            passwordMatchError -> "Passwords do not match"
+                            else -> {""}
+                        }
+
+                        if(!emailError && !passwordError) {
                             onNextClick(email)
-                        } else{
-                            if(!validEmail) {
-                                onEmailChange("")
-                                emailError = true
-                            }
-                            if(!passwordValidation.success) {
+                        }else{
+                            if(passwordError){
                                 onPasswordChange("")
                                 onConfirmedPasswordChange("")
-                                passwordError = true
                             }
-                        }},
+                            if(emailError){
+                                onEmailChange("")
+                            }
+                        }
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.width(200.dp),
-                    enabled = validateEmail(email) && validatePasswords().success,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF0FCFFF),
                         contentColor = Color.White
@@ -328,7 +332,7 @@ fun RegisterScreenPreview() {
             onBackClick = {},
             onLoginClick = {},
             validateEmail = { true },
-            validatePasswords = { ValidationResult() },
+            validatePassword = { true },
             onNextClick = {}
         )
     }
