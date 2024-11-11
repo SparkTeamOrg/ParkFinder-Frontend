@@ -76,7 +76,7 @@ class LoginActivity: ComponentActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun saveTokens(accessToken: String, refreshToken: String) {
+    private fun saveTokens(accessToken: String?, refreshToken: String?) {
         AppPreferences.accessToken = accessToken
         AppPreferences.refreshToken = refreshToken
     }

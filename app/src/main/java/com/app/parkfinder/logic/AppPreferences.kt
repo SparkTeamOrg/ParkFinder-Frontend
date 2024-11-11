@@ -20,6 +20,11 @@ object AppPreferences {
         get() = Key.REFRESH_TOKEN.getString()
         set(value) = Key.REFRESH_TOKEN.setString(value)
 
+    fun removeTokens(){
+        Key.ACCESS_TOKEN.remove()
+        Key.REFRESH_TOKEN.remove()
+    }
+
     private enum class Key {
         ACCESS_TOKEN, REFRESH_TOKEN;
 

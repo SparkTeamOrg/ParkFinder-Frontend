@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -32,12 +33,7 @@ class NavigationActivity : ComponentActivity() {
     }
 
     private fun clearTokens() {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
-            remove("access_token")
-            remove("refresh_token")
-            apply()
-        }
+        AppPreferences.removeTokens()
     }
     private fun decodeJwt() : UserDto {
         val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
