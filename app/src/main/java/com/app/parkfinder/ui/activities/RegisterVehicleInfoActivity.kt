@@ -14,7 +14,6 @@ import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
-import java.util.logging.Logger
 
 class RegisterVehicleInfoActivity: ComponentActivity() {
 
@@ -58,17 +57,13 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
         setContent {
             ParkFinderTheme {
                 RegisterUserDataScreen (
-                    selectedBrand = selectedBrand,
                     onSelectedBrandChange = { selectedBrand = it },
-                    selectedModel = selectedModel,
                     onSelectedModelChange = { selectedModel = it },
-                    selectedColor = selectedColor,
                     onSelectedColorChange = { selectedColor = it },
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
                     onBackClick = { finish() },
-                    validateLicencePlate = { validateLicencePlate(licencePlate.value) },
                     register = { registerUser() }
                 )
             }
