@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCard
@@ -61,17 +63,13 @@ import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 
 @Composable
 fun RegisterUserDataScreen(
-    selectedBrand: Int,
     onSelectedBrandChange: (Int) -> Unit,
-    selectedModel: Int,
     onSelectedModelChange: (Int) -> Unit,
-    selectedColor: Int,
     onSelectedColorChange: (Int) -> Unit,
     licencePlate: String,
     onLicencePlateChange: (String) -> Unit,
     colorNames: Map<Int, String>,
     onBackClick: () -> Unit,
-    validateLicencePlate: (String) -> Boolean,
     viewVehicleBrandModel: VehicleBrandViewModel = viewModel(),
     viewVehicleModel: VehicleModelViewModel = viewModel(),
     register: () -> List<Boolean>
@@ -89,7 +87,8 @@ fun RegisterUserDataScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF151A24))
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -335,17 +334,13 @@ fun OutlinedDropdownMenu(
 fun RegisterVehicleInfoScreenPreview() {
     ParkFinderTheme {
         RegisterUserDataScreen(
-            selectedBrand = 0,
             onSelectedBrandChange = {},
-            selectedModel = 0,
             onSelectedModelChange = {},
-            selectedColor = 0,
             onSelectedColorChange = {},
             licencePlate = "",
             onLicencePlateChange = {},
             colorNames = mapOf(),
             onBackClick = {},
-            validateLicencePlate = { true },
             register = { List(4){ false } }
         )
     }
