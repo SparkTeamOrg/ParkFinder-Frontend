@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.outlined.Help
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.screens.common.PasswordHelp
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.digitCheck
 import com.app.parkfinder.utilis.lengthCheck
@@ -83,7 +85,6 @@ fun RegisterScreen(
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
     var passwordErrorMessage by remember { mutableStateOf("") }
-    var showTooltip by remember { mutableStateOf(false) }
 
     val annotatedText = buildAnnotatedString {
         append("Already have an account? ")
@@ -166,65 +167,7 @@ fun RegisterScreen(
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                     )
-                    //popup
-                    Box(contentAlignment = Alignment.Center) {
-                        IconButton(
-                            onClick = { showTooltip = !showTooltip },
-                            modifier = Modifier,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Help,
-                                contentDescription = "Help Icon",
-                                tint = Color.White
-                            )
-                        }
-
-                        if (showTooltip) {
-                            Popup(
-                                alignment = Alignment.BottomStart,
-                                onDismissRequest = { showTooltip = false }
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .background(Color.Black.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp))
-                                        .padding(8.dp)
-                                        .size(280.dp,170.dp),
-                                    verticalArrangement = Arrangement.spacedBy(1.dp)
-                                ) {
-                                    Text(
-                                        text = "Password must:",
-                                        color = Color.White,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ have between 8 and 20 characters",
-                                        color = if(lengthCheck(password))Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one uppercase letter",
-                                        color = if(uppercaseCheck(password))Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one lowercase letter",
-                                        color = if(lowercaseCheck(password))Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one number",
-                                        color = if(digitCheck(password))Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one special character from @, \$, !, %, *, ?, &, #, _",
-                                        color = if(specialCharCheck(password))Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    PasswordHelp(password)
                 }
                 Spacer(modifier = Modifier.height(0.5.dp))
                 OutlinedTextField(

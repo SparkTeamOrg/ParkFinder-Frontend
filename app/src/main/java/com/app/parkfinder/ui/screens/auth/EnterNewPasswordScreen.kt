@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.screens.common.PasswordHelp
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.digitCheck
 import com.app.parkfinder.utilis.lengthCheck
@@ -156,68 +157,7 @@ fun EnterNewPasswordScreen(
                         fontSize = 20.sp,
 
                     )
-                    //popup
-                    Box(contentAlignment = Alignment.Center) {
-                        IconButton(
-                            onClick = { showTooltip = !showTooltip },
-                            modifier = Modifier,
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Help,
-                                contentDescription = "Help Icon",
-                                tint = Color.White
-                            )
-                        }
-
-                        if (showTooltip) {
-                            Popup(
-                                alignment = Alignment.BottomStart,
-                                onDismissRequest = { showTooltip = false }
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .background(
-                                            Color.Black.copy(alpha = 0.8f),
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(8.dp)
-                                        .size(280.dp, 170.dp),
-                                    verticalArrangement = Arrangement.spacedBy(1.dp)
-                                ) {
-                                    Text(
-                                        text = "Password must:",
-                                        color = Color.White,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ have between 8 and 20 characters",
-                                        color = if (lengthCheck(password)) Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one uppercase letter",
-                                        color = if (uppercaseCheck(password)) Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one lowercase letter",
-                                        color = if (lowercaseCheck(password)) Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one number",
-                                        color = if (digitCheck(password)) Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                    Text(
-                                        text = "◄ contain at least one special character from @, \$, !, %, *, ?, &, #, _",
-                                        color = if (specialCharCheck(password)) Color.Green else Color.Red,
-                                        fontSize = 14.sp
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    PasswordHelp(password)
                 }
                 Spacer(Modifier.padding(10.dp))
                 OutlinedTextField(
