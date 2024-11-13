@@ -19,10 +19,26 @@ import androidx.compose.ui.unit.sp
 fun OTPBox(
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            if (newValue.all { it.isDigit() }) {
+                if (newValue.length <= 1) {
+                    onValueChange(newValue)
+                }
+                else {
+                    // In case there are more than one character
+                    // we take the character that differs from the current value
+                    // and set it as the new value
+                    val diffIndex = newValue.indexOfFirst { it != value.first() }
+                    if (diffIndex != -1) {
+                        onValueChange(newValue[diffIndex].toString())
+                    }
+                }
+            }
+        },
         textStyle = TextStyle(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
@@ -40,7 +56,7 @@ fun OTPBox(
             unfocusedBorderColor = Color.White,
             cursorColor = Color.White
         ),
-        modifier = Modifier
+        modifier = modifier
             .size(56.dp)
             .background(Color(0xFF2E3341), RoundedCornerShape(16.dp))
     )
@@ -49,5 +65,9 @@ fun OTPBox(
 @Preview(showBackground = true)
 @Composable
 fun OTPBoxPreview() {
-    OTPBox(value = "1") {}
+    OTPBox(
+        value = "1",
+        onValueChange = {},
+        modifier = Modifier
+    )
 }
