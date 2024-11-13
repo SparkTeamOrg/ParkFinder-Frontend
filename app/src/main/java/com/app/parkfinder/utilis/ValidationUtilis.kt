@@ -34,3 +34,31 @@ fun validateLicencePlate(licencePlate: String): Boolean {
     val licencePlateRegex = "^\\p{Lu}{2}\\d{3}\\p{Lu}{2}$".toRegex()
     return licencePlateRegex.matches(licencePlate)
 }
+
+
+public fun uppercaseCheck(pass: String): Boolean
+{
+    val passRegex = ".*[A-Z].*".toRegex()
+    return passRegex.matches(pass)
+}
+
+public fun lengthCheck(pass: String): Boolean
+{
+    return pass.length in 8..20
+}
+
+public fun lowercaseCheck(pass: String): Boolean
+{
+    val passRegex = ".*[a-z].*".toRegex()
+    return passRegex.matches(pass)
+}
+public fun digitCheck(pass: String): Boolean
+{
+    val passRegex = ".*[0-9].*".toRegex()
+    return passRegex.matches(pass)
+}
+public fun specialCharCheck(pass: String): Boolean
+{
+    val passRegex = ".*[@_!#\$%&*?].*".toRegex()
+    return passRegex.matches(pass)
+}
