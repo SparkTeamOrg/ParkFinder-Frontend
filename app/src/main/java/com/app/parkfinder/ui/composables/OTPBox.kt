@@ -24,16 +24,18 @@ fun OTPBox(
     OutlinedTextField(
         value = value,
         onValueChange = { newValue ->
-            if (newValue.length <= 1) {
-                onValueChange(newValue)
-            }
-            else {
-                // In case there are more than one character
-                // we take the character that differs from the current value
-                // and set it as the new value
-                val diffIndex = newValue.indexOfFirst { it != value.first() }
-                if (diffIndex != -1) {
-                    onValueChange(newValue[diffIndex].toString())
+            if (newValue.all { it.isDigit() }) {
+                if (newValue.length <= 1) {
+                    onValueChange(newValue)
+                }
+                else {
+                    // In case there are more than one character
+                    // we take the character that differs from the current value
+                    // and set it as the new value
+                    val diffIndex = newValue.indexOfFirst { it != value.first() }
+                    if (diffIndex != -1) {
+                        onValueChange(newValue[diffIndex].toString())
+                    }
                 }
             }
         },
