@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.composables.OTPBox
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 
 @Composable
 fun ResetPasswordVerificationCodeScreen(
@@ -35,6 +38,10 @@ fun ResetPasswordVerificationCodeScreen(
     onNextClick: () -> Unit,
     onResendClick: () -> Unit
 ) {
+
+    val focusRequesters = List(otpValues.size) { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,8 +122,16 @@ fun ResetPasswordVerificationCodeScreen(
                             val newOtpValues = otpValues.toMutableList()
                             newOtpValues[index] = newValue
                             onOtpValueChange(newOtpValues)
+
+                            if(newValue.isNotEmpty() && index < otpValues.size-1) {
+                                focusRequesters[index+1].requestFocus()
+                            }
+                            else if (newValue.isNotEmpty() && index == otpValues.size - 1) {
+                                focusManager.clearFocus()
+                            }
                         }
-                    }
+                    },
+                    modifier = Modifier.Companion.focusRequester(focusRequesters[index])
                 )
             }
         }

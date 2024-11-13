@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 fun OTPBox(
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
@@ -40,7 +41,7 @@ fun OTPBox(
             unfocusedBorderColor = Color.White,
             cursorColor = Color.White
         ),
-        modifier = Modifier
+        modifier = modifier
             .size(56.dp)
             .background(Color(0xFF2E3341), RoundedCornerShape(16.dp))
     )
@@ -49,5 +50,9 @@ fun OTPBox(
 @Preview(showBackground = true)
 @Composable
 fun OTPBoxPreview() {
-    OTPBox(value = "1") {}
+    OTPBox(
+        value = "1",
+        onValueChange = {},
+        modifier = Modifier
+    )
 }
