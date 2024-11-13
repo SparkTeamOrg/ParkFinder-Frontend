@@ -2,7 +2,6 @@ package com.app.parkfinder.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UserDto
@@ -11,7 +10,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.auth0.android.jwt.JWT
 import org.osmdroid.config.Configuration
 
-class NavigationActivity : ComponentActivity() {
+class NavigationActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
@@ -15,7 +14,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword
 
-class RegisterActivity: ComponentActivity() {
+class RegisterActivity: BaseActivity() {
 
     private val email = mutableStateOf("")
     private val password = mutableStateOf("")

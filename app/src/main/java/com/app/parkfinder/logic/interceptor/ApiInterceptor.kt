@@ -1,6 +1,7 @@
 package com.app.parkfinder.logic.interceptor
 
 import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.AuthStatus
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.TokenDto
 import com.app.parkfinder.logic.services.TokenService
@@ -44,6 +45,7 @@ class ApiInterceptor() : Interceptor {
                     }
                     else{
                         AppPreferences.removeTokens()
+                        AuthStatus.signalRefreshTokenExpired()
                     }
                 }
             }
