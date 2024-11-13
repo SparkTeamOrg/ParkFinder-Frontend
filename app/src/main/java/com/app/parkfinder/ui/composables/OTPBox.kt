@@ -23,7 +23,20 @@ fun OTPBox(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            if (newValue.length <= 1) {
+                onValueChange(newValue)
+            }
+            else {
+                // In case there are more than one character
+                // we take the character that differs from the current value
+                // and set it as the new value
+                val diffIndex = newValue.indexOfFirst { it != value.first() }
+                if (diffIndex != -1) {
+                    onValueChange(newValue[diffIndex].toString())
+                }
+            }
+        },
         textStyle = TextStyle(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
