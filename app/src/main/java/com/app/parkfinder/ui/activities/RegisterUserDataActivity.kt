@@ -3,7 +3,6 @@ package com.app.parkfinder.ui.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
@@ -12,7 +11,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validatePhoneNumber
 import com.app.parkfinder.utilis.validateUserName
 
-class RegisterUserDataActivity : ComponentActivity() {
+class RegisterUserDataActivity : BaseActivity() {
 
     private lateinit var email: String
     private lateinit var password: String
