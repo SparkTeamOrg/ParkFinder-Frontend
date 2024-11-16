@@ -93,4 +93,10 @@ dependencies {
     //maps
     implementation(libs.osmdroid.android)
 
+    //images
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    //cropper
+    implementation(libs.android.image.cropper)
 }
