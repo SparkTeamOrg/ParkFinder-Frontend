@@ -44,7 +44,6 @@ fun HomeScreen(
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -86,15 +85,6 @@ fun HomeScreen(
                 minZoomLevel = 8.0
 
                 viewModel.initializeMap(this)
-                viewModel.getAllParkingLotsRes.observe(lifecycleOwner){ res->
-                    if(res.isSuccessful)
-                    {
-                        print("Succes")
-                        viewModel.drawParkingLots(this, res.data)
-                    }
-                    else
-                        print("fail")
-                }
             }
         })
 
