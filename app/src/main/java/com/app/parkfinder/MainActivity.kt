@@ -12,7 +12,6 @@ import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.auth0.android.jwt.JWT
 import kotlinx.coroutines.runBlocking
-import java.util.logging.Logger
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,12 +20,9 @@ class MainActivity : ComponentActivity() {
         AppPreferences.setup(applicationContext)
         val accessToken = AppPreferences.accessToken
         val refreshToken = AppPreferences.refreshToken
-        Logger.getLogger("MainActivity").info("Access token: $accessToken")
-        Logger.getLogger("MainActivity").info("Refresh token: $refreshToken")
 
         if(accessToken != null && !isTokenExpired(accessToken)) {
             // User is logged in and token is not expired
-            Logger.getLogger("MainActivity").info("User is logged in")
             navigateToNavigationPage()
         } else if(refreshToken != null) {
             // Optionally, use the refresh token to get a new access token
