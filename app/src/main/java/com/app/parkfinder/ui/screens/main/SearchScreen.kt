@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,29 +42,28 @@ import com.app.parkfinder.ui.screens.common.BottomNavigationBar
 import com.app.parkfinder.ui.screens.common.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-
-
 @Composable
 fun SearchScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1C1C1C)),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .background(Color(0xFF151A24)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Find Desired Parking Space",
+            text = "Search for parking",
             color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(bottom = 16.dp, top = 80.dp)
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 20.dp, top = 30.dp)
         )
         Image(
-            painter = painterResource(id = R.drawable.parking_lot),
+            painter = painterResource(id = R.drawable.search_parking_img),
             contentDescription = "Parking logo",
             modifier = Modifier.requiredSize(180.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Search location input
         OutlinedTextField(
@@ -73,7 +73,7 @@ fun SearchScreen() {
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 2.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color(36, 45, 64),
                 unfocusedBorderColor = Color.White,
@@ -84,14 +84,14 @@ fun SearchScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Radius slider
-        var radius by remember { mutableFloatStateOf(1f) }
-        Text(text = "Choose Radius $radius", color = Color.White)
+        var radius by remember { mutableFloatStateOf(1f) } // Initial value of radius in km
+        Text(text = "Choose Radius ${radius.toInt()} km", color = Color.White)
         Slider(
             value = radius,
             onValueChange = { radius = it },
-            valueRange = 0.1f..5f,
+            valueRange = 1f..30f,
             modifier = Modifier.fillMaxWidth(0.8f),
-            steps = 10,
+            steps = 29, // 30 steps including the start and end points
             colors = SliderDefaults.colors(
                 thumbColor = Color(0xFF3B83F6),
                 activeTrackColor = Color(0xFF3B83F6)
