@@ -84,14 +84,14 @@ fun SearchScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Radius slider
-        var radius by remember { mutableFloatStateOf(1f) }
-        Text(text = "Choose Radius $radius", color = Color.White)
+        var radius by remember { mutableFloatStateOf(1f) } // Initial value of radius in km
+        Text(text = "Choose Radius ${radius.toInt()} km", color = Color.White)
         Slider(
             value = radius,
             onValueChange = { radius = it },
-            valueRange = 0.1f..5f,
+            valueRange = 1f..30f,
             modifier = Modifier.fillMaxWidth(0.8f),
-            steps = 10,
+            steps = 29, // 30 steps including the start and end points
             colors = SliderDefaults.colors(
                 thumbColor = Color(0xFF3B83F6),
                 activeTrackColor = Color(0xFF3B83F6)
