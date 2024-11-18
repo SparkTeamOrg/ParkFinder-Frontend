@@ -30,7 +30,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
-    private val viewRadius: Double = 0.01 // User can see parking lots within radius of 0.01 degrees TODO: Change this value to a more appropriate one
+    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
@@ -58,7 +58,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                     val initialLocation = GeoPoint(it.latitude, it.longitude)
                     mapView.controller.setCenter(initialLocation)
                     getNearbyParkingLots(it.latitude, it.longitude)
-                    drawCircle(it.latitude, it.longitude, viewRadius)
+                    drawCircle(it.latitude, it.longitude)
                 }
             }
         }
@@ -81,7 +81,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                 lastLocation = newLocation
                 mapView?.controller?.setCenter(newLocation)
                 getNearbyParkingLots(it.latitude, it.longitude)
-                drawCircle(it.latitude, it.longitude, viewRadius)
+                drawCircle(it.latitude, it.longitude)
             }
         }
     }
@@ -141,11 +141,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
         mapView.invalidate() // Refresh the map
     }
 
-    private fun drawCircle(latitude: Double, longitude: Double, radius: Double) {
+    private fun drawCircle(latitude: Double, longitude: Double) {
         val circle = Polygon(mapView)
         val points = mutableListOf<GeoPoint>()
         val numPoints = 100
-        val radiusInMeters = radius * 111000 // Convert degrees to meters
+        val radiusInMeters = this.viewRadius * 111000 // Convert degrees to meters
 
         for (i in 0 until numPoints) {
             val angle = 2 * Math.PI * i / numPoints
