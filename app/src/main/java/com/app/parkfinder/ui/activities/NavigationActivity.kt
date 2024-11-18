@@ -39,14 +39,14 @@ class NavigationActivity : BaseActivity() {
     }
     private fun decodeJwt() : UserDto {
         val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        val token = sharedPreferences.getString("access_token","")
+        val token = AppPreferences.accessToken
         val dto = UserDto()
         try {
             val jwt = JWT(token!!)
             // Get specific claims by name
             dto.Id = jwt.getClaim("UserId").asInt()!!
             dto.Fullname = jwt.getClaim("Fullname").asString()!!
-
+            dto.Email = jwt.getClaim("Email").asString()!!
         } catch (e: Exception) {
             e.printStackTrace()
         }
