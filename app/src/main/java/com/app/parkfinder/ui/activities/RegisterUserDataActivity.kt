@@ -36,6 +36,7 @@ class RegisterUserDataActivity : BaseActivity() {
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
         if (result.isSuccessful) {
             profileImage.value = result.uriContent
+            println(profileImage.value)
         } else {
             val exception = result.error
             println("Crop failed: ${exception?.message}")
@@ -78,7 +79,7 @@ class RegisterUserDataActivity : BaseActivity() {
             putExtra("firstName", fullName.value.split(" ")[0])
             putExtra("lastName", fullName.value.split(" ")[1])
             putExtra("phoneNumber", phoneNumber.value)
-            putExtra("profileImage", profileImage.toString())
+            putExtra("profileImage", profileImage.value.toString())
         }
 
         val options =
