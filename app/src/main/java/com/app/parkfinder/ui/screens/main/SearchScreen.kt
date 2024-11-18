@@ -41,24 +41,22 @@ import com.app.parkfinder.ui.screens.common.BottomNavigationBar
 import com.app.parkfinder.ui.screens.common.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-
-
 @Composable
 fun SearchScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1C1C1C)),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .background(Color(0xFF151A24)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Find Desired Parking Space",
+            text = "Search for parking",
             color = Color.White,
             fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 16.dp, top = 80.dp)
         )
         Image(
-            painter = painterResource(id = R.drawable.parking_lot),
+            painter = painterResource(id = R.drawable.search_parking_img),
             contentDescription = "Parking logo",
             modifier = Modifier.requiredSize(180.dp)
         )
@@ -73,7 +71,7 @@ fun SearchScreen() {
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 2.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color(36, 45, 64),
                 unfocusedBorderColor = Color.White,
