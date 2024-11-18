@@ -28,11 +28,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 
 @Composable
@@ -69,7 +72,18 @@ fun HomeScreen(
             MapView(ctx).apply {
                 setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(true)
-                controller.setZoom(20.0)
+                val serbiaBounds = BoundingBox(
+                    46.18,   // North
+                    23.0,   // West
+                    41.85,   // South
+                    18.83     // East
+                )
+
+                // Set boundary limits and center on Serbia
+                setScrollableAreaLimitDouble(serbiaBounds)
+                controller.setZoom(20)
+                minZoomLevel = 8.0
+
                 viewModel.initializeMap(this)
             }
         })
