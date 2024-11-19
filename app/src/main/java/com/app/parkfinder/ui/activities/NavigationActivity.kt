@@ -74,7 +74,7 @@ class NavigationActivity : BaseActivity() {
             // Get specific claims by name
             dto.Id = jwt.getClaim("UserId").asInt()!!
             dto.Fullname = jwt.getClaim("Fullname").asString()!!
-
+            dto.Email = jwt.getClaim("Email").asString()!!
         } catch (e: Exception) {
             e.message?.let { Log.d("Debug", it) }
             e.printStackTrace()

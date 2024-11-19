@@ -182,7 +182,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { /* Handle click */ }
-            .padding(vertical = 12.dp),
+            .padding(vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -195,6 +195,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null) {
         Text(
             text = title,
             fontSize = 16.sp,
+            fontWeight = FontWeight.W700,
             color = Color.White,
             modifier = Modifier.weight(1f)
         )
