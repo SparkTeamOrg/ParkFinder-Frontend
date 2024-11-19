@@ -1,28 +1,30 @@
 package com.app.parkfinder.logic.services
 
 import com.app.parkfinder.logic.models.BackResponse
-import com.app.parkfinder.logic.models.dtos.RemoveImageDto
-import com.app.parkfinder.logic.models.dtos.UploadImageDto
+import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface ImageService {
-    @GET("images/profileImage")
+    @GET("image/profileImage")
     suspend fun getProfileImage(
         @Query("userId") userId:Int
     ): Response<BackResponse<String>>
 
-    @POST("images/upload")
+    @Multipart
+    @POST("image/upload")
     suspend fun uploadImage(
-        @Body uploadImageDto: UploadImageDto
+        @Part userId: MultipartBody.Part,
+        @Part profileImage: MultipartBody.Part
     ): Response<BackResponse<String>>
 
-    @DELETE("images/delete")
+    @DELETE("image/delete")
     suspend fun removeImage(
-        @Body removeImageDto: RemoveImageDto
+        @Query("userId") userId: Int
     ): Response<BackResponse<String>>
 }
