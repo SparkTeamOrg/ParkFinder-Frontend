@@ -1,14 +1,16 @@
 package com.app.parkfinder.ui.activities
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
@@ -18,12 +20,11 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.auth0.android.jwt.JWT
 import com.canhub.cropper.CropImageContract
-import kotlinx.coroutines.runBlocking
 import okhttp3.MultipartBody
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
-    private val imageService = RetrofitConfig.createService(ImageService:: class.java)
+    private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
     private var user: UserDto = UserDto()
 
@@ -40,8 +41,10 @@ class NavigationActivity : BaseActivity() {
         Configuration.getInstance().userAgentValue = packageName
 
         user = decodeJwt()
-        val imageUriString = getProfileImageUrl(user.Id)
-        currentImageUrl = if(imageUriString != null) Uri.parse(imageUriString) else null
+        lifecycleScope.launch {
+            val imageUriString = getProfileImageUrl(user.Id)
+            currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
+        }
 
         setContent {
             ParkFinderTheme {
@@ -66,12 +69,12 @@ class NavigationActivity : BaseActivity() {
     private fun clearTokens() {
         AppPreferences.removeTokens()
     }
-    private fun decodeJwt() : UserDto {
+
+    private fun decodeJwt(): UserDto {
         val token = AppPreferences.accessToken
         val dto = UserDto()
         try {
             val jwt = JWT(token!!)
-            // Get specific claims by name
             dto.Id = jwt.getClaim("UserId").asInt()!!
             dto.Fullname = jwt.getClaim("Fullname").asString()!!
             dto.Email = jwt.getClaim("Email").asString()!!
@@ -82,54 +85,50 @@ class NavigationActivity : BaseActivity() {
         return dto
     }
 
-    private fun getProfileImageUrl(userId: Int): String?{
-        val response = runBlocking { imageService.getProfileImage(userId) }
-        if(response.isSuccessful){
+    private suspend fun getProfileImageUrl(userId: Int): String? {
+        val response = imageService.getProfileImage(userId)
+        return if (response.isSuccessful) {
             val body = response.body()
-            if(body!=null){
-                if(body.isSuccessful){
-                    return body.data
-                }else{
-                    Log.d("Error", body.messages[0])
-                    return null
-                }
+            if (body != null && body.isSuccessful) {
+                body.data
+            } else {
+                Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
+                null
             }
+        } else {
+            null
         }
-        return null
     }
 
-    private fun uploadImage(userId: Int, imageUrl: Uri){
-        val profileImage = ImageUtils.createMultipartFromUri(this.contentResolver,imageUrl)
-        val userIdPart = MultipartBody.Part.createFormData("UserId", userId.toString())
+    private fun uploadImage(userId: Int, imageUrl: Uri) {
+        lifecycleScope.launch {
+            val profileImage = ImageUtils.createMultipartFromUri(contentResolver, imageUrl)
+            val userIdPart = MultipartBody.Part.createFormData("UserId", userId.toString())
 
-        val response = runBlocking {
-            if (profileImage != null) {
+            val response = if (profileImage != null) {
                 imageService.uploadImage(userIdPart, profileImage)
             } else null
-        }
-        if(response!=null && response.isSuccessful)
-        {
-            val body = response.body()
-            if (body != null){
-                if(body.isSuccessful){
+
+            if (response != null && response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.isSuccessful) {
                     currentImageUrl = Uri.parse(body.data)
-                }else{
-                    Log.d("Error", body.messages[0])
+                } else {
+                    Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
                 }
             }
         }
     }
 
-    private fun removeImage(){
-        val response = runBlocking { imageService.removeImage(user.Id) }
-        if(response.isSuccessful)
-        {
-            val body = response.body()
-            if (body != null) {
-                if(body.isSuccessful){
+    private fun removeImage() {
+        lifecycleScope.launch {
+            val response = imageService.removeImage(user.Id)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.isSuccessful) {
                     currentImageUrl = null
-                }else{
-                    Log.d("Error", body.messages[0])
+                } else {
+                    Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
                 }
             }
         }

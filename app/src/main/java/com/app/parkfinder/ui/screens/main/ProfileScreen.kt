@@ -52,6 +52,7 @@ import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.screens.common.BottomNavigationBar
 import com.app.parkfinder.ui.screens.common.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import java.util.logging.Logger
 
 @Composable
 fun ProfileScreen(
@@ -72,7 +73,13 @@ fun ProfileScreen(
         Box(
             modifier = Modifier.size(180.dp)
         ){
-            ProfileImage(currentImageUrl)
+            currentImageUrl?.let { uri ->
+                Logger.getLogger("ProfileScreen").info("Image with uri: $uri")
+                ProfileImage(uri)
+            } ?: run {
+                Logger.getLogger("ProfileScreen").info("No image")
+                ProfileImage(null)
+            }
             Box(
                 modifier = Modifier
                     .padding(bottom = 17.dp)
