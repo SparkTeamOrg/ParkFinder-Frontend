@@ -15,6 +15,7 @@ import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
+import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
@@ -60,7 +61,20 @@ class NavigationActivity : BaseActivity() {
     }
 
     private fun logout() {
-        clearTokens()
+        val tokenService = RetrofitConfig.createService(TokenService::class.java)
+        lifecycleScope.launch {
+            val deleteResponse = tokenService.delete(user.Id)
+            if(deleteResponse.isSuccessful) {
+                val body = deleteResponse.body()
+                if(body != null){
+                    if(body.isSuccessful){
+                        clearTokens()
+                    }
+                }else {
+                    Log.d("Error", "Error while deleting refresh token")
+                }
+            }
+        }
         val intent = Intent(this, WelcomeActivity::class.java)
         startActivity(intent)
         finish()
