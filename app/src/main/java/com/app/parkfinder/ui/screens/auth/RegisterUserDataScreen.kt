@@ -1,8 +1,10 @@
 package com.app.parkfinder.ui.screens.auth
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
@@ -47,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
@@ -59,7 +63,10 @@ fun RegisterUserDataScreen(
     onBackClick: () -> Unit,
     validateUserName: (String) -> Boolean,
     validatePhoneNumber: (String) -> Boolean,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    openImagePicker: () -> Unit,
+    profileImage: Uri?,
+    onProfileImageChange: (Uri?) -> Unit
 ) {
     var nameError by remember { mutableStateOf(false) }
     var phoneError by remember { mutableStateOf(false) }
@@ -114,17 +121,11 @@ fun RegisterUserDataScreen(
         Box(
             modifier = Modifier.size(180.dp)
         ){
-            Image(
-                painter = painterResource(id = R.drawable.default_profile_picture),
-                contentDescription = "Background Image",
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            ProfileImage(profileImage)
             Box(
                 modifier = Modifier
-                    .padding(end = 10.dp, bottom = 12.dp)
-                    .align(Alignment.BottomEnd),
+                    .padding(bottom = 17.dp)
+                    .align(Alignment.BottomEnd)
             ) {
                 Box(
                     modifier = Modifier
@@ -132,7 +133,7 @@ fun RegisterUserDataScreen(
                         .clip(CircleShape)
                         .border(width = 3.dp, color = Color.White, shape = CircleShape)
                         .background(Color(0xFF0FCFFF))
-
+                        .clickable{ openImagePicker() }
                 ) {
                     Icon(
                         imageVector = Icons.Default.CameraAlt,
@@ -142,6 +143,31 @@ fun RegisterUserDataScreen(
                             .align(Alignment.Center),
                         tint = Color.White
                     )
+                }
+            }
+            if(profileImage != null) {
+                Box(
+                    modifier = Modifier
+                        .padding(end = 42.dp)
+                        .align(Alignment.BottomEnd)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .border(width = 3.dp, color = Color.White, shape = CircleShape)
+                            .background(Color.Red)
+                            .clickable { onProfileImageChange(null) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Image",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.Center),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
@@ -262,6 +288,22 @@ fun RegisterUserDataScreen(
     }
 }
 
+@Composable
+fun ProfileImage(profileImage: Uri?) {
+    val imagePainter = rememberAsyncImagePainter(
+        model = profileImage ?: R.drawable.default_profile_picture
+    )
+    Image(
+        painter = imagePainter,
+        contentDescription = "Profile Image",
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(CircleShape)
+            .border(4.dp, Color(0xFF0FCFFF), CircleShape),
+        contentScale = ContentScale.Crop
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun RegisterUserDataScreenPreview() {
@@ -274,7 +316,10 @@ fun RegisterUserDataScreenPreview() {
             onBackClick = {},
             validateUserName = { true },
             validatePhoneNumber = { true },
-            onNextClick = {}
+            onNextClick = {},
+            openImagePicker = {},
+            profileImage = null,
+            onProfileImageChange = {}
         )
     }
 }

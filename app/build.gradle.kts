@@ -62,6 +62,7 @@ dependencies {
     implementation (libs.androidx.material.icons.extended)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.material3.v140alpha02)
+    implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,4 +94,10 @@ dependencies {
     //maps
     implementation(libs.osmdroid.android)
 
+    //images
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    //cropper
+    implementation(libs.android.image.cropper)
 }

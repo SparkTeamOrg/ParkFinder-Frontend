@@ -1,5 +1,7 @@
 package com.app.parkfinder.ui.screens.main
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,16 +24,11 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.StackedBarChart
 import androidx.compose.material.icons.filled.Wallet
-import androidx.compose.material.icons.filled.WifiCalling
-import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,17 +45,22 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.screens.common.BottomNavigationBar
 import com.app.parkfinder.ui.screens.common.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import java.util.logging.Logger
 
 @Composable
 fun ProfileScreen(
     logout : ()->Unit,
-    user: UserDto
+    user: UserDto,
+    currentImageUrl: Uri?,
+    openImagePicker: () -> Unit,
+    removeImage: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -72,17 +73,17 @@ fun ProfileScreen(
         Box(
             modifier = Modifier.size(180.dp)
         ){
-            Image(
-                painter = painterResource(id = R.drawable.default_profile_picture),
-                contentDescription = "Background Image",
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            currentImageUrl?.let { uri ->
+                Logger.getLogger("ProfileScreen").info("Image with uri: $uri")
+                ProfileImage(uri)
+            } ?: run {
+                Logger.getLogger("ProfileScreen").info("No image")
+                ProfileImage(null)
+            }
             Box(
                 modifier = Modifier
-                    .padding(end = 10.dp, bottom = 12.dp)
-                    .align(Alignment.BottomEnd),
+                    .padding(bottom = 17.dp)
+                    .align(Alignment.BottomEnd)
             ) {
                 Box(
                     modifier = Modifier
@@ -90,7 +91,7 @@ fun ProfileScreen(
                         .clip(CircleShape)
                         .border(width = 3.dp, color = Color.White, shape = CircleShape)
                         .background(Color(0xFF0FCFFF))
-
+                        .clickable{ openImagePicker() }
                 ) {
                     androidx.compose.material3.Icon(
                         imageVector = Icons.Default.CameraAlt,
@@ -100,6 +101,31 @@ fun ProfileScreen(
                             .align(Alignment.Center),
                         tint = Color.White
                     )
+                }
+            }
+            if(currentImageUrl != null) {
+                Box(
+                    modifier = Modifier
+                        .padding(end = 42.dp)
+                        .align(Alignment.BottomEnd)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .border(width = 3.dp, color = Color.White, shape = CircleShape)
+                            .background(Color.Red)
+                            .clickable { removeImage() }
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Image",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.Center),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
@@ -203,7 +229,22 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null) {
     }
 }
 
-
+@Composable
+fun ProfileImage(profileImage: Uri?) {
+    Log.d("Uri",profileImage.toString())
+    val imagePainter = rememberAsyncImagePainter(
+        model = profileImage ?: R.drawable.default_profile_picture
+    )
+    Image(
+        painter = imagePainter,
+        contentDescription = "Profile Image",
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(CircleShape)
+            .border(4.dp, Color(0xFF0FCFFF), CircleShape),
+        contentScale = ContentScale.Crop
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -224,7 +265,7 @@ fun ProfileScreenPreview() {
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto()) }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto(), null, {}, {}) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

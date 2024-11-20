@@ -1,6 +1,7 @@
 package com.app.parkfinder.ui.screens.auth
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -22,7 +23,10 @@ import com.app.parkfinder.ui.screens.main.SearchScreen
 @Composable
 fun NavigationScreen (
     logout: () -> Unit,
-    user: UserDto
+    user: UserDto,
+    currentImageUrl: Uri?,
+    openImagePicker: () -> Unit,
+    removeImage: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -40,7 +44,7 @@ fun NavigationScreen (
             //UI for Search
             composable(BottomNavItem.Search.route) { SearchScreen() }
             //UI for Profile
-            composable(BottomNavItem.Profile.route) { ProfileScreen(logout,user) }
+            composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage) }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){ ReservedScreen() }
         }
@@ -56,6 +60,9 @@ fun NavigationScreen (
 fun DefaultPreview() {
     NavigationScreen(
         logout = {},
-        user = UserDto()
+        user = UserDto(),
+        currentImageUrl = null,
+        openImagePicker = {},
+        removeImage = {}
     )
 }

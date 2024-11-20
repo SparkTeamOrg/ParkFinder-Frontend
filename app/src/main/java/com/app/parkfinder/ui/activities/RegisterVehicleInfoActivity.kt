@@ -2,7 +2,9 @@ package com.app.parkfinder.ui.activities
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,7 +14,9 @@ import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validateLicencePlate
+
 
 class RegisterVehicleInfoActivity: BaseActivity() {
 
@@ -24,7 +28,7 @@ class RegisterVehicleInfoActivity: BaseActivity() {
     private lateinit var firstName: String
     private lateinit var lastName: String
     private lateinit var phoneNumber: String
-    private lateinit var profileImage: String
+    private lateinit var profileImage: Uri
 
     private var selectedBrand: Int = 0
     private var selectedModel: Int = 0
@@ -50,7 +54,7 @@ class RegisterVehicleInfoActivity: BaseActivity() {
         firstName = intent.getStringExtra("firstName") ?: ""
         lastName = intent.getStringExtra("lastName") ?: ""
         phoneNumber = intent.getStringExtra("phoneNumber") ?: ""
-        profileImage = intent.getStringExtra("profileImage") ?: ""
+        profileImage = Uri.parse(intent.getStringExtra("profileImage") ?: "")
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -97,11 +101,13 @@ class RegisterVehicleInfoActivity: BaseActivity() {
             firstName = firstName,
             lastName = lastName,
             mobilePhone = phoneNumber,
-            profileImage = profileImage,
+            profileImage = ImageUtils.createMultipartFromUri(this.contentResolver,profileImage),
             modelId = selectedModel,
             color = colorNames[selectedColor] ?: "",
             licencePlate = licencePlate.value
         )
+
+        Log.d("Debug", userModel.toString())
 
         authViewModel.register(userModel)
         return List(4){false}
