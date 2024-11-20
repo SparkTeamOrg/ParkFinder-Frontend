@@ -198,7 +198,7 @@ fun ReservedScreenPreview() {
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto()) }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto(), null, {}, {}) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }

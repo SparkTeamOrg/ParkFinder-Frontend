@@ -12,6 +12,7 @@ import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.services.AuthService
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 
 class AuthViewModel: ViewModel() {
     private val authService = RetrofitConfig.createService(AuthService::class.java)
@@ -278,7 +279,18 @@ class AuthViewModel: ViewModel() {
 
     fun register(registerModel: UserRegisterDto){
         viewModelScope.launch {
-            val response = authService.register(registerModel)
+            val response = authService.register(
+                firstName = MultipartBody.Part.createFormData("firstName", registerModel.firstName),
+                lastName = MultipartBody.Part.createFormData("lastName", registerModel.lastName),
+                email = MultipartBody.Part.createFormData("email", registerModel.email),
+                mobilePhone = MultipartBody.Part.createFormData("mobilePhone", registerModel.mobilePhone),
+                password = MultipartBody.Part.createFormData("password", registerModel.password),
+                licencePlate = MultipartBody.Part.createFormData("licencePlate", registerModel.licencePlate),
+                color = MultipartBody.Part.createFormData("color", registerModel.color),
+                modelId = MultipartBody.Part.createFormData("modelId", registerModel.modelId.toString()),
+                verificationCode = MultipartBody.Part.createFormData("verificationCode", registerModel.verificationCode),
+                profileImage = registerModel.profileImage
+            )
             if(response.isSuccessful){
                 val responseBody = response.body()
                 if (responseBody != null) {

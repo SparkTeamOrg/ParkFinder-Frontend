@@ -21,7 +21,7 @@ class ApiInterceptor() : Interceptor {
             .build()
 
         var response = chain.proceed(newRequest)
-        if(response.code() == 401)
+        if(response.code == 401)
         {
             val refreshToken = AppPreferences.refreshToken
             val refreshResponse = runBlocking {
