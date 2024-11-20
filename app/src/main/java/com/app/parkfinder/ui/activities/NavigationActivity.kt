@@ -2,12 +2,17 @@ package com.app.parkfinder.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
 import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
+import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.auth0.android.jwt.JWT
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
@@ -28,7 +33,21 @@ class NavigationActivity : BaseActivity() {
     }
 
     private fun logout() {
-        clearTokens()
+        val tokenService = RetrofitConfig.createService(TokenService::class.java)
+        lifecycleScope.launch {
+            val user = decodeJwt()
+            val deleteResponse = tokenService.delete(user.Id)
+            if(deleteResponse.isSuccessful) {
+                val body = deleteResponse.body()
+                if(body != null){
+                    if(body.isSuccessful){
+                        clearTokens()
+                    }
+                }else {
+                    Log.d("Error", "Error while deleting refresh token")
+                }
+            }
+        }
         val intent = Intent(this, WelcomeActivity::class.java)
         startActivity(intent)
         finish()
@@ -38,7 +57,6 @@ class NavigationActivity : BaseActivity() {
         AppPreferences.removeTokens()
     }
     private fun decodeJwt() : UserDto {
-        val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
         val token = AppPreferences.accessToken
         val dto = UserDto()
         try {
