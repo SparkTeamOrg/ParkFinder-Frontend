@@ -12,6 +12,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.NavigationStep
+import com.app.parkfinder.logic.models.OsrmRouteResponse
+import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.services.MapService
 import com.app.parkfinder.logic.services.OsrmService
@@ -36,6 +39,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
+    private var steps: List<Step> = emptyList()
+    var instructions = mutableListOf<NavigationStep>()
+
     private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
@@ -44,11 +50,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     private var selectedRoute: Polyline? = null
     private var selectedPoint: GeoPoint? = null
 
+    private var osrmRouteResponse : OsrmRouteResponse? = null
+
     private val osrmService = OsrmService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>>()
+    private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
     val getAllParkingLotsRes: LiveData<BackResponse<List<ParkingLotDto>>> = _getAllParkingLotsRes
+    val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -90,6 +100,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
             Logger.getLogger("MapViewModel").info("Location changed to: $newLocation")
             if (lastLocation == null || newLocation.distanceToAsDouble(lastLocation) > 10) {
                 lastLocation = newLocation
+                mapView?.overlays?.clear()
                 mapView?.controller?.setCenter(newLocation)
                 getNearbyParkingLots(it.latitude, it.longitude)
                 drawCircle(it.latitude, it.longitude)
@@ -143,8 +154,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
             }
 
             if (response.isSuccessful) {
-                val routeResponse = response.body()
-                val geometry = routeResponse?.routes?.firstOrNull()?.geometry
+                osrmRouteResponse = response.body()
+                val geometry = osrmRouteResponse?.routes?.firstOrNull()?.geometry
                 geometry?.let {
                     val geoPoints = it.coordinates.map { coord ->
                         GeoPoint(coord[1], coord[0])
@@ -153,7 +164,22 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                         setPoints(geoPoints)
                         outlinePaint.color = Color.rgb(0, 0, 255)
                     }
-                    mapView.overlays.removeIf { overlay -> overlay is Polyline }
+
+                    steps = osrmRouteResponse?.routes?.firstOrNull()?.legs?.firstOrNull()?.steps!!
+                    instructions.clear()
+                    steps.map { step: Step ->
+                        var dum = "" + step.maneuver.type + " " + step.maneuver.modifier
+                        if(step.name!="")
+                            dum+=" at " + step.name
+                        val item = NavigationStep(
+                            distance = step.distance,
+                            duration = step.duration,
+                                instruction = dum
+                        )
+                        instructions.add(item)
+                    }
+                    _getAllInstructions.postValue(instructions)
+//                    mapView.overlays.removeIf { overlay -> overlay is Polyline }
                     mapView.overlays.add(polyline)
                     polyline.setOnClickListener{_,_,_->
                         mapView.overlays.remove(selectedRoute)
