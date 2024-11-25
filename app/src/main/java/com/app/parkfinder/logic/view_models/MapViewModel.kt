@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.util.LocationUtils
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -42,7 +43,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     private var steps: List<Step> = emptyList()
     var instructions = mutableListOf<NavigationStep>()
 
-    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
+    private val viewRadius: Double = 0.006 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
@@ -95,10 +96,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     }
 
     override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
+        Log.d("monkey","Location changed")
         location?.let {
             val newLocation = GeoPoint(it.latitude, it.longitude)
-            Logger.getLogger("MapViewModel").info("Location changed to: $newLocation")
-            if (lastLocation == null || newLocation.distanceToAsDouble(lastLocation) > 10) {
+            Log.d("monkey","Location changed to: $newLocation")
+            if (newLocation.distanceToAsDouble(lastLocation) > 10) {
                 lastLocation = newLocation
                 mapView?.overlays?.clear()
                 mapView?.controller?.setCenter(newLocation)
@@ -183,6 +185,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                     mapView.overlays.add(polyline)
                     polyline.setOnClickListener{_,_,_->
                         mapView.overlays.remove(selectedRoute)
+                        instructions.clear()
+                        _getAllInstructions.postValue(instructions)
                         selectedRoute = null
                         selectedPoint = null
                         true
