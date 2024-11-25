@@ -4,20 +4,30 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Color
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.NavigationStep
+import com.app.parkfinder.logic.models.OsrmRouteResponse
+import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.services.MapService
+import com.app.parkfinder.logic.services.OsrmService
 import com.google.gson.JsonParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.util.LocationUtils
 import org.osmdroid.views.overlay.Polygon
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider
@@ -30,15 +40,26 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
-    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
+    private var steps: List<Step> = emptyList()
+    var instructions = mutableListOf<NavigationStep>()
+
+    private val viewRadius: Double = 0.006 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
 
+    private var selectedRoute: Polyline? = null
+    private var selectedPoint: GeoPoint? = null
+
+    private var osrmRouteResponse : OsrmRouteResponse? = null
+
+    private val osrmService = OsrmService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>>()
+    private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
     val getAllParkingLotsRes: LiveData<BackResponse<List<ParkingLotDto>>> = _getAllParkingLotsRes
+    val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -56,6 +77,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
             runOnFirstFix {
                 myLocation?.let {
                     val initialLocation = GeoPoint(it.latitude, it.longitude)
+                    lastLocation = initialLocation
                     mapView.controller.setCenter(initialLocation)
                     getNearbyParkingLots(it.latitude, it.longitude)
                     drawCircle(it.latitude, it.longitude)
@@ -74,14 +96,22 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     }
 
     override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
+        Log.d("monkey","Location changed")
         location?.let {
             val newLocation = GeoPoint(it.latitude, it.longitude)
-            Logger.getLogger("MapViewModel").info("Location changed to: $newLocation")
-            if (lastLocation == null || newLocation.distanceToAsDouble(lastLocation) > 10) {
+            Log.d("monkey","Location changed to: $newLocation")
+            if (newLocation.distanceToAsDouble(lastLocation) > 10) {
                 lastLocation = newLocation
+                mapView?.overlays?.clear()
                 mapView?.controller?.setCenter(newLocation)
                 getNearbyParkingLots(it.latitude, it.longitude)
                 drawCircle(it.latitude, it.longitude)
+
+                viewModelScope.launch {
+                    if(selectedRoute!=null)
+                        mapView?.overlays?.remove(selectedRoute)
+                    selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!);
+                }
             }
         }
     }
@@ -115,6 +145,61 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
         }
     }
 
+    // Function to fetch and draw route between start and end points
+    private suspend fun drawRoute(mapView: MapView, start: GeoPoint, end: GeoPoint) :Polyline? {
+        val startCoords = "${start.longitude},${start.latitude}"
+        val endCoords = "${end.longitude},${end.latitude}"
+
+        try {
+            val response = withContext(Dispatchers.IO) {
+                osrmService.getRoute(startCoords, endCoords).execute()
+            }
+
+            if (response.isSuccessful) {
+                osrmRouteResponse = response.body()
+                val geometry = osrmRouteResponse?.routes?.firstOrNull()?.geometry
+                geometry?.let {
+                    val geoPoints = it.coordinates.map { coord ->
+                        GeoPoint(coord[1], coord[0])
+                    }
+                    val polyline = Polyline().apply {
+                        setPoints(geoPoints)
+                        outlinePaint.color = Color.rgb(0, 0, 255)
+                    }
+
+                    steps = osrmRouteResponse?.routes?.firstOrNull()?.legs?.firstOrNull()?.steps!!
+                    instructions.clear()
+                    steps.map { step: Step ->
+                        var dum = "" + step.maneuver.type + " " + step.maneuver.modifier
+                        if(step.name!="")
+                            dum+=" at " + step.name
+                        val item = NavigationStep(
+                            distance = step.distance,
+                            duration = step.duration,
+                                instruction = dum
+                        )
+                        instructions.add(item)
+                    }
+                    _getAllInstructions.postValue(instructions)
+//                    mapView.overlays.removeIf { overlay -> overlay is Polyline }
+                    mapView.overlays.add(polyline)
+                    polyline.setOnClickListener{_,_,_->
+                        mapView.overlays.remove(selectedRoute)
+                        instructions.clear()
+                        _getAllInstructions.postValue(instructions)
+                        selectedRoute = null
+                        selectedPoint = null
+                        true
+                    }
+                    mapView.invalidate()
+                    return polyline
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
     private fun drawParkingLots(mapView: MapView, pLots: List<ParkingLotDto>) {
         for (lot in pLots) {
             val jsonObject = JsonParser.parseString(lot.polygonGeoJson).asJsonObject
@@ -135,11 +220,40 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
             polygon.strokeColor = Color.RED
             polygon.strokeWidth = 2f
 
+
+            polygon.setOnClickListener{_,_,_ ->
+                if(lastLocation == null)
+                    Log.d("Mes","Lokacija je null")
+                viewModelScope.launch {
+                    if(selectedRoute!=null)
+                        mapView.overlays.remove(selectedRoute)
+                    selectedPoint = calculateCentroid(geoPoints)
+                    selectedRoute = drawRoute(mapView,lastLocation!!,selectedPoint!!)
+                }
+
+
+                true
+            }
+
+
             // Add the Polygon to the MapView
             mapView.overlays.add(polygon)
         }
         mapView.invalidate() // Refresh the map
     }
+    private fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
+        var centroidLat = 0.0
+        var centroidLon = 0.0
+
+        for (point in points) {
+            centroidLat += point.latitude
+            centroidLon += point.longitude
+        }
+
+        val totalPoints = points.size
+        return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
+    }
+
 
     private fun drawCircle(latitude: Double, longitude: Double) {
         val circle = Polygon(mapView)
