@@ -2,9 +2,10 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
-
-        <!-- Local IP address of backend server for testing -->
-        <domain includeSubdomains="true">192.168.1.218</domain>
+        <domain includeSubdomains="true">192.168.33.65</domain>
+        <domain includeSubdomains="true">softeng.pmf.kg.ac.rs</domain>
+<!--        &lt;!&ndash; Local IP address of backend server for testing &ndash;&gt;-->
+<!--        <domain includeSubdomains="true">192.168.1.218</domain>-->
 
         <!-- Server IP address -->
         <domain includeSubdomains="true">softeng.pmf.kg.ac.rs</domain>
