@@ -35,7 +35,7 @@ class LoginActivity: BaseActivity() {
                     onEmailChange = { email.value = it },
                     password = password.value,
                     onPasswordChange = { password.value = it },
-                    onBackClick = { finish() },
+                    onBackClick = { navigateToWelcome() },
                     onForgotPasswordClick = { navigateToForgotPassword() },
                     onRegisterClick = { navigateToRegister() },
                     login = { loginUser(email.value, password.value) },
@@ -71,6 +71,13 @@ class LoginActivity: BaseActivity() {
     private fun navigateToForgotPassword()
     {
         val intent = Intent(this, ForgotPasswordActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToWelcome()
+    {
+        val intent = Intent(this, WelcomeActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

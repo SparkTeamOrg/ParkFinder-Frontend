@@ -3,6 +3,7 @@ package com.app.parkfinder.ui.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.R
@@ -11,6 +12,13 @@ import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 class WelcomeActivity: BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finishAffinity()
+            }
+        })
+
         setContent {
             ParkFinderTheme {
                 WelcomeScreen(
