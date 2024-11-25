@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Lock
@@ -48,15 +47,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import com.app.parkfinder.R
 import com.app.parkfinder.ui.screens.common.PasswordHelp
 import com.app.parkfinder.ui.theme.ParkFinderTheme
-import com.app.parkfinder.utilis.digitCheck
-import com.app.parkfinder.utilis.lengthCheck
-import com.app.parkfinder.utilis.lowercaseCheck
-import com.app.parkfinder.utilis.specialCharCheck
-import com.app.parkfinder.utilis.uppercaseCheck
 
 @Composable
 fun EnterNewPasswordScreen(
@@ -71,7 +64,7 @@ fun EnterNewPasswordScreen(
 {
     var passwordVisible by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-    var showTooltip by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -136,7 +129,7 @@ fun EnterNewPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(10.dp, RoundedCornerShape(8.dp))
-                .background(Color(36, 45, 64))
+                .background(Color(36, 45, 64).copy(alpha = 0.4f))
                 .padding(16.dp)
         )
         {
