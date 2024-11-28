@@ -17,7 +17,7 @@ interface VehicleService {
     @GET("Vehicle/UserVehicles")
     suspend fun getUserVehicles(
         @Query("userId") userId: Int
-    ):Response<BackResponse<List<VehicleDto>>>;
+    ):Response<BackResponse<List<VehicleDto>>>
 
     @POST("Vehicle/RegisterVehicle")
     suspend fun registerVehicle(
@@ -31,7 +31,7 @@ interface VehicleService {
 
     @DELETE("Vehicle/DeleteVehicle")
     suspend fun deleteVehicle(
-        @Query("vehicleId") vehicleId: Number,
-        @Query("userId") userId: Number
-    ): Response<BackResponse<Number>>
+        @Query("vehicleId") vehicleId: Int,
+        @Query("userId") userId: Int
+    ): Response<BackResponse<Int>>
 }
