@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
@@ -59,7 +61,8 @@ class NavigationActivity : BaseActivity() {
                     user = user,
                     currentImageUrl = currentImageUrl,
                     openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
-                    removeImage = { removeImage() }
+                    removeImage = { removeImage() },
+                    navigateToVehicleInfo = { navigateToVehicleInfo() }
                 )
             }
         }
@@ -151,5 +154,11 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun navigateToVehicleInfo() {
+        val intent = Intent(this, VehicleInfoActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 }

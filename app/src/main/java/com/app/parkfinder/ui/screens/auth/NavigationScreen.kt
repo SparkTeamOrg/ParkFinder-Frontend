@@ -26,7 +26,8 @@ fun NavigationScreen (
     user: UserDto,
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
-    removeImage: () -> Unit
+    removeImage: () -> Unit,
+    navigateToVehicleInfo: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -44,7 +45,7 @@ fun NavigationScreen (
             //UI for Search
             composable(BottomNavItem.Search.route) { SearchScreen() }
             //UI for Profile
-            composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage) }
+            composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo) }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){ ReservedScreen() }
         }
@@ -63,6 +64,7 @@ fun DefaultPreview() {
         user = UserDto(),
         currentImageUrl = null,
         openImagePicker = {},
-        removeImage = {}
+        removeImage = {},
+        navigateToVehicleInfo = {}
     )
 }
