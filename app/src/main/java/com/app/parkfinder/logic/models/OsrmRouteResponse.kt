@@ -1,5 +1,9 @@
 package com.app.parkfinder.logic.models
 
+
+//Look for documentation about OSRM
+//https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route-service
+
 data class OsrmRouteResponse(
     val routes: List<Route>
 )

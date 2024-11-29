@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.auth.register
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -8,7 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.screens.auth.RegisterUserDataScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.screens.auth.register.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validatePhoneNumber

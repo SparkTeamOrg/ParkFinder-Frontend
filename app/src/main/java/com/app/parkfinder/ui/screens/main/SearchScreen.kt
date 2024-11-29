@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
@@ -38,15 +41,19 @@ import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.screens.common.BottomNavigationBar
-import com.app.parkfinder.ui.screens.common.ParkFinderLogo
+import com.app.parkfinder.ui.composables.BottomNavigationBar
+import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun SearchScreen() {
+fun SearchScreen(
+    searchParkingsAroundLocation: (location:String) -> Unit = {}
+) {
+    var searchedLocation by remember{ mutableStateOf("")}
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFF151A24)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -67,8 +74,8 @@ fun SearchScreen() {
 
         // Search location input
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = searchedLocation,
+            onValueChange = {searchedLocation = it},
             placeholder = { Text("Search locations...", color = Color.White) },
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White) },
             modifier = Modifier
@@ -102,7 +109,7 @@ fun SearchScreen() {
 
         // Search Button
         Button(
-            onClick = { /* Handle search action */ },//TODO - Add navigation to the home with shown parking lots
+            onClick = {searchParkingsAroundLocation(searchedLocation) },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)
