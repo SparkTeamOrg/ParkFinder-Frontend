@@ -21,6 +21,7 @@ data class Maneuver(
     val location : List<Double>,
     val modifier: String,
     val type: String,
+    var exit: String?
 
 )
 

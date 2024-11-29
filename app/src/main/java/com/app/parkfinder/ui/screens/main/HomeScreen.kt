@@ -124,7 +124,7 @@ fun HomeScreen(
             DirectionsPanel(
                 steps = steps,
                 modifier = Modifier
-                    .width(250.dp)
+                    .width(350.dp)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp)

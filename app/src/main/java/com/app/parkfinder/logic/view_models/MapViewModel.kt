@@ -43,6 +43,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     private var steps: List<Step> = emptyList()
     var instructions = mutableListOf<NavigationStep>()
 
+    // 0.03 is approximately 5km
     private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
@@ -169,14 +170,34 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
 
                     steps = osrmRouteResponse?.routes?.firstOrNull()?.legs?.firstOrNull()?.steps!!
                     instructions.clear()
+                    var a  = 0
                     steps.map { step: Step ->
-                        var dum = "" + step.maneuver.type + " " + step.maneuver.modifier
-                        if(step.name!="")
-                            dum+=" at " + step.name
+
+
+                        Log.e("${++a} TURN","Action: ${step.maneuver.type}, Name: ${step.name}, Direction: ${step.maneuver.modifier}, Exit: ${step.maneuver.exit}")
+
+                        val direction = " " + step.maneuver.modifier // Add space before modifier if present
+                        val instruction: String = when (step.maneuver.type) {
+                            "turn" -> "Turn$direction onto ${step.name}."
+                            "roundabout" -> {
+                                val exitText = step.maneuver.exit?.let { " and take the $it exit" } ?: ""
+                                "Enter the roundabout$direction$exitText."
+                            }
+                            "merge" -> "Merge$direction."
+                            "on_ramp" -> "Take the ramp$direction."
+                            "off_ramp" -> "Exit the ramp$direction."
+                            "arrive" -> "You have arrived at your destination."
+                            "depart" -> "Start on ${step.name}."
+                            "continue" -> "Continue$direction onto ${step.name}."
+                            "notification" -> "Notification: ${step.name}"  // Notifications often use `name` or other descriptive text
+                            else -> "Follow the route."  // Default fallback
+                        }
+                        "$instruction (${step.distance.toInt()} meters)" // Append the distance
+
                         val item = NavigationStep(
                             distance = step.distance,
                             duration = step.duration,
-                                instruction = dum
+                                instruction = instruction
                         )
                         instructions.add(item)
                     }
