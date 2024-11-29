@@ -49,7 +49,7 @@ class AddVehicleActivity : BaseActivity() {
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
-                    onBackClick = { finish() },
+                    onBackClick = { navigateToVehicleInfo() },
                     register = { registerVehicle() }
                 )
             }
@@ -60,7 +60,7 @@ class AddVehicleActivity : BaseActivity() {
                     navigateToVehicleInfo()
                 }
                 else {
-                    Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, result.data, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -103,5 +103,6 @@ class AddVehicleActivity : BaseActivity() {
         val intent = Intent(this, VehicleInfoActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
+        finish()
     }
 }

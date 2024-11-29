@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.material3.v140alpha02)
     implementation(libs.generativeai)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,8 +71,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
 
     //Backend API packets
     implementation(libs.ui)

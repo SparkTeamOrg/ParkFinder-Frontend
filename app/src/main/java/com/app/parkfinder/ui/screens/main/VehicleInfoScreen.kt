@@ -40,14 +40,23 @@ import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 
 @Composable
 fun VehicleInfoScreen(
     vehicles: List<VehicleDto>,
     onBackClick: () -> Unit,
-    onPlusClick: () -> Unit
+    onPlusClick: () -> Unit,
+    onCanClick: (Int) -> Unit
 ) {
+    var currentVehicle by remember { mutableStateOf(VehicleDto(-1, "", "", -1, "", -1, "")) }
     val pagerState = rememberPagerState(pageCount = { vehicles.size })
 
     Column(
@@ -139,10 +148,12 @@ fun VehicleInfoScreen(
             modifier = Modifier.fillMaxWidth()
         ) { page ->
             val vehicle = vehicles[page]
+            currentVehicle = vehicle
+
             Column(
                 modifier = Modifier
+                    .padding(10.dp)
                     .fillMaxWidth()
-                    .padding(16.dp),
             ) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -180,18 +191,9 @@ fun VehicleInfoScreen(
                     tint = White
                 )
             }
-            Spacer(modifier = Modifier.width(20.dp))
-            IconButton(
-                onClick = { /* To Do */ },
-                modifier = Modifier
-                    .size(55.dp)
-                    .background(Color.Red, shape = CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Add Vehicle",
-                    tint = White
-                )
+            if(vehicles.size > 1) {
+                Spacer(modifier = Modifier.width(20.dp))
+                DeleteButton(currentVehicle.id, onCanClick)
             }
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -220,4 +222,69 @@ fun VehicleLabel(label: String, value: String) {
         color = Color.Gray,
     )
     Spacer(modifier = Modifier.height(22.dp))
+}
+
+@Composable
+fun DeleteButton(vehicleId: Int, onCanClick: (Int) -> Unit) {
+    val showDialog = remember { mutableStateOf(false) }
+
+    val isVehicleDeleted = remember { mutableStateOf(false) }
+    IconButton(
+        onClick = { showDialog.value = true },
+        modifier = Modifier
+            .size(55.dp)
+            .background(Color.Red, shape = CircleShape)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = "Delete Vehicle",
+            tint = White
+        )
+    }
+
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false }, // Dismiss on outside click
+            title = {
+                Text(
+                    text = "Confirm Deletion",
+                    color = White
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to delete this vehicle?",
+                    color = White,
+                    fontSize = 16.sp
+                )
+           },
+            containerColor = Color(0xFF151A24),
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onCanClick(vehicleId)
+                        isVehicleDeleted.value = true
+                        showDialog.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Yes, Delete")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF)
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
