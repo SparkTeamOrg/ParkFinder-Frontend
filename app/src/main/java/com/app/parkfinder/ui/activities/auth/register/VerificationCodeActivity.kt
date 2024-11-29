@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.auth.register
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -9,12 +9,14 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.auth.ResetPasswordVerificationCodeScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.screens.auth.register.VerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-class ResetPasswordVerificationCodeActivity : BaseActivity() {
+class VerificationCodeActivity : BaseActivity() {
 
     private lateinit var email: String
+    private lateinit var password: String
 
     private val authViewModel: AuthViewModel by viewModels()
     private val otpValues = mutableStateOf(List(4) { "" })
@@ -23,10 +25,11 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         email = intent.getStringExtra("email") ?: ""
+        password = intent.getStringExtra("password") ?: ""
 
         setContent {
             ParkFinderTheme {
-                ResetPasswordVerificationCodeScreen(
+                VerificationCodeScreen(
                     email = email,
                     otpValues = otpValues.value,
                     onOtpValueChange = { newOtpValues ->
@@ -39,14 +42,6 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
             }
         }
 
-        authViewModel.sendingVerificationCodeForPasswordResetResult.observe(this) { result ->
-            if (result.isSuccessful) {
-                Toast.makeText(this, "Verification code sent", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
-            }
-        }
-
         authViewModel.verifyingCodeResult.observe(this) { result ->
             if (result.isSuccessful) {
                 navigateToNextScreen()
@@ -54,13 +49,23 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
                 Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
             }
         }
+
+        authViewModel.sendingVerificationCodeForRegistrationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Verification code sent", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun navigateToNextScreen() {
-        val intent = Intent(this, EnterNewPasswordActivity::class.java).apply {
+        val intent = Intent(this, RegisterUserDataActivity::class.java).apply {
             putExtra("email", email)
+            putExtra("password", password)
             putExtra("code", otpValues.value.joinToString(""))
         }
+
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
@@ -71,6 +76,6 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
     }
 
     private fun sendVerificationCode(email: String) {
-        authViewModel.sendVerificationCodeForPasswordReset(email)
+        authViewModel.sendVerificationCodeForRegistration(email)
     }
 }
