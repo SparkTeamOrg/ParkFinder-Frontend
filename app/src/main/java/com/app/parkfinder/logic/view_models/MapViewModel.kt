@@ -202,6 +202,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                         instructions.add(item)
                     }
                     _getAllInstructions.postValue(instructions)
+                    mapView.overlays.remove(selectedRoute)
 //                    mapView.overlays.removeIf { overlay -> overlay is Polyline }
                     mapView.overlays.add(polyline)
                     polyline.setOnClickListener{_,_,_->
