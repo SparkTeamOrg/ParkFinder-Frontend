@@ -37,11 +37,16 @@ import com.app.parkfinder.logic.models.dtos.VehicleDto
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.TabRowDefaults.Divider
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.ui.draw.clip
 
 @Composable
 fun VehicleInfoScreen(
     vehicles: List<VehicleDto>,
+    onBackClick: () -> Unit,
+    onPlusClick: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { vehicles.size })
 
@@ -60,7 +65,7 @@ fun VehicleInfoScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(
-                onClick = {/* TO DO */ },
+                onClick = { onBackClick() },
                 modifier = Modifier
                     .size(60.dp)
                     .background(Color(0xFF293038), shape = CircleShape)
@@ -83,14 +88,33 @@ fun VehicleInfoScreen(
                 modifier = Modifier.size(60.dp)
             )
         }
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(
-            text = "My Vehicles",
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            color = White,
-            textAlign = TextAlign.Center
-        )
+        Spacer(modifier = Modifier.height(40.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(modifier = Modifier.weight(0.25f))
+            Text(
+                text = "My Vehicles",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = { onPlusClick() },
+                modifier = Modifier
+                    .size(52.dp)
+                    .background(Color(0xFF0FCFFF), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Vehicle",
+                    tint = White
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(40.dp))
         Row(
             Modifier
@@ -115,30 +139,60 @@ fun VehicleInfoScreen(
             modifier = Modifier.fillMaxWidth()
         ) { page ->
             val vehicle = vehicles[page]
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.car),
-                            contentDescription = "Background Image",
-                            modifier = Modifier
-                                .width(160.dp)
-                                .height(160.dp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    VehicleLabel("Vehicle Company", vehicle.vehicleModelVehicleBrandName)
-                    VehicleLabel("VehicleModel", vehicle.vehicleModelName)
-                    VehicleLabel("Registration number", vehicle.licencePlate)
-                    VehicleLabel("Color", vehicle.color)
+                    Image(
+                        painter = painterResource(id = R.drawable.car),
+                        contentDescription = "Background Image",
+                        modifier = Modifier
+                            .width(160.dp)
+                            .height(160.dp),
+                    )
                 }
+                Spacer(modifier = Modifier.height(15.dp))
+                VehicleLabel("Vehicle Company", vehicle.vehicleModelVehicleBrandName)
+                VehicleLabel("VehicleModel", vehicle.vehicleModelName)
+                VehicleLabel("Registration number", vehicle.licencePlate)
+                VehicleLabel("Color", vehicle.color)
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = { /* To Do */ },
+                modifier = Modifier
+                    .size(55.dp)
+                    .background(Color(0xFF0FCFFF), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Update Vehicle",
+                    tint = White
+                )
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            IconButton(
+                onClick = { /* To Do */ },
+                modifier = Modifier
+                    .size(55.dp)
+                    .background(Color.Red, shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Add Vehicle",
+                    tint = White
+                )
+            }
         }
         Spacer(modifier = Modifier.height(20.dp))
     }

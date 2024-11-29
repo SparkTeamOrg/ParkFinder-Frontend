@@ -2,7 +2,6 @@ package com.app.parkfinder.ui.activities
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -10,25 +9,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.models.dtos.UserRegisterDto
-import com.app.parkfinder.logic.view_models.AuthViewModel
+import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.models.dtos.CreateVehicleDto
+import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.screens.auth.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
-import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validateLicencePlate
+import com.auth0.android.jwt.JWT
 
+class AddVehicleActivity : BaseActivity() {
 
-class RegisterVehicleInfoActivity: BaseActivity() {
-
-    private val authViewModel: AuthViewModel by viewModels()
-
-    private lateinit var email: String
-    private lateinit var password: String
-    private lateinit var verificationCode: String
-    private lateinit var firstName: String
-    private lateinit var lastName: String
-    private lateinit var phoneNumber: String
-    private lateinit var profileImage: Uri
+    private val vehicleViewModel: VehicleViewModel by viewModels()
 
     private var selectedBrand: Int = 0
     private var selectedModel: Int = 0
@@ -47,16 +38,8 @@ class RegisterVehicleInfoActivity: BaseActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        email = intent.getStringExtra("email") ?: ""
-        password = intent.getStringExtra("password") ?: ""
-        verificationCode = intent.getStringExtra("code") ?: ""
-        firstName = intent.getStringExtra("firstName") ?: ""
-        lastName = intent.getStringExtra("lastName") ?: ""
-        phoneNumber = intent.getStringExtra("phoneNumber") ?: ""
-        profileImage = Uri.parse(intent.getStringExtra("profileImage") ?: "")
-
         super.onCreate(savedInstanceState)
+
         setContent {
             ParkFinderTheme {
                 RegisterVehicleInfoScreen (
@@ -67,24 +50,23 @@ class RegisterVehicleInfoActivity: BaseActivity() {
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
                     onBackClick = { finish() },
-                    register = { registerUser() }
+                    register = { registerVehicle() }
                 )
             }
-        }
 
-        authViewModel.registrationResult.observe(this) { result ->
-            if (result.isSuccessful) {
-                Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
-                navigateToLogin()
-            }
-            else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+            vehicleViewModel.registerVehicleResult.observe(this) { result ->
+                if (result.isSuccessful) {
+                    Toast.makeText(this, "Vehicle added successfully", Toast.LENGTH_LONG).show()
+                    navigateToVehicleInfo()
+                }
+                else {
+                    Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
 
-    private fun registerUser() : List<Boolean> {
-
+    private fun registerVehicle(): List<Boolean> {
         val brandError = selectedBrand == 0
         val modelError = selectedModel == 0
         val colorError = selectedColor == 0
@@ -94,27 +76,31 @@ class RegisterVehicleInfoActivity: BaseActivity() {
             return listOf(brandError, modelError, colorError, regNumError)
         }
 
-        val userModel = UserRegisterDto(
-            email = email,
-            password = password,
-            verificationCode = verificationCode,
-            firstName = firstName,
-            lastName = lastName,
-            mobilePhone = phoneNumber,
-            profileImage = ImageUtils.createMultipartFromUri(this.contentResolver,profileImage),
-            modelId = selectedModel,
+        val vehicle = CreateVehicleDto(
+            licencePlate = licencePlate.value,
             color = colorNames[selectedColor] ?: "",
-            licencePlate = licencePlate.value
+            userId = getUserId(),
+            modelId = selectedModel
         )
 
-        Log.d("Debug", userModel.toString())
-
-        authViewModel.register(userModel)
+        vehicleViewModel.registerVehicle(vehicle)
         return List(4){false}
     }
 
-    private fun navigateToLogin() {
-        val intent = Intent(this, WelcomeActivity::class.java)
+    private fun getUserId(): Int {
+        val token = AppPreferences.accessToken
+        try {
+            val jwt = JWT(token!!)
+            return jwt.getClaim("UserId").asInt()!!
+        } catch (e: Exception) {
+            e.message?.let { Log.d("Debug", it) }
+            e.printStackTrace()
+            return -1
+        }
+    }
+
+    private fun navigateToVehicleInfo() {
+        val intent = Intent(this, VehicleInfoActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

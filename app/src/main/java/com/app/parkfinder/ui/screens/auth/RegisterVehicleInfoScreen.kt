@@ -62,7 +62,7 @@ import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
 import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 
 @Composable
-fun RegisterUserDataScreen(
+fun RegisterVehicleInfoScreen(
     onSelectedBrandChange: (Int) -> Unit,
     onSelectedModelChange: (Int) -> Unit,
     onSelectedColorChange: (Int) -> Unit,
@@ -333,7 +333,7 @@ fun OutlinedDropdownMenu(
 @Composable
 fun RegisterVehicleInfoScreenPreview() {
     ParkFinderTheme {
-        RegisterUserDataScreen(
+        RegisterVehicleInfoScreen(
             onSelectedBrandChange = {},
             onSelectedModelChange = {},
             onSelectedColorChange = {},

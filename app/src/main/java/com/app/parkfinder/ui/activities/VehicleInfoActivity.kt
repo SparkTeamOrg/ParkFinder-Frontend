@@ -1,10 +1,13 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.screens.main.VehicleInfoScreen
@@ -22,6 +25,8 @@ class VehicleInfoActivity : BaseActivity() {
             ParkFinderTheme {
                 VehicleInfoScreen(
                     vehicles = emptyList(),
+                    onBackClick = { finish () },
+                    onPlusClick = { navigateToAddVehicle() }
                 )
             }
         }
@@ -40,7 +45,9 @@ class VehicleInfoActivity : BaseActivity() {
                 setContent {
                     ParkFinderTheme {
                         VehicleInfoScreen(
-                            vehicles = userVehicles
+                            vehicles = userVehicles,
+                            onBackClick = { finish() },
+                            onPlusClick = { navigateToAddVehicle() }
                         )
                     }
                 }
@@ -48,6 +55,11 @@ class VehicleInfoActivity : BaseActivity() {
                 Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
             }
         }
+    }
+    private fun navigateToAddVehicle() {
+        val intent = Intent(this, AddVehicleActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 
     private fun getUserId(): Int {

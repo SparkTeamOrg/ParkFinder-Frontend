@@ -93,6 +93,11 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.AddVehicleActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/CustomCropTheme" />
     </application>
