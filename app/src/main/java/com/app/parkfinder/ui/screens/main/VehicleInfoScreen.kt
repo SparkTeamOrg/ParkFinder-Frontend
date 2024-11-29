@@ -41,7 +41,7 @@ import androidx.compose.ui.draw.clip
 
 @Composable
 fun VehicleInfoScreen(
-    vehicles: List<VehicleDto>
+    vehicles: List<VehicleDto>,
 ) {
     val pagerState = rememberPagerState(pageCount = { vehicles.size })
 
