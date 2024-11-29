@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,11 +13,13 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
@@ -59,7 +62,8 @@ class NavigationActivity : BaseActivity() {
                     user = user,
                     currentImageUrl = currentImageUrl,
                     openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
-                    removeImage = { removeImage() }
+                    removeImage = { removeImage() },
+                    searchFreeParkingsAroundLocation = {a->navigateToParkingList(a)}
                 )
             }
         }
@@ -151,5 +155,12 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+
+    private fun navigateToParkingList(location:String):Unit {
+        val intent = Intent(this, FreeParkingSearchListActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 }

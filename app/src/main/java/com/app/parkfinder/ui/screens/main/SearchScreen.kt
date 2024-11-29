@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
@@ -45,7 +46,10 @@ import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun SearchScreen() {
+fun SearchScreen(
+    searchParkingsAroundLocation: (location:String) -> Unit = {}
+) {
+    var searchedLocation by remember{ mutableStateOf("")}
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,8 +74,8 @@ fun SearchScreen() {
 
         // Search location input
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = searchedLocation,
+            onValueChange = {searchedLocation = it},
             placeholder = { Text("Search locations...", color = Color.White) },
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White) },
             modifier = Modifier
@@ -105,7 +109,7 @@ fun SearchScreen() {
 
         // Search Button
         Button(
-            onClick = { /* Handle search action */ },//TODO - Add navigation to the home with shown parking lots
+            onClick = {searchParkingsAroundLocation(searchedLocation) },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)

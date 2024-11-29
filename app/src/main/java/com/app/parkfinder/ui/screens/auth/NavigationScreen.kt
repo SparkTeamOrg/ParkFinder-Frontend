@@ -26,7 +26,8 @@ fun NavigationScreen (
     user: UserDto,
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
-    removeImage: () -> Unit
+    removeImage: () -> Unit,
+    searchFreeParkingsAroundLocation: (String)->Unit = {}
 ) {
 
     val navController = rememberNavController()
@@ -42,7 +43,7 @@ fun NavigationScreen (
             //UI for Home
             composable(BottomNavItem.Home.route) { HomeScreen(user) }
             //UI for Search
-            composable(BottomNavItem.Search.route) { SearchScreen() }
+            composable(BottomNavItem.Search.route) { SearchScreen(searchFreeParkingsAroundLocation) }
             //UI for Profile
             composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage) }
             //UI for Reserved
