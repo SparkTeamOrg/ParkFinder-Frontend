@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens.auth
+package com.app.parkfinder.ui.screens.auth.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,9 +28,10 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import com.app.parkfinder.ui.screens.auth.register.VerificationCodeScreen
 
 @Composable
-fun VerificationCodeScreen(
+fun ResetPasswordVerificationCodeScreen(
     email: String = "",
     otpValues:  List<String> = List(4) { "" },
     onOtpValueChange: (List<String>) -> Unit,
@@ -41,7 +42,7 @@ fun VerificationCodeScreen(
 
     val focusRequesters = List(otpValues.size) { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,6 +74,9 @@ fun VerificationCodeScreen(
                 contentDescription = "App Logo",
                 modifier = Modifier.fillMaxWidth(0.5f)
             )
+            // Dummy icon in order to align the logo center
+            // Has to be transparent to not be visible
+            // Has to have the same size as the back button
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Dummy",
@@ -80,7 +84,7 @@ fun VerificationCodeScreen(
                 modifier = Modifier.size(60.dp)
             )
         }
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         Text(
             text = "Verification Code",
@@ -128,7 +132,7 @@ fun VerificationCodeScreen(
                             }
                         }
                     },
-                    modifier = Modifier.focusRequester(focusRequesters[index])
+                    modifier = Modifier.Companion.focusRequester(focusRequesters[index])
                 )
             }
         }
@@ -166,7 +170,7 @@ fun VerificationCodeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun VerificationCodeScreenPreview() {
+fun ResetPasswordVerificationCodeScreen() {
     ParkFinderTheme {
         VerificationCodeScreen(
             email = "email@example.com",

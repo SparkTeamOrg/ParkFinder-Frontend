@@ -40,8 +40,8 @@ import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.screens.common.BottomNavigationBar
-import com.app.parkfinder.ui.screens.common.ParkFinderLogo
+import com.app.parkfinder.ui.composables.BottomNavigationBar
+import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable

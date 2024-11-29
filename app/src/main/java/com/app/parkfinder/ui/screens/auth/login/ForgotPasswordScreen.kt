@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens.auth
+package com.app.parkfinder.ui.screens.auth.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

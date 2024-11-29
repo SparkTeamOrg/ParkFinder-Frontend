@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.auth.register
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -9,7 +9,9 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.auth.RegisterScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.activities.auth.login.LoginActivity
+import com.app.parkfinder.ui.screens.auth.register.RegisterScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword

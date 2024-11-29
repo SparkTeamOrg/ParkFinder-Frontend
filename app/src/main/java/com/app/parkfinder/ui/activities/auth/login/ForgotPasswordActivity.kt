@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.auth.login
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -9,7 +9,8 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.auth.ForgotPasswordScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.screens.auth.login.ForgotPasswordScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 class ForgotPasswordActivity : BaseActivity() {

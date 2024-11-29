@@ -1,7 +1,6 @@
-package com.app.parkfinder.ui.screens.common
+package com.app.parkfinder.ui.composables
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

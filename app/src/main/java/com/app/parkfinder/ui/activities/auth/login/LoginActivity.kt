@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.auth.login
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -12,7 +12,11 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.screens.auth.LoginScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.activities.NavigationActivity
+import com.app.parkfinder.ui.activities.auth.register.RegisterActivity
+import com.app.parkfinder.ui.activities.WelcomeActivity
+import com.app.parkfinder.ui.screens.auth.login.LoginScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword

@@ -23,7 +23,6 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,8 +40,8 @@ import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.screens.common.BottomNavigationBar
-import com.app.parkfinder.ui.screens.common.ParkFinderLogo
+import com.app.parkfinder.ui.composables.BottomNavigationBar
+import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 
