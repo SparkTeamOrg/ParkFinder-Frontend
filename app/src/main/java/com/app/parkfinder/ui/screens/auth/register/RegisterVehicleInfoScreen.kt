@@ -62,7 +62,14 @@ import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
 import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 
 @Composable
-fun RegisterUserDataScreen(
+fun RegisterVehicleInfoScreen(
+    //used for update
+    selectedBrand: Int? = null,
+    selectedBrandName: String? = null,
+    selectedModelName: String? = null,
+    selectedColor: Int? = null,
+    checkIfModified: (()->Boolean)? = null,
+    //used for registration and add
     onSelectedBrandChange: (Int) -> Unit,
     onSelectedModelChange: (Int) -> Unit,
     onSelectedColorChange: (Int) -> Unit,
@@ -74,14 +81,21 @@ fun RegisterUserDataScreen(
     viewVehicleModel: VehicleModelViewModel = viewModel(),
     register: () -> List<Boolean>
 ) {
+
     LaunchedEffect(Unit) {
         viewVehicleBrandModel.getAllVehicleBrands()
+        if (selectedBrand != null) {
+            viewVehicleModel.getAllVehicleModelsByBrand(selectedBrand)
+        }
     }
 
     var brandError by remember { mutableStateOf(false) }
     var modelError by remember { mutableStateOf(false) }
     var colorError by remember { mutableStateOf(false) }
     var regNumError by remember { mutableStateOf(false) }
+
+    var buttonEnabled by remember { mutableStateOf(true) }
+    buttonEnabled = (checkIfModified != null && checkIfModified()) || checkIfModified == null
 
     Column(
         modifier = Modifier
@@ -123,7 +137,7 @@ fun RegisterUserDataScreen(
         }
         Spacer(modifier = Modifier.height(70.dp))
         Text(
-            text = "Please set up your vehicle",
+            text = if(selectedBrand!=null) "Update Vehicle Information" else "Please set up your vehicle",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = White,
@@ -165,31 +179,34 @@ fun RegisterUserDataScreen(
                     color = White,
                     modifier = Modifier.align(Alignment.Start)
                 )
+
                 OutlinedDropdownMenu(
                     label = "Brand",
-                    selectedText = "Select a brand",
+                    selectedText = selectedBrandName ?: "Select a brand",
                     options = viewVehicleBrandModel.brands.value,
                     icon = Icons.Default.DirectionsCar,
                     isError =  brandError,
-                    onOptionSelected = {
-                        option ->
+                    onOptionSelected = { option ->
                         run {
                             onSelectedBrandChange(option)
                             viewVehicleModel.getAllVehicleModelsByBrand(option)
                         }
+                        onSelectedModelChange(0)
                     }
                 )
+
                 OutlinedDropdownMenu(
                     label = "Model",
-                    selectedText = "Select a model",
+                    selectedText = selectedModelName ?: "Select a model",
                     options = viewVehicleModel.vehicle_models.value,
                     icon = Icons.Default.DirectionsCar,
                     isError = modelError,
                     onOptionSelected = { option -> onSelectedModelChange(option) }
                 )
+
                 OutlinedDropdownMenu(
                     label = "Color",
-                    selectedText = "Select a color",
+                    selectedText = colorNames[selectedColor] ?: "Select a color",
                     options = colorNames,
                     icon = Icons.Default.ColorLens,
                     isError = colorError,
@@ -243,14 +260,18 @@ fun RegisterUserDataScreen(
                     onLicencePlateChange("")
                 }
             },
+            enabled = buttonEnabled,
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF0FCFFF),
-                contentColor = White
+                disabledContainerColor = Color(0xFF0FCFFF).copy(alpha = 0.3f)
             )
         ) {
-            Text("Finish")
+            Text(
+                text = "Finish",
+                color = if (buttonEnabled) White else White.copy(alpha = 0.3f)
+            )
         }
     }
 }
@@ -333,7 +354,7 @@ fun OutlinedDropdownMenu(
 @Composable
 fun RegisterVehicleInfoScreenPreview() {
     ParkFinderTheme {
-        RegisterUserDataScreen(
+        RegisterVehicleInfoScreen(
             onSelectedBrandChange = {},
             onSelectedModelChange = {},
             onSelectedColorChange = {},

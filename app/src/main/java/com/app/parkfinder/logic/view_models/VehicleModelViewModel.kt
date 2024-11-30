@@ -16,10 +16,11 @@ class VehicleModelViewModel : ViewModel() {
             val response = vehicleModelService.getAllVehicleModelByBrandId(brandId)
             if(response.isSuccessful){
                 val body = response.body()
-                for(brand in body?.data!!)
-                {
-                    vehicle_models.value += Pair<Int,String>(brand.id,brand.name)
-                }
+                val newModels = body?.data?.associate { brand ->
+                    brand.id to brand.name
+                } ?: mapOf()
+
+                vehicle_models.value = newModels
             }
             else
                 println("request je neuspesan")
