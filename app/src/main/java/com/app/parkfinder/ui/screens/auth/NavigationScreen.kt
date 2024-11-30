@@ -12,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.screens.common.BottomNavigationBar
-import com.app.parkfinder.ui.screens.common.ParkFinderLogo
+import com.app.parkfinder.ui.composables.BottomNavigationBar
+import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.screens.main.HomeScreen
 import com.app.parkfinder.ui.screens.main.ProfileScreen
 import com.app.parkfinder.ui.screens.main.ReservedScreen
@@ -27,7 +27,8 @@ fun NavigationScreen (
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
-    navigateToVehicleInfo: () -> Unit
+    navigateToVehicleInfo: () -> Unit,
+    searchFreeParkingsAroundLocation: (String)->Unit = {}
 ) {
 
     val navController = rememberNavController()
@@ -43,7 +44,7 @@ fun NavigationScreen (
             //UI for Home
             composable(BottomNavItem.Home.route) { HomeScreen(user) }
             //UI for Search
-            composable(BottomNavItem.Search.route) { SearchScreen() }
+            composable(BottomNavItem.Search.route) { SearchScreen(searchFreeParkingsAroundLocation) }
             //UI for Profile
             composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo) }
             //UI for Reserved

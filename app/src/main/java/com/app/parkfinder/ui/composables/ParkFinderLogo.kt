@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens.common
+package com.app.parkfinder.ui.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

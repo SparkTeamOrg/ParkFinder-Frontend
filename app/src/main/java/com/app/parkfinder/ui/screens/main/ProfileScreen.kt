@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
@@ -49,8 +51,8 @@ import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.screens.common.BottomNavigationBar
-import com.app.parkfinder.ui.screens.common.ParkFinderLogo
+import com.app.parkfinder.ui.composables.BottomNavigationBar
+import com.app.parkfinder.ui.composables.ParkFinderLogo
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import java.util.logging.Logger
 
@@ -67,7 +69,8 @@ fun ProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF1B1B1B))
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Profile Picture
@@ -149,15 +152,26 @@ fun ProfileScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+        Column(
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        )
+        {
 
-        // Menu Items
-        MenuItem(icon = Icons.Default.Wallet, title = "Balance")
-        MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
-        MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
-        MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
-        MenuItem(icon = Icons.Outlined.Notifications, title = "Notifications", notificationCount = 5)
-        MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center")
-
+            // Menu Items
+            MenuItem(icon = Icons.Default.Wallet, title = "Balance")
+            MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
+            MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
+            MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
+            MenuItem(
+                icon = Icons.Outlined.Notifications,
+                title = "Notifications",
+                notificationCount = 5
+            )
+            MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center")
+        }
         Spacer(modifier = Modifier.weight(1f))
 
         // Log Out

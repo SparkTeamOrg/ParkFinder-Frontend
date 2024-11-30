@@ -7,6 +7,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.R
+import com.app.parkfinder.ui.activities.auth.login.LoginActivity
+import com.app.parkfinder.ui.activities.auth.register.RegisterActivity
 import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 
 class WelcomeActivity: BaseActivity() {

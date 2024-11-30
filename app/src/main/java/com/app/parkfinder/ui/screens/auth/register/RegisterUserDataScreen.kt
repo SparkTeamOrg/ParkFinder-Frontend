@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.screens.auth
+package com.app.parkfinder.ui.screens.auth.register
 
 import android.net.Uri
 import androidx.compose.foundation.Image
