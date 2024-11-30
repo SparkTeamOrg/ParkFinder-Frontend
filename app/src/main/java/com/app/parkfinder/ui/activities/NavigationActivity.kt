@@ -20,6 +20,7 @@ import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
+import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
@@ -63,7 +64,8 @@ class NavigationActivity : BaseActivity() {
                     currentImageUrl = currentImageUrl,
                     openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
                     removeImage = { removeImage() },
-                    searchFreeParkingsAroundLocation = {a->navigateToParkingList(a)}
+                    searchFreeParkingsAroundLocation = { a->navigateToParkingList(a) },
+                    navigateToVehicleInfo = { navigateToVehicleInfo() }
                 )
             }
         }
@@ -157,8 +159,14 @@ class NavigationActivity : BaseActivity() {
         }
     }
 
+    private fun navigateToVehicleInfo() {
+        val intent = Intent(this, VehicleInfoActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
 
-    private fun navigateToParkingList(location:String):Unit {
+
+    private fun navigateToParkingList(location:String) {
         val intent = Intent(this, FreeParkingSearchListActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())

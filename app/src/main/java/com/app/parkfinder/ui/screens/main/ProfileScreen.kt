@@ -62,7 +62,8 @@ fun ProfileScreen(
     user: UserDto,
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
-    removeImage: () -> Unit
+    removeImage: () -> Unit,
+    navigateToVehicleInfo: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -161,7 +162,7 @@ fun ProfileScreen(
 
             // Menu Items
             MenuItem(icon = Icons.Default.Wallet, title = "Balance")
-            MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info")
+            MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
             MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
             MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
             MenuItem(
@@ -198,11 +199,15 @@ fun ProfileScreen(
 }
 
 @Composable
-fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null) {
+fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, handleClick: (()->Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle click */ }
+            .clickable {
+                if (handleClick != null) {
+                    handleClick()
+                }
+            }
             .padding(vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -279,9 +284,17 @@ fun ProfileScreenPreview() {
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto(), null, {}, {}) }
+                composable(BottomNavItem.Profile.route) {
+                    ProfileScreen(
+                        {},
+                        UserDto(),
+                        null,
+                        {},
+                        {},
+                        {})
+                }
                 //UI for Reserved
-                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
+                composable(BottomNavItem.Reserved.route) { ReservedScreen() }
             }
         }
     }
