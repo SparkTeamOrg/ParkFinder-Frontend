@@ -1,7 +1,9 @@
 package com.app.parkfinder.logic.models.dtos
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class VehicleDto (
     var id: Int,
     var licencePlate: String,
@@ -10,4 +12,4 @@ data class VehicleDto (
     var vehicleModelName: String,
     var vehicleModelVehicleBrandId: Int,
     var vehicleModelVehicleBrandName: String
-) : Serializable
+) : Parcelable

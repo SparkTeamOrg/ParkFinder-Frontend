@@ -93,17 +93,17 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.VehicleInfoActivity"
+            android:name=".ui.activities.vehicle.VehicleInfoActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.AddVehicleActivity"
+            android:name=".ui.activities.vehicle.AddVehicleActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.UpdateVehicleActivity"
+            android:name=".ui.activities.vehicle.UpdateVehicleActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>

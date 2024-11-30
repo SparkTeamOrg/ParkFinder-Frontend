@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.vehicle
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -16,7 +16,8 @@ import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UpdateVehicleDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
-import com.app.parkfinder.ui.screens.auth.RegisterVehicleInfoScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
 import com.auth0.android.jwt.JWT
@@ -29,7 +30,7 @@ class UpdateVehicleActivity : BaseActivity() {
     private var selectedBrand by mutableIntStateOf(0)
     private var selectedBrandName = mutableStateOf<String?>(null)
     private var selectedModel by mutableIntStateOf(0)
-    private var selectedModelName = mutableStateOf<String>("")
+    private var selectedModelName = mutableStateOf<String?>(null)
     private var selectedColor by mutableIntStateOf(0)
     private var licencePlate = mutableStateOf("")
 
@@ -48,14 +49,14 @@ class UpdateVehicleActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        vehicleDto = intent.getSerializableExtra("vehicleDto") as VehicleDto
-        vehicleId = vehicleDto!!.id
-        selectedBrand = vehicleDto!!.vehicleModelVehicleBrandId
-        selectedBrandName.value = vehicleDto!!.vehicleModelVehicleBrandName
-        selectedModel = vehicleDto!!.vehicleModelId
-        selectedModelName.value = vehicleDto!!.vehicleModelName
-        licencePlate.value = vehicleDto!!.licencePlate
-        selectedColor = getColorId(vehicleDto!!.color)
+        val vehicleDto: VehicleDto? = intent.getParcelableExtra("vehicleDto", VehicleDto::class.java)
+        vehicleId = vehicleDto?.id ?: -1
+        selectedBrand = vehicleDto?.vehicleModelVehicleBrandId ?: -1
+        selectedBrandName.value = vehicleDto?.vehicleModelVehicleBrandName
+        selectedModel = vehicleDto?.vehicleModelId ?: -1
+        selectedModelName.value = vehicleDto?.vehicleModelName
+        licencePlate.value = vehicleDto?.licencePlate ?: ""
+        selectedColor = getColorId(vehicleDto?.color ?: "")
 
         setContent {
             ParkFinderTheme {

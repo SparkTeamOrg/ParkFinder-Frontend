@@ -1,4 +1,4 @@
-package com.app.parkfinder.ui.activities
+package com.app.parkfinder.ui.activities.vehicle
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -12,7 +12,8 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.CreateVehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
-import com.app.parkfinder.ui.screens.auth.RegisterVehicleInfoScreen
+import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
 import com.auth0.android.jwt.JWT
