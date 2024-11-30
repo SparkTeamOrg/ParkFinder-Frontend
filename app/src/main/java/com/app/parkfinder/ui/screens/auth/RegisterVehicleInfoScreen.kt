@@ -63,8 +63,13 @@ import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 
 @Composable
 fun RegisterVehicleInfoScreen(
+    selectedBrand: Int? = null,
+    selectedBrandName: String? = null,
+    selectedModelName: String? = null,
+    selectedColor: Int? = null,
     onSelectedBrandChange: (Int) -> Unit,
     onSelectedModelChange: (Int) -> Unit,
+    onSelectedModelNameChange:  ((String) -> Unit)? = null,
     onSelectedColorChange: (Int) -> Unit,
     licencePlate: String,
     onLicencePlateChange: (String) -> Unit,
@@ -74,8 +79,12 @@ fun RegisterVehicleInfoScreen(
     viewVehicleModel: VehicleModelViewModel = viewModel(),
     register: () -> List<Boolean>
 ) {
+
     LaunchedEffect(Unit) {
         viewVehicleBrandModel.getAllVehicleBrands()
+        if (selectedBrand != null) {
+            viewVehicleModel.getAllVehicleModelsByBrand(selectedBrand)
+        }
     }
 
     var brandError by remember { mutableStateOf(false) }
@@ -165,31 +174,37 @@ fun RegisterVehicleInfoScreen(
                     color = White,
                     modifier = Modifier.align(Alignment.Start)
                 )
+
                 OutlinedDropdownMenu(
                     label = "Brand",
-                    selectedText = "Select a brand",
+                    selectedText = selectedBrandName ?: "Select a brand",
                     options = viewVehicleBrandModel.brands.value,
                     icon = Icons.Default.DirectionsCar,
                     isError =  brandError,
-                    onOptionSelected = {
-                        option ->
+                    onOptionSelected = { option ->
                         run {
                             onSelectedBrandChange(option)
                             viewVehicleModel.getAllVehicleModelsByBrand(option)
+                            if (onSelectedModelNameChange != null) {
+                                onSelectedModelChange(0)
+                                onSelectedModelNameChange("Select a model")
+                            }
                         }
                     }
                 )
+
                 OutlinedDropdownMenu(
                     label = "Model",
-                    selectedText = "Select a model",
+                    selectedText = selectedModelName ?: "Select a model",
                     options = viewVehicleModel.vehicle_models.value,
                     icon = Icons.Default.DirectionsCar,
                     isError = modelError,
                     onOptionSelected = { option -> onSelectedModelChange(option) }
                 )
+
                 OutlinedDropdownMenu(
                     label = "Color",
-                    selectedText = "Select a color",
+                    selectedText = colorNames[selectedColor] ?: "Select a color",
                     options = colorNames,
                     icon = Icons.Default.ColorLens,
                     isError = colorError,

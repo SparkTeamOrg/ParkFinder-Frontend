@@ -11,6 +11,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.screens.main.VehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -33,7 +34,8 @@ class VehicleInfoActivity : BaseActivity() {
                     vehicles = userVehicles.value.data,
                     onBackClick = { finish () },
                     onPlusClick = { navigateToAddVehicle() },
-                    onCanClick = { vehicleId -> deleteVehicle(vehicleId)}
+                    onCanClick = { vehicleId -> deleteVehicle(vehicleId)},
+                    onPenClick = { dto -> navigateToUpdateVehicle(dto) }
                 )
             }
 
@@ -59,6 +61,15 @@ class VehicleInfoActivity : BaseActivity() {
 
     private fun navigateToAddVehicle() {
         val intent = Intent(this, AddVehicleActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+        finish()
+    }
+
+    private fun navigateToUpdateVehicle(dto: VehicleDto) {
+        val intent = Intent(this, UpdateVehicleActivity::class.java).apply {
+            putExtra("vehicleDto", dto)
+        }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
         finish()

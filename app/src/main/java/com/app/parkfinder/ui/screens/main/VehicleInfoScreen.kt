@@ -54,7 +54,8 @@ fun VehicleInfoScreen(
     vehicles: List<VehicleDto>,
     onBackClick: () -> Unit,
     onPlusClick: () -> Unit,
-    onCanClick: (Int) -> Unit
+    onCanClick: (Int) -> Unit,
+    onPenClick: (VehicleDto) -> Unit
 ) {
     var currentVehicle by remember { mutableStateOf(VehicleDto(-1, "", "", -1, "", -1, "")) }
     val pagerState = rememberPagerState(pageCount = { vehicles.size })
@@ -180,7 +181,7 @@ fun VehicleInfoScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             IconButton(
-                onClick = { /* To Do */ },
+                onClick = { onPenClick(currentVehicle) },
                 modifier = Modifier
                     .size(55.dp)
                     .background(Color(0xFF0FCFFF), shape = CircleShape)
