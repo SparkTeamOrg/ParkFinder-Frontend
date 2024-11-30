@@ -24,12 +24,15 @@ import com.auth0.android.jwt.JWT
 class UpdateVehicleActivity : BaseActivity() {
     private val vehicleViewModel: VehicleViewModel by viewModels()
 
+    private var vehicleDto: VehicleDto? = null
     private var vehicleId by mutableIntStateOf(0)
     private var selectedBrand by mutableIntStateOf(0)
+    private var selectedBrandName = mutableStateOf<String?>(null)
     private var selectedModel by mutableIntStateOf(0)
+    private var selectedModelName = mutableStateOf<String>("")
     private var selectedColor by mutableIntStateOf(0)
     private var licencePlate = mutableStateOf("")
-    private var selectedModelName = mutableStateOf("")
+
 
     private val colorNames = mapOf(
         1 to "Red",
@@ -45,29 +48,30 @@ class UpdateVehicleActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val dto = intent.getSerializableExtra("vehicleDto") as VehicleDto
-        vehicleId = dto.id
-        selectedBrand = dto.vehicleModelVehicleBrandId
-        selectedModel = dto.vehicleModelId
-        selectedModelName.value = dto.vehicleModelName
-        licencePlate.value = dto.licencePlate
-        selectedColor = getColorId(dto.color)
+        vehicleDto = intent.getSerializableExtra("vehicleDto") as VehicleDto
+        vehicleId = vehicleDto!!.id
+        selectedBrand = vehicleDto!!.vehicleModelVehicleBrandId
+        selectedBrandName.value = vehicleDto!!.vehicleModelVehicleBrandName
+        selectedModel = vehicleDto!!.vehicleModelId
+        selectedModelName.value = vehicleDto!!.vehicleModelName
+        licencePlate.value = vehicleDto!!.licencePlate
+        selectedColor = getColorId(vehicleDto!!.color)
 
         setContent {
             ParkFinderTheme {
                 RegisterVehicleInfoScreen(
                     selectedBrand = selectedBrand,
-                    selectedBrandName = dto.vehicleModelVehicleBrandName,
+                    selectedBrandName = selectedBrandName.value,
                     selectedModelName = selectedModelName.value,
                     selectedColor = selectedColor,
                     onSelectedBrandChange = { selectedBrand = it },
                     onSelectedModelChange = { selectedModel = it },
                     onSelectedColorChange = { selectedColor = it },
-                    onSelectedModelNameChange = { selectedModelName.value = it },
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
                     onBackClick = { navigateToVehicleInfo() },
+                    checkIfModified = { checkIfModified() },
                     register = { updateVehicle() }
                 )
             }
@@ -102,11 +106,16 @@ class UpdateVehicleActivity : BaseActivity() {
                 userId = getUserId()
         )
 
-        println(updateDto)
-
         vehicleViewModel.updateVehicle(updateDto)
 
         return List(4){false}
+    }
+
+    private fun checkIfModified(): Boolean {
+        return selectedBrand != vehicleDto?.vehicleModelVehicleBrandId ||
+                selectedModel != vehicleDto?.vehicleModelId ||
+                selectedColor != getColorId(vehicleDto!!.color) ||
+                licencePlate.value != vehicleDto!!.licencePlate
     }
 
     private fun navigateToVehicleInfo() {

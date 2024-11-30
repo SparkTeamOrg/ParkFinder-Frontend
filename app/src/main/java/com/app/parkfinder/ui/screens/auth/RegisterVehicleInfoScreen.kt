@@ -63,13 +63,15 @@ import com.app.parkfinder.logic.view_models.VehicleModelViewModel
 
 @Composable
 fun RegisterVehicleInfoScreen(
+    //used for update
     selectedBrand: Int? = null,
     selectedBrandName: String? = null,
     selectedModelName: String? = null,
     selectedColor: Int? = null,
+    checkIfModified: (()->Boolean)? = null,
+    //used for registration and add
     onSelectedBrandChange: (Int) -> Unit,
     onSelectedModelChange: (Int) -> Unit,
-    onSelectedModelNameChange:  ((String) -> Unit)? = null,
     onSelectedColorChange: (Int) -> Unit,
     licencePlate: String,
     onLicencePlateChange: (String) -> Unit,
@@ -91,6 +93,9 @@ fun RegisterVehicleInfoScreen(
     var modelError by remember { mutableStateOf(false) }
     var colorError by remember { mutableStateOf(false) }
     var regNumError by remember { mutableStateOf(false) }
+
+    var buttonEnabled by remember { mutableStateOf(true) }
+    buttonEnabled = (checkIfModified != null && checkIfModified()) || checkIfModified == null
 
     Column(
         modifier = Modifier
@@ -132,7 +137,7 @@ fun RegisterVehicleInfoScreen(
         }
         Spacer(modifier = Modifier.height(70.dp))
         Text(
-            text = "Please set up your vehicle",
+            text = if(selectedBrand!=null) "Update Vehicle Information" else "Please set up your vehicle",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = White,
@@ -185,11 +190,8 @@ fun RegisterVehicleInfoScreen(
                         run {
                             onSelectedBrandChange(option)
                             viewVehicleModel.getAllVehicleModelsByBrand(option)
-                            if (onSelectedModelNameChange != null) {
-                                onSelectedModelChange(0)
-                                onSelectedModelNameChange("Select a model")
-                            }
                         }
+                        onSelectedModelChange(0)
                     }
                 )
 
@@ -258,14 +260,18 @@ fun RegisterVehicleInfoScreen(
                     onLicencePlateChange("")
                 }
             },
+            enabled = buttonEnabled,
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF0FCFFF),
-                contentColor = White
+                disabledContainerColor = Color(0xFF0FCFFF).copy(alpha = 0.3f)
             )
         ) {
-            Text("Finish")
+            Text(
+                text = "Finish",
+                color = if (buttonEnabled) White else White.copy(alpha = 0.3f)
+            )
         }
     }
 }

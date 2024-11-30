@@ -50,7 +50,7 @@ class AddVehicleActivity : BaseActivity() {
                     onLicencePlateChange = { licencePlate.value = it },
                     colorNames = colorNames,
                     onBackClick = { navigateToVehicleInfo() },
-                    register = { registerVehicle() }
+                    register = { addVehicle() }
                 )
             }
 
@@ -66,7 +66,7 @@ class AddVehicleActivity : BaseActivity() {
         }
     }
 
-    private fun registerVehicle(): List<Boolean> {
+    private fun addVehicle(): List<Boolean> {
         val brandError = selectedBrand == 0
         val modelError = selectedModel == 0
         val colorError = selectedColor == 0
