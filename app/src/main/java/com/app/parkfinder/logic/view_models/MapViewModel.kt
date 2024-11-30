@@ -2,14 +2,20 @@ package com.app.parkfinder.logic.view_models
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.graphics.Color
 import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.core.app.ApplicationProvider
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.NavigationStep
@@ -18,6 +24,7 @@ import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.services.MapService
 import com.app.parkfinder.logic.services.OsrmService
+import com.app.parkfinder.ui.activities.NavigationActivity
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +43,7 @@ import java.util.logging.Logger
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MapViewModel(application: Application) : AndroidViewModel(application), IMyLocationConsumer {
+class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
@@ -87,35 +94,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
         }
         mapView.overlays.add(locationOverlay)
 
+        val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
+
+        // Request location updates
+        try {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                2000L,
+                10f,
+                this
+            )
+        } catch (e: SecurityException) {
+            Log.e("monkey","Location permission required")
+        }
+
         // Disable zoom buttons
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.zoomController.setZoomInEnabled(false)
         mapView.zoomController.setZoomOutEnabled(false)
 
-        // Set location change listener
-        locationProvider.startLocationProvider(this)
     }
 
-    override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
-        Log.d("monkey","Location changed")
-        location?.let {
-            val newLocation = GeoPoint(it.latitude, it.longitude)
-            Log.d("monkey","Location changed to: $newLocation")
-            if (newLocation.distanceToAsDouble(lastLocation) > 10) {
-                lastLocation = newLocation
-                mapView?.overlays?.clear()
-                mapView?.controller?.setCenter(newLocation)
-                getNearbyParkingLots(it.latitude, it.longitude)
-                drawCircle(it.latitude, it.longitude)
-
-                viewModelScope.launch {
-                    if(selectedRoute!=null)
-                        mapView?.overlays?.remove(selectedRoute)
-                    selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!);
-                }
-            }
-        }
-    }
 
     private fun getNearbyParkingLots(lat: Double, long: Double) {
         viewModelScope.launch {
@@ -324,5 +323,25 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     fun destroy() {
         locationOverlay?.disableMyLocation()
         super.onCleared()
+    }
+
+    override fun onLocationChanged(loc: Location) {
+        Log.e("monkey","location changed Lon:${loc.longitude} Lat:${loc.latitude}")
+        val newLocation = GeoPoint(loc.latitude, loc.longitude)
+        Log.d("monkey","Location changed to: $newLocation")
+//        if (newLocation.distanceToAsDouble(lastLocation) > 10) {
+            lastLocation = newLocation
+            mapView?.overlays?.clear()
+            mapView?.controller?.setCenter(newLocation)
+            getNearbyParkingLots(loc.latitude, loc.longitude)
+            drawCircle(loc.latitude, loc.longitude)
+
+            viewModelScope.launch {
+                if(selectedRoute!=null)
+                    mapView?.overlays?.remove(selectedRoute)
+                if(selectedPoint!=null)
+                    selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!);
+//            }
+        }
     }
 }
