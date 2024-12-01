@@ -14,7 +14,7 @@ import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
-import com.app.parkfinder.ui.screens.auth.register.RegisterUserDataScreen
+import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validateLicencePlate
@@ -61,7 +61,7 @@ class RegisterVehicleInfoActivity: BaseActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ParkFinderTheme {
-                RegisterUserDataScreen (
+                RegisterVehicleInfoScreen (
                     onSelectedBrandChange = { selectedBrand = it },
                     onSelectedModelChange = { selectedModel = it },
                     onSelectedColorChange = { selectedColor = it },

@@ -49,7 +49,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun SearchScreen(
-    searchParkingsAroundLocation: (location:String, radius: Int) -> Unit = { s: String, i: Int -> },
+    searchParkingsAroundLocation: () -> Unit = { -> },
     mapViewModel: MapViewModel = viewModel()
 ) {
     mapViewModel.getAllParkingLotsAroundLocationRes.value
@@ -112,8 +112,10 @@ fun SearchScreen(
 
         // Search Button
         Button(
-            onClick = {searchParkingsAroundLocation(searchedLocation,radius.toInt())
-                      mapViewModel.searchByLocation(searchedLocation,radius.toInt())},
+            onClick = {
+                searchParkingsAroundLocation()
+                mapViewModel.searchByLocation(searchedLocation,radius.toInt())
+            },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -143,7 +145,7 @@ fun SearchScreenPreview() {
                 //UI for Search
                 composable(BottomNavItem.Search.route) { SearchScreen() }
                 //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({},UserDto(), null, {}, {}) }
+                composable(BottomNavItem.Profile.route) { ProfileScreen({},UserDto(), null, {}, {}, {}) }
                 //UI for Reserved
                 composable(BottomNavItem.Reserved.route){ ReservedScreen() }
             }
