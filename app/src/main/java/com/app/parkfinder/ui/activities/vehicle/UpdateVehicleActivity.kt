@@ -2,11 +2,13 @@ package com.app.parkfinder.ui.activities.vehicle
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +36,6 @@ class UpdateVehicleActivity : BaseActivity() {
     private var selectedColor by mutableIntStateOf(0)
     private var licencePlate = mutableStateOf("")
 
-
     private val colorNames = mapOf(
         1 to "Red",
         2 to "Green",
@@ -46,19 +47,22 @@ class UpdateVehicleActivity : BaseActivity() {
         8 to "Black"
     )
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val vehicleDto: VehicleDto? = intent.getParcelableExtra("vehicleDto", VehicleDto::class.java)
-        vehicleId = vehicleDto?.id ?: -1
-        selectedBrand = vehicleDto?.vehicleModelVehicleBrandId ?: -1
-        selectedBrandName.value = vehicleDto?.vehicleModelVehicleBrandName
-        selectedModel = vehicleDto?.vehicleModelId ?: -1
-        selectedModelName.value = vehicleDto?.vehicleModelName
-        licencePlate.value = vehicleDto?.licencePlate ?: ""
-        selectedColor = getColorId(vehicleDto?.color ?: "")
-
         setContent {
+
+            val vehicleDto: VehicleDto? = intent.getParcelableExtra("vehicleDto", VehicleDto::class.java)
+            val image: Int = intent.getIntExtra("image", R.drawable.car1)
+            vehicleId = vehicleDto?.id ?: -1
+            selectedBrand = vehicleDto?.vehicleModelVehicleBrandId ?: -1
+            selectedBrandName.value = vehicleDto?.vehicleModelVehicleBrandName
+            selectedModel = vehicleDto?.vehicleModelId ?: -1
+            selectedModelName.value = vehicleDto?.vehicleModelName
+            licencePlate.value = vehicleDto?.licencePlate ?: ""
+            selectedColor = getColorId(vehicleDto?.color ?: "")
+
             ParkFinderTheme {
                 RegisterVehicleInfoScreen(
                     selectedBrand = selectedBrand,
@@ -73,6 +77,7 @@ class UpdateVehicleActivity : BaseActivity() {
                     colorNames = colorNames,
                     onBackClick = { navigateToVehicleInfo() },
                     checkIfModified = { checkIfModified() },
+                    image = image,
                     register = { updateVehicle() }
                 )
             }

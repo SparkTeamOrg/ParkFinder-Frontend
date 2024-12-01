@@ -11,5 +11,6 @@ data class VehicleDto (
     var vehicleModelId: Int,
     var vehicleModelName: String,
     var vehicleModelVehicleBrandId: Int,
-    var vehicleModelVehicleBrandName: String
+    var vehicleModelVehicleBrandName: String,
+    var carImage: Int? = null
 ) : Parcelable
