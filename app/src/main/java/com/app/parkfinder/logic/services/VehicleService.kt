@@ -14,24 +14,22 @@ import retrofit2.http.Query
 
 interface VehicleService {
 
-    @GET("Vehicle/UserVehicles")
+    @GET("vehicle/UserVehicles")
     suspend fun getUserVehicles(
-        @Query("userId") userId: Int
     ):Response<BackResponse<List<VehicleDto>>>
 
-    @POST("Vehicle/RegisterVehicle")
+    @POST("vehicle/RegisterVehicle")
     suspend fun registerVehicle(
         @Body createVehicleDto: CreateVehicleDto
     ): Response<BackResponse<String>>
 
-    @PUT("Vehicle/UpdateVehicle")
+    @PUT("vehicle/UpdateVehicle")
     suspend fun updateVehicle(
         @Body updateVehicleDto: UpdateVehicleDto
     ): Response<BackResponse<UpdateVehicleDto>>
 
-    @DELETE("Vehicle/DeleteVehicle")
+    @DELETE("vehicle/DeleteVehicle")
     suspend fun deleteVehicle(
         @Query("vehicleId") vehicleId: Int,
-        @Query("userId") userId: Int
     ): Response<BackResponse<Int>>
 }
