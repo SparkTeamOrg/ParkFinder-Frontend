@@ -43,10 +43,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 
 @Composable
@@ -55,10 +53,17 @@ fun VehicleInfoScreen(
     onBackClick: () -> Unit,
     onPlusClick: () -> Unit,
     onCanClick: (Int) -> Unit,
-    onPenClick: (VehicleDto) -> Unit
+    onPenClick: (VehicleDto, Int) -> Unit
 ) {
-    var currentVehicle by remember { mutableStateOf(VehicleDto(-1, "", "", -1, "", -1, "")) }
     val pagerState = rememberPagerState(pageCount = { vehicles.size })
+
+    val carImages = listOf(
+        R.drawable.car1,
+        R.drawable.car2,
+        R.drawable.car3,
+        R.drawable.car4,
+        R.drawable.car5
+    )
 
     Column(
         modifier = Modifier
@@ -148,8 +153,9 @@ fun VehicleInfoScreen(
             state = pagerState,
             modifier = Modifier.fillMaxWidth()
         ) { page ->
+
             val vehicle = vehicles[page]
-            currentVehicle = vehicle
+            val image = carImages[page % carImages.size]
 
             Column(
                 modifier = Modifier
@@ -161,7 +167,7 @@ fun VehicleInfoScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.car),
+                        painter = painterResource(id = image),
                         contentDescription = "Background Image",
                         modifier = Modifier
                             .width(160.dp)
@@ -181,7 +187,9 @@ fun VehicleInfoScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             IconButton(
-                onClick = { onPenClick(currentVehicle) },
+                onClick = {
+                    onPenClick(vehicles[pagerState.currentPage], carImages[pagerState.currentPage % carImages.size])
+                  },
                 modifier = Modifier
                     .size(55.dp)
                     .background(Color(0xFF0FCFFF), shape = CircleShape)
@@ -194,7 +202,8 @@ fun VehicleInfoScreen(
             }
             if(vehicles.size > 1) {
                 Spacer(modifier = Modifier.width(20.dp))
-                DeleteButton(currentVehicle.id, onCanClick)
+                val index = if(pagerState.currentPage == vehicles.size) pagerState.currentPage - 1 else pagerState.currentPage
+                DeleteButton(vehicles[index].id, onCanClick)
             }
         }
         Spacer(modifier = Modifier.height(20.dp))

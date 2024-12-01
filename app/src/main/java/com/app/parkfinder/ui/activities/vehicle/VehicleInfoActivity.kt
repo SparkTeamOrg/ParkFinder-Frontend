@@ -36,7 +36,7 @@ class VehicleInfoActivity : BaseActivity() {
                     onBackClick = { finish () },
                     onPlusClick = { navigateToAddVehicle() },
                     onCanClick = { vehicleId -> deleteVehicle(vehicleId)},
-                    onPenClick = { dto -> navigateToUpdateVehicle(dto) }
+                    onPenClick = { dto, image -> navigateToUpdateVehicle(dto, image) }
                 )
             }
 
@@ -67,9 +67,11 @@ class VehicleInfoActivity : BaseActivity() {
         finish()
     }
 
-    private fun navigateToUpdateVehicle(dto: VehicleDto) {
+    private fun navigateToUpdateVehicle(dto: VehicleDto, image: Int) {
+        Log.d("Debug", dto.toString())
         val intent = Intent(this, UpdateVehicleActivity::class.java).apply {
             putExtra("vehicleDto", dto)
+            putExtra("image", image)
         }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
