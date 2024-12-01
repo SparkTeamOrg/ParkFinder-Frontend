@@ -2,20 +2,16 @@ package com.app.parkfinder.logic.view_models
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.test.core.app.ApplicationProvider
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.NavigationStep
@@ -23,8 +19,8 @@ import com.app.parkfinder.logic.models.OsrmRouteResponse
 import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.services.MapService
+import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
-import com.app.parkfinder.ui.activities.NavigationActivity
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,14 +28,10 @@ import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
-import org.osmdroid.util.LocationUtils
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer
-import org.osmdroid.views.overlay.mylocation.IMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import java.util.logging.Logger
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -51,7 +43,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     var instructions = mutableListOf<NavigationStep>()
 
     // 0.03 is approximately 5km
-    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
+    private val viewRadius: Int = 5 // in kilometers
+
+    private val kmValue = 0.006 // 1km in degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
@@ -62,16 +56,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private var osrmRouteResponse : OsrmRouteResponse? = null
 
     private val osrmService = OsrmService.create()
+    private val nominatimService = NominatimService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
-    private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>>()
+    private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
-    val getAllParkingLotsRes: LiveData<BackResponse<List<ParkingLotDto>>> = _getAllParkingLotsRes
+    val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
-            if (res.isSuccessful) {
+            if (res?.isSuccessful == true) {
                 mapView?.let { drawParkingLots(it, res.data) }
             }
         }
@@ -87,13 +82,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     val initialLocation = GeoPoint(it.latitude, it.longitude)
                     lastLocation = initialLocation
                     mapView.controller.setCenter(initialLocation)
-                    getNearbyParkingLots(it.latitude, it.longitude)
+                    getNearbyParkingLots(it.latitude, it.longitude,viewRadius)
                     drawCircle(it.latitude, it.longitude)
                 }
             }
         }
         mapView.overlays.add(locationOverlay)
-
         val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
 
         // Request location updates
@@ -115,11 +109,41 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     }
 
+    private suspend fun geocodeLocation(location: String): GeoPoint? {
+        return try {
+            val response = withContext(Dispatchers.IO) {
+                nominatimService.getCoordinates(location, "json", 1,1,"testApp").execute()
+            }
+            if (response.isSuccessful) {
+                val result = response.body()?.firstOrNull()
+                val lat = result?.lat?.toDoubleOrNull()
+                val lon = result?.lon?.toDoubleOrNull()
+                if (lat != null && lon != null) GeoPoint(lat, lon) else null
+            } else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
-    private fun getNearbyParkingLots(lat: Double, long: Double) {
+    fun searchByLocation(location: String, radius: Int)
+    {
+        viewModelScope.launch {
+            val point = geocodeLocation(location)
+            if(point == null)
+                _getAllParkingLotsRes.postValue(null)
+            else
+            {
+                getNearbyParkingLots(point.latitude,point.longitude, radius)
+            }
+
+        }
+    }
+
+    private fun getNearbyParkingLots(lat: Double, long: Double, radius:Int) {
         viewModelScope.launch {
             try {
-                val response = mapService.GetAllNearbyParkingLots(viewRadius, lat, long)
+                val response = mapService.GetAllNearbyParkingLots(radius * kmValue, lat, long)
                 if (response.isSuccessful) {
                     response.body()?.let {
                         _getAllParkingLotsRes.postValue(it)
@@ -328,12 +352,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     override fun onLocationChanged(loc: Location) {
         Log.e("monkey","location changed Lon:${loc.longitude} Lat:${loc.latitude}")
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
-        Log.d("monkey","Location changed to: $newLocation")
+//        Log.d("monkey","Location changed to: $newLocation")
 //        if (newLocation.distanceToAsDouble(lastLocation) > 10) {
             lastLocation = newLocation
             mapView?.overlays?.clear()
             mapView?.controller?.setCenter(newLocation)
-            getNearbyParkingLots(loc.latitude, loc.longitude)
+            mapView?.overlays?.add(locationOverlay)
+        getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
             drawCircle(loc.latitude, loc.longitude)
 
             viewModelScope.launch {

@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface NominatimService {
     @GET("search")
-    fun geocode(
+    fun getCoordinates(
         @Query("q") query: String,
         @Query("format") format: String = "json",
         @Query("limit") limit: Int = 1,

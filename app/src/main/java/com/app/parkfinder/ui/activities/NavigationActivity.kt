@@ -63,7 +63,7 @@ class NavigationActivity : BaseActivity() {
                     currentImageUrl = currentImageUrl,
                     openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
                     removeImage = { removeImage() },
-                    searchFreeParkingsAroundLocation = {a->navigateToParkingList(a)}
+                    searchFreeParkingsAroundLocation = {a,b ->navigateToParkingList(a,b)}
                 )
             }
         }
@@ -158,7 +158,7 @@ class NavigationActivity : BaseActivity() {
     }
 
 
-    private fun navigateToParkingList(location:String):Unit {
+    private fun navigateToParkingList(location:String,radius:Int):Unit {
         val intent = Intent(this, FreeParkingSearchListActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())

@@ -15,6 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.composables.ParkFinderLogo
 
 data class ParkingSpace(
@@ -24,7 +27,7 @@ data class ParkingSpace(
 )
 
 @Composable
-fun ParkingListScreen(parkingSpaces: List<ParkingSpace>) {
+fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
     Scaffold(
         topBar = {
             ParkFinderLogo()
@@ -45,7 +48,7 @@ fun ParkingListScreen(parkingSpaces: List<ParkingSpace>) {
 }
 
 @Composable
-fun ParkingItem(parkingSpace: ParkingSpace) {
+fun ParkingItem(parkingSpace: ParkingLotDto) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -79,13 +82,13 @@ fun ParkingItem(parkingSpace: ParkingSpace) {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = parkingSpace.name,
+                    text = if(parkingSpace.town==null) parkingSpace.city +", " + parkingSpace.road else parkingSpace.town +", " + parkingSpace.road,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = Color.White
                 )
                 Text(
-                    text = parkingSpace.distance,
+                    text = "${parkingSpace.distance} km away",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -95,7 +98,7 @@ fun ParkingItem(parkingSpace: ParkingSpace) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "⭐ ${parkingSpace.rating}",
+                    text = "⭐ 0.0",
                     fontSize = 14.sp,
                     color = Color.Yellow
                 )
@@ -111,7 +114,9 @@ fun ParkingItem(parkingSpace: ParkingSpace) {
 }
 
 @Composable
-fun ParkingScreenPreview() {
+fun ParkingScreenPreview(
+    parkings: List<ParkingLotDto>
+) {
     val parkingSpaces = remember {
         listOf(
             ParkingSpace("Zmaj Jovina 12", "0.2 km away", 5.0f),
@@ -122,5 +127,5 @@ fun ParkingScreenPreview() {
             ParkingSpace("Grada Sirena 16", "0.6 km away", 4.2f)
         )
     }
-    ParkingListScreen(parkingSpaces)
+    ParkingListScreen(parkings)
 }
