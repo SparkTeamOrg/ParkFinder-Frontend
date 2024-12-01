@@ -69,6 +69,7 @@ fun RegisterVehicleInfoScreen(
     selectedModelName: String? = null,
     selectedColor: Int? = null,
     checkIfModified: (()->Boolean)? = null,
+    image: Int? = null,
     //used for registration and add
     onSelectedBrandChange: (Int) -> Unit,
     onSelectedModelChange: (Int) -> Unit,
@@ -152,7 +153,7 @@ fun RegisterVehicleInfoScreen(
                 .background(White)
         ){
             Image(
-                painter = painterResource(id = R.drawable.car),
+                painter = painterResource(id = image ?: R.drawable.car1),
                 contentDescription = "Background Image",
                 modifier = Modifier
                     .width(120.dp)

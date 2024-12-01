@@ -154,9 +154,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(24.dp))
         Column(
             modifier = Modifier
-                .height(300.dp)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
         )
         {
 
