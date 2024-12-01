@@ -26,7 +26,6 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.auth0.android.jwt.JWT
 import com.canhub.cropper.CropImageContract
-import okhttp3.MultipartBody
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
@@ -38,7 +37,7 @@ class NavigationActivity : BaseActivity() {
         if (uri != null) ImageUtils.openCropper(uri, cropImage)
     }
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) result.uriContent?.let { uploadImage(user.Id, it) }
+        if (result.isSuccessful) result.uriContent?.let { uploadImage(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +51,7 @@ class NavigationActivity : BaseActivity() {
 
         user = decodeJwt()
         lifecycleScope.launch {
-            val imageUriString = getProfileImageUrl(user.Id)
+            val imageUriString = getProfileImageUrl()
             currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
         }
 
@@ -74,7 +73,7 @@ class NavigationActivity : BaseActivity() {
     private fun logout() {
         val tokenService = RetrofitConfig.createService(TokenService::class.java)
         lifecycleScope.launch {
-            val deleteResponse = tokenService.delete(user.Id)
+            val deleteResponse = tokenService.delete()
             if(deleteResponse.isSuccessful) {
                 val body = deleteResponse.body()
                 if(body != null){
@@ -110,14 +109,13 @@ class NavigationActivity : BaseActivity() {
         return dto
     }
 
-    private suspend fun getProfileImageUrl(userId: Int): String? {
-        val response = imageService.getProfileImage(userId)
+    private suspend fun getProfileImageUrl(): String? {
+        val response = imageService.getProfileImage()
         return if (response.isSuccessful) {
             val body = response.body()
             if (body != null && body.isSuccessful) {
                 body.data
             } else {
-                Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
                 null
             }
         } else {
@@ -125,13 +123,12 @@ class NavigationActivity : BaseActivity() {
         }
     }
 
-    private fun uploadImage(userId: Int, imageUrl: Uri) {
+    private fun uploadImage(imageUrl: Uri) {
         lifecycleScope.launch {
             val profileImage = ImageUtils.createMultipartFromUri(contentResolver, imageUrl)
-            val userIdPart = MultipartBody.Part.createFormData("UserId", userId.toString())
 
             val response = if (profileImage != null) {
-                imageService.uploadImage(userIdPart, profileImage)
+                imageService.uploadImage(profileImage)
             } else null
 
             if (response != null && response.isSuccessful) {
@@ -147,7 +144,7 @@ class NavigationActivity : BaseActivity() {
 
     private fun removeImage() {
         lifecycleScope.launch {
-            val response = imageService.removeImage(user.Id)
+            val response = imageService.removeImage()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.isSuccessful) {

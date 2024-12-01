@@ -3,20 +3,17 @@ package com.app.parkfinder.ui.activities.vehicle
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.CreateVehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
-import com.auth0.android.jwt.JWT
 
 class AddVehicleActivity : BaseActivity() {
 
@@ -80,24 +77,11 @@ class AddVehicleActivity : BaseActivity() {
         val vehicle = CreateVehicleDto(
             licencePlate = licencePlate.value,
             color = colorNames[selectedColor] ?: "",
-            userId = getUserId(),
             modelId = selectedModel
         )
 
         vehicleViewModel.registerVehicle(vehicle)
         return List(4){false}
-    }
-
-    private fun getUserId(): Int {
-        val token = AppPreferences.accessToken
-        try {
-            val jwt = JWT(token!!)
-            return jwt.getClaim("UserId").asInt()!!
-        } catch (e: Exception) {
-            e.message?.let { Log.d("Debug", it) }
-            e.printStackTrace()
-            return -1
-        }
     }
 
     private fun navigateToVehicleInfo() {

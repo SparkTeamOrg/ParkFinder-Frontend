@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,7 +13,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.UpdateVehicleDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
@@ -22,7 +20,6 @@ import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.validateLicencePlate
-import com.auth0.android.jwt.JWT
 
 class UpdateVehicleActivity : BaseActivity() {
     private val vehicleViewModel: VehicleViewModel by viewModels()
@@ -109,7 +106,6 @@ class UpdateVehicleActivity : BaseActivity() {
                 modelId = selectedModel,
                 color = colorNames[selectedColor] ?: "",
                 licencePlate = licencePlate.value,
-                userId = getUserId()
         )
 
         vehicleViewModel.updateVehicle(updateDto)
@@ -124,26 +120,14 @@ class UpdateVehicleActivity : BaseActivity() {
                 licencePlate.value != vehicleDto!!.licencePlate
     }
 
+    private fun getColorId(colorName: String): Int {
+        return colorNames.entries.find { it.value.equals(colorName, ignoreCase = true) }?.key ?: -1
+    }
+
     private fun navigateToVehicleInfo() {
         val intent = Intent(this, VehicleInfoActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
         finish()
-    }
-
-    private fun getColorId(colorName: String): Int {
-        return colorNames.entries.find { it.value.equals(colorName, ignoreCase = true) }?.key ?: -1
-    }
-
-    private fun getUserId(): Int {
-        val token = AppPreferences.accessToken
-        try {
-            val jwt = JWT(token!!)
-            return jwt.getClaim("UserId").asInt()!!
-        } catch (e: Exception) {
-            e.message?.let { Log.d("Debug", it) }
-            e.printStackTrace()
-            return -1
-        }
     }
 }

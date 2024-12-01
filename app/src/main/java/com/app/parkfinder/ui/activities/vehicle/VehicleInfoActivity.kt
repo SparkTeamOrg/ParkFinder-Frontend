@@ -9,14 +9,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.livedata.observeAsState
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.main.VehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
-import com.auth0.android.jwt.JWT
 
 class VehicleInfoActivity : BaseActivity() {
 
@@ -53,11 +51,11 @@ class VehicleInfoActivity : BaseActivity() {
     }
 
     private fun loadUserVehicles() {
-        vehicleViewModel.getUserVehicles(getUserId())
+        vehicleViewModel.getUserVehicles()
     }
 
     private fun deleteVehicle(vehicleId: Int){
-        vehicleViewModel.deleteVehicle(vehicleId, getUserId())
+        vehicleViewModel.deleteVehicle(vehicleId)
     }
 
     private fun navigateToAddVehicle() {
@@ -76,17 +74,5 @@ class VehicleInfoActivity : BaseActivity() {
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
         finish()
-    }
-
-    private fun getUserId(): Int {
-        val token = AppPreferences.accessToken
-        try {
-            val jwt = JWT(token!!)
-            return jwt.getClaim("UserId").asInt()!!
-        } catch (e: Exception) {
-            e.message?.let { Log.d("Debug", it) }
-            e.printStackTrace()
-            return -1
-        }
     }
 }

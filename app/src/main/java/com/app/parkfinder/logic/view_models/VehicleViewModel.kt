@@ -24,10 +24,10 @@ class VehicleViewModel : ViewModel() {
     val updateVehicleResult: LiveData<BackResponse<UpdateVehicleDto>> = _updateVehicleResult
     val deleteVehicleResult: LiveData<BackResponse<Int>> = _deleteVehicleResult
 
-    fun getUserVehicles(userId: Int) {
+    fun getUserVehicles() {
         viewModelScope.launch {
             try {
-                val response = vehicleService.getUserVehicles(userId)
+                val response = vehicleService.getUserVehicles()
                 if(response.isSuccessful) {
                     response.body()?.let {
                         _userVehiclesResult.postValue(it)
@@ -123,7 +123,7 @@ class VehicleViewModel : ViewModel() {
                     BackResponse(
                         isSuccessful = false,
                         messages = listOf("An error occurred"),
-                        data = UpdateVehicleDto(-1,"","",-1,-1)
+                        data = UpdateVehicleDto(-1,"","",-1)
                     ).let {
                         _updateVehicleResult.postValue(
                             it
@@ -138,13 +138,13 @@ class VehicleViewModel : ViewModel() {
                 BackResponse(
                     isSuccessful = false,
                     messages = listOf(e.message ?: "An error occurred"),
-                    data = UpdateVehicleDto(-1,"","",-1,-1)
+                    data = UpdateVehicleDto(-1,"","",-1)
                 ).let {
                     _updateVehicleResult.postValue(
                         BackResponse(
                             isSuccessful = false,
                             messages = listOf(e.message ?: "An error occurred"),
-                            data = UpdateVehicleDto(-1,"","",-1,-1)
+                            data = UpdateVehicleDto(-1,"","",-1)
                         )
                     )
                 }
@@ -152,10 +152,10 @@ class VehicleViewModel : ViewModel() {
         }
     }
 
-    fun deleteVehicle(vehicleId: Int, userId: Int) {
+    fun deleteVehicle(vehicleId: Int) {
         viewModelScope.launch {
             try {
-                val response = vehicleService.deleteVehicle(vehicleId, userId)
+                val response = vehicleService.deleteVehicle(vehicleId)
 
                 if(response.isSuccessful) {
                     response.body()?.let {
