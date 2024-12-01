@@ -53,7 +53,7 @@ class UpdateVehicleActivity : BaseActivity() {
 
         setContent {
 
-            val vehicleDto: VehicleDto? = intent.getParcelableExtra("vehicleDto", VehicleDto::class.java)
+            vehicleDto = intent.getParcelableExtra("vehicleDto", VehicleDto::class.java)
             val image: Int = intent.getIntExtra("image", R.drawable.car1)
             vehicleId = vehicleDto?.id ?: -1
             selectedBrand = vehicleDto?.vehicleModelVehicleBrandId ?: -1
