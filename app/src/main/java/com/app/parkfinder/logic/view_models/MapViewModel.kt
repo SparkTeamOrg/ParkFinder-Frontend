@@ -48,7 +48,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     var instructions = mutableListOf<NavigationStep>()
 
     // 0.03 is approximately 5km
-    private val viewRadius: Double = 1000.03 // User can see parking lots within radius of 0.03 degrees
+    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
