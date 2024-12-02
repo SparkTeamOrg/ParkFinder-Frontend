@@ -6,6 +6,8 @@ import android.content.Context.LOCATION_SERVICE
 import android.graphics.Color
 import android.graphics.Paint
 import android.location.Location
+import android.os.Looper
+import android.os.Handler
 import android.location.LocationListener
 import android.location.LocationManager
 import android.util.Log
@@ -14,6 +16,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 import com.app.parkfinder.logic.models.BackResponse
@@ -27,6 +30,9 @@ import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
 import com.app.parkfinder.utilis.TextOverlay
 import com.google.gson.JsonParser
+import com.microsoft.signalr.HubConnection
+import com.microsoft.signalr.HubConnectionBuilder
+import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,8 +51,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
+    private var hubConnection: HubConnection? = null
+
     private var steps: List<Step> = emptyList()
-    var instructions = mutableListOf<NavigationStep>()
+    private var instructions = mutableListOf<NavigationStep>()
 
     // 0.03 is approximately 5km
     private val viewRadius: Int = 5 // in kilometers
@@ -72,8 +80,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _getAllParkingLotsAroundLocationRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
-//    val getAllParkingLotsRes: LiveData<BackResponse<List<ParkingLotDto>>> = _getAllParkingLotsRes
-    val getParkingSpotsForParkingLot: LiveData<BackResponse<List<ParkingSpotDto>>> = _getParkingSpotsForParkingLot
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
@@ -89,6 +95,47 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 mapView?.let { drawParkingSpots(it, res.data) }
             }
         }
+    }
+
+    private fun startHubConnection() {
+        if (hubConnection == null) {
+            try {
+                // Create a new HubConnection
+                hubConnection = HubConnectionBuilder.create("http://10.0.2.2:5009/baseHub")
+                    .withTransport(com.microsoft.signalr.TransportEnum.LONG_POLLING)
+                    .withAccessTokenProvider(Single.defer {
+                        Single.just((AppPreferences.accessToken) ?: "")
+                    })
+                    .build()
+
+                hubConnection?.on("GetParkingSpots",
+                    { data ->
+                        // Show a toast message on the UI thread instead of logging
+                        // TODO: Replace with a more appropriate message handling
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(getApplication(), "Received message: $data", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    String::class.java
+                )
+
+                // Start the connection
+                hubConnection?.start()?.blockingAwait()
+            } catch (e: Exception) {
+                Log.e("MapViewModel", "Error starting hub connection", e)
+                if (e.message?.contains("Unauthorized") == true) {
+                    Toast.makeText(getApplication(), "Unauthorized access. Please log in again.", Toast.LENGTH_SHORT).show()
+                    // Handle unauthorized access, e.g., redirect to login screen
+                } else {
+                    Toast.makeText(getApplication(), "Error starting hub connection: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun stopHubConnection() {
+        hubConnection?.stop()
+        hubConnection = null
     }
 
     fun initializeMap(mapView: MapView) {
@@ -126,12 +173,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         mapView.zoomController.setZoomInEnabled(false)
         mapView.zoomController.setZoomOutEnabled(false)
 
+        startHubConnection()
     }
 
     private suspend fun geocodeLocation(location: String): GeoPoint? {
         return try {
             val response = withContext(Dispatchers.IO) {
-                nominatimService.getCoordinates(location, "json", 1,1,"testApp").execute()
+                nominatimService.getCoordinates(location, "json", 1,1,"sparkParkFinder").execute()
             }
             if (response.isSuccessful) {
                 val result = response.body()?.firstOrNull()
@@ -153,7 +201,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 _getAllParkingLotsAroundLocationRes.postValue(null)
             else
             {
-                Log.d("donkey","Parking lots found in search ")
                 getNearbyParkingLots(point.latitude,point.longitude, radius, true)
             }
 
@@ -229,20 +276,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     // Function to fetch and draw route between start and end points
     private suspend fun drawRoute(mapView: MapView, start: GeoPoint, end: GeoPoint) :Polyline? {
-        val startCoords = "${start.longitude},${start.latitude}"
-        val endCoords = "${end.longitude},${end.latitude}"
+        val startCoordinates = "${start.longitude},${start.latitude}"
+        val endCoordinates = "${end.longitude},${end.latitude}"
 
         try {
             val response = withContext(Dispatchers.IO) {
-                osrmService.getRoute(startCoords, endCoords).execute()
+                osrmService.getRoute(startCoordinates, endCoordinates).execute()
             }
 
             if (response.isSuccessful) {
                 osrmRouteResponse = response.body()
                 val geometry = osrmRouteResponse?.routes?.firstOrNull()?.geometry
                 geometry?.let {
-                    val geoPoints = it.coordinates.map { coord ->
-                        GeoPoint(coord[1], coord[0])
+                    val geoPoints = it.coordinates.map { cord ->
+                        GeoPoint(cord[1], cord[0])
                     }
                     val polyline = Polyline().apply {
                         setPoints(geoPoints)
@@ -331,18 +378,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     getParkingSpotsForParkingLot(lot.id)
                 }
                 else {
-                    // Clear existing parking spot overlays
-                    for (overlay in currentParkingSpotOverlays) {
-                        mapView.overlays.remove(overlay)
-                    }
-                    currentParkingSpotOverlays.clear()
-
-                    // Clear existing text overlays
-                    for (overlay in currentTextOverlays) {
-                        mapView.overlays.remove(overlay)
-                    }
-                    currentTextOverlays.clear()
-
+                    clearParkingSpots()
                     currentParkingLotClickedId = -1
                 }
 
@@ -388,21 +424,23 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.points = geoPoints
 //            Logger.getLogger("MapViewModel").info("Spot status: ${spot.parkingSpotStatus}")
 
-            if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
-                // Green
-                polygon.fillColor = Color.argb(100, 0, 255, 0)
-            }
-            else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal) {
-                // Yellow
-                polygon.fillColor = Color.argb(100, 255, 255, 0)
-            }
-            else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
-                // Red
-                polygon.fillColor = Color.argb(100, 255, 0, 0)
-            }
-            else {
-                // Blue
-                polygon.fillColor = Color.argb(100, 0, 0, 255)
+            when (spot.parkingSpotStatus) {
+                ParkingSpotStatusEnum.FREE.ordinal -> {
+                    // Green
+                    polygon.fillColor = Color.argb(100, 0, 255, 0)
+                }
+                ParkingSpotStatusEnum.RESERVED.ordinal -> {
+                    // Yellow
+                    polygon.fillColor = Color.argb(100, 255, 255, 0)
+                }
+                ParkingSpotStatusEnum.OCCUPIED.ordinal -> {
+                    // Red
+                    polygon.fillColor = Color.argb(100, 255, 0, 0)
+                }
+                else -> {
+                    // Blue
+                    polygon.fillColor = Color.argb(100, 0, 0, 255)
+                }
             }
 
             polygon.strokeColor = Color.RED
@@ -411,6 +449,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.setOnClickListener{_,_,_ ->
                 if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal
                     || spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal) {
+
                     if(lastLocation == null)
                         Log.d("Mes","Lokacija je null")
 
@@ -452,6 +491,22 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             spotNumber++
         }
         mapView.invalidate() // Refresh the map
+    }
+
+    private fun clearParkingSpots() {
+        // Clear existing parking spot overlays
+        for (overlay in currentParkingSpotOverlays) {
+            mapView?.overlays?.remove(overlay)
+        }
+        currentParkingSpotOverlays.clear()
+
+        // Clear existing text overlays
+        for (overlay in currentTextOverlays) {
+            mapView?.overlays?.remove(overlay)
+        }
+        currentTextOverlays.clear()
+
+        mapView?.invalidate() // Refresh the map
     }
 
     private fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
@@ -514,11 +569,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     fun destroy() {
         locationOverlay?.disableMyLocation()
+        stopHubConnection()
         super.onCleared()
     }
 
     override fun onLocationChanged(loc: Location) {
-        Log.e("monkey","location changed Lon:${loc.longitude} Lat:${loc.latitude}")
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
         lastLocation = newLocation
         mapView?.overlays?.clear()
@@ -549,6 +604,5 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 mapView?.overlays?.add(overlay)
             }
         }
-
     }
 }
