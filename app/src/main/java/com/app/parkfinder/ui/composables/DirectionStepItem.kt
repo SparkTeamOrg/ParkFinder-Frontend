@@ -71,7 +71,7 @@ fun DirectionsPanel(steps: List<NavigationStep>, modifier: Modifier = Modifier) 
         Text(
             text = "Navigation Instructions",
             style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.primary,
+            color = Color(0xFF151A24),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 

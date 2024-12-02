@@ -47,9 +47,10 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun SearchScreen(
-    searchParkingsAroundLocation: (location:String) -> Unit = {}
+    searchParkingsAroundLocation: (String, Int) -> Unit = { s: String, i: Int -> },
 ) {
     var searchedLocation by remember{ mutableStateOf("")}
+    var radius by remember { mutableFloatStateOf(1f) } // Initial value of radius in km
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,8 +91,6 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Radius slider
-        var radius by remember { mutableFloatStateOf(1f) } // Initial value of radius in km
         Text(text = "Choose Radius ${radius.toInt()} km", color = Color.White)
         Slider(
             value = radius,
@@ -109,7 +108,9 @@ fun SearchScreen(
 
         // Search Button
         Button(
-            onClick = {searchParkingsAroundLocation(searchedLocation) },
+            onClick = {
+                searchParkingsAroundLocation(searchedLocation, radius.toInt())
+                      },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)
