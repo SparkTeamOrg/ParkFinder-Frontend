@@ -201,7 +201,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 _getAllParkingLotsAroundLocationRes.postValue(null)
             else
             {
-                Log.d("donkey","Parking lots found in search ")
                 getNearbyParkingLots(point.latitude,point.longitude, radius, true)
             }
 
