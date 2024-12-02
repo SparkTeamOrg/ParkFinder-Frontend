@@ -35,13 +35,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
-import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.composables.BottomNavigationBar
 import com.app.parkfinder.ui.composables.ParkFinderLogo
@@ -49,10 +47,8 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun SearchScreen(
-    searchParkingsAroundLocation: () -> Unit = { -> },
-    mapViewModel: MapViewModel = viewModel()
+    searchParkingsAroundLocation: (String, Int) -> Unit = { s: String, i: Int -> },
 ) {
-    mapViewModel.getAllParkingLotsAroundLocationRes.value
     var searchedLocation by remember{ mutableStateOf("")}
     var radius by remember { mutableFloatStateOf(1f) } // Initial value of radius in km
     Column(
@@ -113,9 +109,8 @@ fun SearchScreen(
         // Search Button
         Button(
             onClick = {
-                searchParkingsAroundLocation()
-                mapViewModel.searchByLocation(searchedLocation,radius.toInt())
-            },
+                searchParkingsAroundLocation(searchedLocation, radius.toInt())
+                      },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF3B83F6)),
             modifier = Modifier
                 .fillMaxWidth(0.6f)

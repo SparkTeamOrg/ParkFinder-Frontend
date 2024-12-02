@@ -49,7 +49,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     var instructions = mutableListOf<NavigationStep>()
 
     // 0.03 is approximately 5km
-    private val viewRadius: Int = 1 // in kilometers
+    private val viewRadius: Int = 5 // in kilometers
 
     private val kmValue = 0.006 // 1km in degrees
 
@@ -151,19 +151,23 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 _getAllParkingLotsAroundLocationRes.postValue(null)
             else
             {
-                getNearbyParkingLots(point.latitude,point.longitude, radius)
+                Log.d("donkey","Parking lots found in search ")
+                getNearbyParkingLots(point.latitude,point.longitude, radius, true)
             }
 
         }
     }
 
-    private fun getNearbyParkingLots(lat: Double, long: Double, radius:Int) {
+    private fun getNearbyParkingLots(lat: Double, long: Double, radius:Int, isSearch: Boolean = false) {
         viewModelScope.launch {
             try {
                 val response = mapService.GetAllNearbyParkingLots(radius * kmValue, lat, long)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _getAllParkingLotsRes.postValue(it)
+                        if(isSearch)
+                            _getAllParkingLotsAroundLocationRes.postValue(it)
+                        else
+                            _getAllParkingLotsRes.postValue(it)
                     }
                 } else {
                     BackResponse(
@@ -171,7 +175,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         messages = listOf("An error occurred"),
                         data = emptyList<ParkingLotDto>()
                     ).let {
-                        _getAllParkingLotsRes.postValue(it)
+                        if(isSearch)
+                            _getAllParkingLotsAroundLocationRes.postValue(it)
+                        else
+                            _getAllParkingLotsRes.postValue(it)
                     }
                 }
             } catch (e: Exception) {
@@ -180,7 +187,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     messages = listOf(e.message ?: "An error occurred"),
                     data = emptyList<ParkingLotDto>()
                 ).let {
-                    _getAllParkingLotsRes.postValue(it)
+                    if(isSearch)
+                        _getAllParkingLotsAroundLocationRes.postValue(it)
+                    else
+                        _getAllParkingLotsRes.postValue(it)
                 }
             }
         }

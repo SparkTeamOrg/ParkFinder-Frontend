@@ -27,7 +27,7 @@ fun NavigationScreen (
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
-    searchFreeParkingsAroundLocation: () -> Unit = { ->},
+    searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
     navigateToVehicleInfo: () -> Unit = { ->}
 ) {
 

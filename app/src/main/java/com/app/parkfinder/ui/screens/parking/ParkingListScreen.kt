@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.screens.parking
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ data class ParkingSpace(
     val rating: Float
 )
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
     Scaffold(
@@ -40,6 +42,8 @@ fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
                     .padding(PaddingValues)
             ) {
                 items(parkingSpaces.size) { index ->
+                    val roundedValue = String.format("%.2f", parkingSpaces[index].distance).toDouble()
+                    parkingSpaces[index].distance = roundedValue
                     ParkingItem(parkingSpace = parkingSpaces[index])
                 }
             }
@@ -117,15 +121,5 @@ fun ParkingItem(parkingSpace: ParkingLotDto) {
 fun ParkingScreenPreview(
     parkings: List<ParkingLotDto>
 ) {
-    val parkingSpaces = remember {
-        listOf(
-            ParkingSpace("Zmaj Jovina 12", "0.2 km away", 5.0f),
-            ParkingSpace("Zmaj Jovina 14", "0.25 km away", 4.5f),
-            ParkingSpace("Zmaj Jovina 20", "0.3 km away", 4.8f),
-            ParkingSpace("Zmaj Jovina 22", "0.31 km away", 4.0f),
-            ParkingSpace("Radoja Domanovića", "0.5 km away", 3.8f),
-            ParkingSpace("Grada Sirena 16", "0.6 km away", 4.2f)
-        )
-    }
     ParkingListScreen(parkings)
 }
