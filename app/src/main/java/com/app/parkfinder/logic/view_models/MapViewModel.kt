@@ -2,11 +2,14 @@ package com.app.parkfinder.logic.view_models
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context.LOCATION_SERVICE
 import android.graphics.Color
 import android.graphics.Paint
 import android.location.Location
 import android.os.Looper
 import android.os.Handler
+import android.location.LocationListener
+import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -23,6 +26,7 @@ import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.services.MapService
+import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
 import com.app.parkfinder.utilis.TextOverlay
 import com.google.gson.JsonParser
@@ -39,14 +43,11 @@ import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
-import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer
-import org.osmdroid.views.overlay.mylocation.IMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import java.util.logging.Logger
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MapViewModel(application: Application) : AndroidViewModel(application), IMyLocationConsumer {
+class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
     @SuppressLint("StaticFieldLeak")
     var mapView: MapView? = null
 
@@ -56,7 +57,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     private var instructions = mutableListOf<NavigationStep>()
 
     // 0.03 is approximately 5km
-    private val viewRadius: Double = 0.03 // User can see parking lots within radius of 0.03 degrees
+    private val viewRadius: Int = 5 // in kilometers
+
+    private val kmValue = 0.006 // 1km in degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
     private var lastLocation: GeoPoint? = null
@@ -70,16 +73,19 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
     private var currentParkingLotClickedId: Int = -1
 
     private val osrmService = OsrmService.create()
+    private val nominatimService = NominatimService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
-    private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>>()
+    private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getParkingSpotsForParkingLot = MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
+    private val _getAllParkingLotsAroundLocationRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
+    val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
-            if (res.isSuccessful) {
+            if (res?.isSuccessful == true) {
                 mapView?.let { drawParkingLots(it, res.data) }
             }
         }
@@ -104,8 +110,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
 
                 hubConnection?.on("GetParkingSpots",
                     { data ->
-                        Logger.getLogger("MapViewModel").info(data.toString())
-
                         // Show a toast message on the UI thread instead of logging
                         // TODO: Replace with a more appropriate message handling
                         Handler(Looper.getMainLooper()).post {
@@ -144,52 +148,76 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                     val initialLocation = GeoPoint(it.latitude, it.longitude)
                     lastLocation = initialLocation
                     mapView.controller.setCenter(initialLocation)
-                    getNearbyParkingLots(it.latitude, it.longitude)
+                    getNearbyParkingLots(it.latitude, it.longitude,viewRadius)
                     drawCircle(it.latitude, it.longitude)
                 }
             }
         }
         mapView.overlays.add(locationOverlay)
+        val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
+
+        // Request location updates
+        try {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                2000L,
+                10f,
+                this
+            )
+        } catch (e: SecurityException) {
+            Log.e("monkey","Location permission required")
+        }
 
         // Disable zoom buttons
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.zoomController.setZoomInEnabled(false)
         mapView.zoomController.setZoomOutEnabled(false)
 
-        // Set location change listener
-        locationProvider.startLocationProvider(this)
-
         startHubConnection()
     }
 
-    override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
-        Log.d("monkey","Location changed")
-        location?.let {
-            val newLocation = GeoPoint(it.latitude, it.longitude)
-            Log.d("monkey","Location changed to: $newLocation")
-            if (newLocation.distanceToAsDouble(lastLocation) > 10) {
-                lastLocation = newLocation
-                mapView?.overlays?.clear()
-                mapView?.controller?.setCenter(newLocation)
-                getNearbyParkingLots(it.latitude, it.longitude)
-                drawCircle(it.latitude, it.longitude)
-
-                viewModelScope.launch {
-                    if(selectedRoute!=null)
-                        mapView?.overlays?.remove(selectedRoute)
-                    selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!)
-                }
+    private suspend fun geocodeLocation(location: String): GeoPoint? {
+        return try {
+            val response = withContext(Dispatchers.IO) {
+                nominatimService.getCoordinates(location, "json", 1,1,"sparkParkFinder").execute()
             }
+            if (response.isSuccessful) {
+                val result = response.body()?.firstOrNull()
+                val lat = result?.lat?.toDoubleOrNull()
+                val lon = result?.lon?.toDoubleOrNull()
+                if (lat != null && lon != null) GeoPoint(lat, lon) else null
+            } else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
-    private fun getNearbyParkingLots(lat: Double, long: Double) {
+    fun searchByLocation(location: String, radius: Int)
+    {
+        viewModelScope.launch {
+            val point = geocodeLocation(location)
+            if(point == null)
+                _getAllParkingLotsAroundLocationRes.postValue(null)
+            else
+            {
+                Log.d("donkey","Parking lots found in search ")
+                getNearbyParkingLots(point.latitude,point.longitude, radius, true)
+            }
+
+        }
+    }
+
+    private fun getNearbyParkingLots(lat: Double, long: Double, radius:Int, isSearch: Boolean = false) {
         viewModelScope.launch {
             try {
-                val response = mapService.GetAllNearbyParkingLots(viewRadius, lat, long)
+                val response = mapService.GetAllNearbyParkingLots(radius * kmValue, lat, long)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _getAllParkingLotsRes.postValue(it)
+                        if(isSearch)
+                            _getAllParkingLotsAroundLocationRes.postValue(it)
+                        else
+                            _getAllParkingLotsRes.postValue(it)
                     }
                 } else {
                     BackResponse(
@@ -197,7 +225,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                         messages = listOf("An error occurred"),
                         data = emptyList<ParkingLotDto>()
                     ).let {
-                        _getAllParkingLotsRes.postValue(it)
+                        if(isSearch)
+                            _getAllParkingLotsAroundLocationRes.postValue(it)
+                        else
+                            _getAllParkingLotsRes.postValue(it)
                     }
                 }
             } catch (e: Exception) {
@@ -206,7 +237,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
                     messages = listOf(e.message ?: "An error occurred"),
                     data = emptyList<ParkingLotDto>()
                 ).let {
-                    _getAllParkingLotsRes.postValue(it)
+                    if(isSearch)
+                        _getAllParkingLotsAroundLocationRes.postValue(it)
+                    else
+                        _getAllParkingLotsRes.postValue(it)
                 }
             }
         }
@@ -389,6 +423,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
 
             val polygon = Polygon(mapView)
             polygon.points = geoPoints
+//            Logger.getLogger("MapViewModel").info("Spot status: ${spot.parkingSpotStatus}")
 
             when (spot.parkingSpotStatus) {
                 ParkingSpotStatusEnum.FREE.ordinal -> {
@@ -493,7 +528,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
         val circle = Polygon(mapView)
         val points = mutableListOf<GeoPoint>()
         val numPoints = 100
-        val radiusInMeters = this.viewRadius * 111000 // Convert degrees to meters
+        val radiusInMeters = this.viewRadius * this.kmValue * 111000 // Convert degrees to meters
 
         for (i in 0 until numPoints) {
             val angle = 2 * Math.PI * i / numPoints
@@ -537,5 +572,38 @@ class MapViewModel(application: Application) : AndroidViewModel(application), IM
         locationOverlay?.disableMyLocation()
         stopHubConnection()
         super.onCleared()
+    }
+
+    override fun onLocationChanged(loc: Location) {
+        val newLocation = GeoPoint(loc.latitude, loc.longitude)
+        lastLocation = newLocation
+        mapView?.overlays?.clear()
+
+        if(selectedRoute != null)
+            mapView?.controller?.setCenter(newLocation)
+
+        mapView?.overlays?.add(locationOverlay)
+
+        getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
+        drawCircle(loc.latitude, loc.longitude)
+
+        viewModelScope.launch {
+            if(selectedRoute!=null)
+                mapView?.overlays?.remove(selectedRoute)
+            if(selectedPoint!=null)
+                selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!);
+        }
+
+        if (currentParkingSpotOverlays.isNotEmpty()) {
+            for (overlay in currentParkingSpotOverlays) {
+                mapView?.overlays?.add(overlay)
+            }
+        }
+
+        if (currentTextOverlays.isNotEmpty()) {
+            for (overlay in currentTextOverlays) {
+                mapView?.overlays?.add(overlay)
+            }
+        }
     }
 }
