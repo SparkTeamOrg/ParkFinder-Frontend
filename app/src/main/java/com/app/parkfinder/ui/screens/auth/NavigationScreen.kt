@@ -27,8 +27,8 @@ fun NavigationScreen (
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
-    navigateToVehicleInfo: () -> Unit,
-    searchFreeParkingsAroundLocation: (String)->Unit = {}
+    searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
+    navigateToVehicleInfo: () -> Unit = { ->}
 ) {
 
     val navController = rememberNavController()

@@ -125,7 +125,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .width(350.dp)
                     .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(Color(0xFF151A24))
                     .padding(16.dp)
                     .align(Alignment.CenterStart)
             )

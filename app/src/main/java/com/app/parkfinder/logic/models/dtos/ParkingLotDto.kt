@@ -8,9 +8,10 @@ data class ParkingLotDto (
     var road: String,
     var town: String,
     var city: String,
-    var County: String,
-    var State: String,
-    var PostCode: Int,
-    var Country: String,
-    var CountryCode: String
+    var county: String,
+    var state: String,
+    var postCode: Int,
+    var country: String,
+    var countryCode: String,
+    var distance: Double
 )
