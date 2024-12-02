@@ -72,6 +72,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _getAllParkingLotsAroundLocationRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
 
+    val getAllParkingLotsRes: LiveData<BackResponse<List<ParkingLotDto>>> = _getAllParkingLotsRes
+    val getParkingSpotsForParkingLot: LiveData<BackResponse<List<ParkingSpotDto>>> = _getParkingSpotsForParkingLot
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
@@ -384,6 +386,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
             val polygon = Polygon(mapView)
             polygon.points = geoPoints
+            Logger.getLogger("MapViewModel").info("Spot status: ${spot.parkingSpotStatus}")
 
             if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
                 // Green
