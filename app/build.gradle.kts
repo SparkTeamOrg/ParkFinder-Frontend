@@ -100,4 +100,7 @@ dependencies {
 
     //cropper
     implementation(libs.android.image.cropper)
+
+    // SignalR
+    implementation (libs.signalr)
 }
