@@ -16,6 +16,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.app.parkfinder.BuildConfig
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
@@ -101,7 +102,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         if (hubConnection == null) {
             try {
                 // Create a new HubConnection
-                hubConnection = HubConnectionBuilder.create("http://10.0.2.2:5009/baseHub")
+                hubConnection = HubConnectionBuilder.create(BuildConfig.BACKEND_URL + "baseHub")
                     .withTransport(com.microsoft.signalr.TransportEnum.LONG_POLLING)
                     .withAccessTokenProvider(Single.defer {
                         Single.just((AppPreferences.accessToken) ?: "")
