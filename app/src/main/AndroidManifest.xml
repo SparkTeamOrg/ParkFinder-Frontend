@@ -43,42 +43,42 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.LoginActivity"
+            android:name=".ui.activities.auth.login.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.RegisterActivity"
+            android:name=".ui.activities.auth.register.RegisterActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.ForgotPasswordActivity"
+            android:name=".ui.activities.auth.login.ForgotPasswordActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.VerificationCodeActivity"
+            android:name=".ui.activities.auth.register.VerificationCodeActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.ResetPasswordVerificationCodeActivity"
+            android:name=".ui.activities.auth.login.ResetPasswordVerificationCodeActivity"
             android:exported="false"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.EnterNewPasswordActivity"
+            android:name=".ui.activities.auth.login.EnterNewPasswordActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.RegisterUserDataActivity"
+            android:name=".ui.activities.auth.register.RegisterUserDataActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
-            android:name=".ui.activities.RegisterVehicleInfoActivity"
+            android:name=".ui.activities.auth.register.RegisterVehicleInfoActivity"
             android:exported="true"
             android:theme="@style/Theme.ParkFinder">
         </activity>
@@ -88,8 +88,28 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.parking.FreeParkingSearchListActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.vehicle.VehicleInfoActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.vehicle.AddVehicleActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.vehicle.UpdateVehicleActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Theme.AppCompat.Light" />
+            android:theme="@style/CustomCropTheme" />
     </application>
 
 </manifest>

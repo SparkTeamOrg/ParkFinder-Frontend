@@ -20,9 +20,11 @@ materialIconsExtended = "1.7.5"
 navigationCompose = "2.8.3"
 osmdroidAndroid = "6.1.14"
 retrofit = "2.9.0"
+signalr = "8.0.0"
 ui = "1.7.5"
 media3CommonKtx = "1.4.1"
 generativeai = "0.9.0"
+runtimeLivedata = "1.7.5"
 
 [libraries]
 android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
@@ -53,9 +55,11 @@ jwtdecode = { module = "com.auth0.android:jwtdecode", version.ref = "jwtdecode" 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+signalr = { module = "com.microsoft.signalr:signalr", version.ref = "signalr" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
