@@ -1,5 +1,6 @@
 package com.app.parkfinder.ui.activities
 
+import android.app.ActivityOptions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,19 +10,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
+import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.auth0.android.jwt.JWT
 import com.canhub.cropper.CropImageContract
-import okhttp3.MultipartBody
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
@@ -33,17 +37,21 @@ class NavigationActivity : BaseActivity() {
         if (uri != null) ImageUtils.openCropper(uri, cropImage)
     }
     private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) result.uriContent?.let { uploadImage(user.Id, it) }
+        if (result.isSuccessful) result.uriContent?.let { uploadImage(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { /* This disables any action on back button click */}
+        })
+
         Configuration.getInstance().userAgentValue = packageName
 
         user = decodeJwt()
         lifecycleScope.launch {
-            val imageUriString = getProfileImageUrl(user.Id)
+            val imageUriString = getProfileImageUrl()
             currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
         }
 
@@ -54,7 +62,12 @@ class NavigationActivity : BaseActivity() {
                     user = user,
                     currentImageUrl = currentImageUrl,
                     openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
-                    removeImage = { removeImage() }
+                    removeImage = { removeImage() },
+                    searchFreeParkingsAroundLocation = { loc, rad ->
+                        navigateToParkingList(loc,rad)
+                    }
+                    ,
+                    navigateToVehicleInfo = { navigateToVehicleInfo() }
                 )
             }
         }
@@ -63,7 +76,7 @@ class NavigationActivity : BaseActivity() {
     private fun logout() {
         val tokenService = RetrofitConfig.createService(TokenService::class.java)
         lifecycleScope.launch {
-            val deleteResponse = tokenService.delete(user.Id)
+            val deleteResponse = tokenService.delete()
             if(deleteResponse.isSuccessful) {
                 val body = deleteResponse.body()
                 if(body != null){
@@ -99,14 +112,13 @@ class NavigationActivity : BaseActivity() {
         return dto
     }
 
-    private suspend fun getProfileImageUrl(userId: Int): String? {
-        val response = imageService.getProfileImage(userId)
+    private suspend fun getProfileImageUrl(): String? {
+        val response = imageService.getProfileImage()
         return if (response.isSuccessful) {
             val body = response.body()
             if (body != null && body.isSuccessful) {
                 body.data
             } else {
-                Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
                 null
             }
         } else {
@@ -114,13 +126,12 @@ class NavigationActivity : BaseActivity() {
         }
     }
 
-    private fun uploadImage(userId: Int, imageUrl: Uri) {
+    private fun uploadImage(imageUrl: Uri) {
         lifecycleScope.launch {
             val profileImage = ImageUtils.createMultipartFromUri(contentResolver, imageUrl)
-            val userIdPart = MultipartBody.Part.createFormData("UserId", userId.toString())
 
             val response = if (profileImage != null) {
-                imageService.uploadImage(userIdPart, profileImage)
+                imageService.uploadImage(profileImage)
             } else null
 
             if (response != null && response.isSuccessful) {
@@ -136,7 +147,7 @@ class NavigationActivity : BaseActivity() {
 
     private fun removeImage() {
         lifecycleScope.launch {
-            val response = imageService.removeImage(user.Id)
+            val response = imageService.removeImage()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null && body.isSuccessful) {
@@ -146,5 +157,20 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun navigateToVehicleInfo() {
+        val intent = Intent(this, VehicleInfoActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToParkingList(location: String, radius: Int):Unit {
+        val intent = Intent(this, FreeParkingSearchListActivity::class.java).apply {
+            putExtra("location",location)
+            putExtra("radius",radius)
+        }
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 }

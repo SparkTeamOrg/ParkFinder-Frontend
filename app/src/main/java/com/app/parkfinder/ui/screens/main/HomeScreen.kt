@@ -2,25 +2,39 @@ package com.app.parkfinder.ui.screens.main
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,11 +42,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
+import com.app.parkfinder.ui.composables.DirectionsPanel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -44,6 +59,15 @@ fun HomeScreen(
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val cycle = LocalLifecycleOwner.current
+    var isSidebarVisible by remember { mutableStateOf(false) }
+    var steps = mutableListOf<NavigationStep>()
+
+    viewModel.getAllInstructions.observe(cycle){ instructions->
+        steps = instructions.toMutableList()
+        Log.d("monkey","proslo je " + steps.size)
+    }
+
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -86,12 +110,45 @@ fun HomeScreen(
 
                 viewModel.initializeMap(this)
             }
-        })
+        },
+            update = {
+
+            })
+        // Sidebar
+        AnimatedVisibility(
+            visible = isSidebarVisible,
+            enter = slideInHorizontally { it }, // Slide in from the right
+            exit = slideOutHorizontally { it } // Slide out to the right
+        ) {
+            DirectionsPanel(
+                steps = steps,
+                modifier = Modifier
+                    .width(350.dp)
+                    .fillMaxHeight()
+                    .background(Color(0xFF151A24))
+                    .padding(16.dp)
+                    .align(Alignment.CenterStart)
+            )
+        }
+        // Toggle Sidebar Button
+        FloatingActionButton(
+            onClick = { isSidebarVisible = !isSidebarVisible },
+            modifier = Modifier
+                .padding(300.dp,16.dp,0.dp,0.dp)
+                .align(Alignment.TopStart)
+        ) {
+            Icon(
+                imageVector = if (isSidebarVisible) Icons.Default.Close else Icons.Default.Menu,
+                contentDescription = "Toggle Sidebar"
+            )
+        }
+    }
 
         Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp)
+                .padding(end = 16.dp, top = 16.dp, start = 5.dp)
         ) {
 
             // Button to zoom in
@@ -152,6 +209,4 @@ fun HomeScreen(
                 }
             }
         }
-
     }
-}

@@ -6,7 +6,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface TokenService {
     @POST("token/refresh")
@@ -16,6 +15,5 @@ interface TokenService {
 
     @DELETE("token/delete")
     suspend fun delete(
-        @Query("userId") userId: Number
     ): Response<BackResponse<String>>
 }
