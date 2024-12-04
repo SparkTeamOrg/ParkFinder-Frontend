@@ -89,9 +89,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
+    private val _parkingSpotReserved = MutableSharedFlow<String>()
+    val parkingSpotReserved = _parkingSpotReserved.asSharedFlow()
+
     var clickedLot: ParkingLotDto? = null
     var clickedSpotNumber: String = "No number"
-    var clickedSpotDistance: Double = 0.0
+    private var clickedGeoPoints = mutableListOf<GeoPoint>()
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -465,17 +468,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         Log.d("Mes","Lokacija je null")
 
                     clickedSpotNumber = "P${pLots.indexOf(spot) + 1}"
+                    clickedGeoPoints = geoPoints
 
                     viewModelScope.launch {
                         _parkingSpotClicked.emit(spot)
                     }
-
-//                    viewModelScope.launch {
-//                        if(selectedRoute!=null)
-//                            mapView.overlays.remove(selectedRoute)
-//                        selectedPoint = calculateCentroid(geoPoints)
-//                        selectedRoute = drawRoute(mapView,lastLocation!!,selectedPoint!!)
-//                    }
                 }
                 else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
                     Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
@@ -493,7 +490,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
             // Add text overlay with spot number
             val textOverlay = TextOverlay(
-                text = "P" + spotNumber.toString(),
+                text = "P$spotNumber",
                 position = calculateCentroid(geoPoints),
                 textPaint = Paint(
                     Paint.ANTI_ALIAS_FLAG
@@ -566,6 +563,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         mapView?.invalidate() // Refresh the map
     }
 
+    fun startNavigation(){
+        viewModelScope.launch {
+            if (selectedRoute != null)
+                mapView?.overlays?.remove(selectedRoute)
+            selectedPoint = calculateCentroid(clickedGeoPoints)
+            selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
+        }
+    }
+
     fun enableMyLocation() {
         locationOverlay?.enableMyLocation()
     }
@@ -581,6 +587,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     fun setCenterToMyLocation() {
         locationOverlay?.myLocation?.let {
             mapView?.controller?.setCenter(GeoPoint(it.latitude, it.longitude))
+        }
+    }
+
+    fun setParkingSpotReserved(spotNumber: String){
+        viewModelScope.launch {
+            _parkingSpotReserved.emit(spotNumber)
         }
     }
 

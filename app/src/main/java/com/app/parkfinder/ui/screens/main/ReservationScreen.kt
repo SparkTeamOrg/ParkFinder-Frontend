@@ -15,10 +15,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -43,15 +41,15 @@ import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 @Composable
 fun ReservationScreen(
     lot: ParkingLotDto,
-    spotNumber: String
+    spotNumber: String,
+    startNavigation: (String) -> Unit
 ) {
     val status = if (lot.occupied == 0) "Free for reservation" else "Already reserved"
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(Color(0xFF1B1B1B))
+            .background(Color(0xFF151A24))
     ) {
         Box {
             Image(
@@ -82,7 +80,6 @@ fun ReservationScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .height(580.dp)
                     .fillMaxWidth()
             ) {
                 Row(
@@ -181,7 +178,7 @@ fun ReservationScreen(
                         .fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { /* Handle rate and leave action */ },
+                        onClick = { startNavigation(spotNumber) },
                         modifier = Modifier
                             .width(220.dp)
                             .height(48.dp)

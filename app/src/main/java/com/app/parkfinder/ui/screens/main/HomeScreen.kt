@@ -44,6 +44,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
@@ -69,6 +70,12 @@ fun HomeScreen(
     viewModel.getAllInstructions.observe(cycle){ instructions->
         steps = instructions.toMutableList()
         Log.d("monkey","proslo je " + steps.size)
+    }
+
+    NavigationStatus.isParkingSpotReserved.observe(cycle) { isReserved ->
+        if (isReserved) {
+            viewModel.startNavigation()
+        }
     }
 
     LaunchedEffect(viewModel.parkingSpotClicked) {
