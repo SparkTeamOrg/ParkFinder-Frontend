@@ -45,6 +45,8 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.models.NavigationStep
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.composables.DirectionsPanel
@@ -56,6 +58,7 @@ import org.osmdroid.views.MapView
 @Composable
 fun HomeScreen(
     user: UserDto,
+    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -68,6 +71,13 @@ fun HomeScreen(
         Log.d("monkey","proslo je " + steps.size)
     }
 
+    LaunchedEffect(viewModel.parkingSpotClicked) {
+        viewModel.parkingSpotClicked.collect { spot ->
+            viewModel.clickedLot?.let {
+                navigateToReservation(spot, it, viewModel.clickedSpotNumber)
+            }
+        }
+    }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),

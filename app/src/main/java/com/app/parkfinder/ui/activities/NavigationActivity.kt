@@ -16,10 +16,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
+import com.app.parkfinder.ui.activities.parking.ReservationActivity
 import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -67,7 +70,8 @@ class NavigationActivity : BaseActivity() {
                         navigateToParkingList(loc,rad)
                     }
                     ,
-                    navigateToVehicleInfo = { navigateToVehicleInfo() }
+                    navigateToVehicleInfo = { navigateToVehicleInfo() },
+                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
                 )
             }
         }
@@ -169,6 +173,16 @@ class NavigationActivity : BaseActivity() {
         val intent = Intent(this, FreeParkingSearchListActivity::class.java).apply {
             putExtra("location",location)
             putExtra("radius",radius)
+        }
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToReservation(spot: ParkingSpotDto, lot: ParkingLotDto, spotNumber: String) {
+        val intent = Intent(this, ReservationActivity::class.java).apply {
+            putExtra("parking_spot", spot)
+            putExtra("parking_lot", lot)
+            putExtra("spot_number", spotNumber)
         }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
