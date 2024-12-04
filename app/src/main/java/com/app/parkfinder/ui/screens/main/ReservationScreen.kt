@@ -21,14 +21,28 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,13 +50,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.VehicleDto
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun ReservationScreen(
     lot: ParkingLotDto,
     spotNumber: String,
-    startNavigation: (String) -> Unit
+    startNavigation: (String) -> Unit,
+    vehicles: List<VehicleDto>,
+    selectedVehicle: Int,
+    onSelectedVehicleChange: (Int)->Unit
 ) {
     val status = if (lot.occupied == 0) "Free for reservation" else "Already reserved"
 
@@ -146,7 +164,7 @@ fun ReservationScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Spot number: ",
+                    text = "Spot number",
                     fontSize = 18.sp,
                     color = Color.White,
                 )
@@ -160,7 +178,7 @@ fun ReservationScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Status: ",
+                    text = "Status",
                     fontSize = 18.sp,
                     color = Color.White,
                 )
@@ -169,6 +187,21 @@ fun ReservationScreen(
                     fontSize = 18.sp,
                     fontWeight = FontWeight(500),
                     color = if (lot.occupied == 0) Color(0xFF00AEEF) else Color.Red
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Choose your vehicle",
+                    fontSize = 18.sp,
+                    color = Color.White,
+                )
+                OutlinedDropdownMenu(
+                    label = "",
+                    selectedText = "Select a vehicle",
+                    options = vehicles,
+                    icon = Icons.Default.DirectionsCar,
+                    onOptionSelected = { option -> onSelectedVehicleChange(option) }
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
@@ -183,17 +216,88 @@ fun ReservationScreen(
                             .width(220.dp)
                             .height(48.dp)
                             .align(Alignment.Center),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00AEEF)),
-                        shape = RoundedCornerShape(10.dp)
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFF00AEEF),
+                            disabledBackgroundColor = Color(0xFF0FCFFF).copy(alpha = 0.3f),
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        enabled = selectedVehicle != 0,
                     ) {
                         Text(
                             text = "Reserve and navigate",
-                            color = Color.White,
+                            color = if(selectedVehicle!=0) White else White.copy(alpha = 0.3f),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OutlinedDropdownMenu(
+    label: String,
+    selectedText: String,
+    options: List<VehicleDto>,
+    icon: ImageVector,
+    onOptionSelected: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var showText by remember { mutableStateOf(selectedText) }
+
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+        OutlinedTextField(
+            readOnly = true,
+            value = showText,
+            onValueChange = {},
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color(36, 45, 64),
+                unfocusedBorderColor = White,
+                unfocusedTextColor = White,
+                focusedTextColor = White,
+                errorTextColor = Color.Red
+            ),
+            leadingIcon = {
+                androidx.compose.material3.Icon(
+                    imageVector = icon,
+                    contentDescription = "Car Icon",
+                    tint = White
+                )
+            },
+            trailingIcon = {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown Icon",
+                    tint = White
+                )
+            },
+            label = { Text(label, color = White) },
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color(36, 45, 64))
+        ) {
+            options.forEach { opt ->
+                val vehicleInfo = opt.vehicleModelVehicleBrandName + " " + opt.vehicleModelName + " " + opt.licencePlate
+                DropdownMenuItem(
+                    text = { Text(vehicleInfo, color = White) },
+                    onClick = {
+                        expanded = false
+                        onOptionSelected(opt.id)
+                        showText = vehicleInfo
+                    },
+                    modifier = Modifier.background(Color(36, 45, 64))
+                )
             }
         }
     }

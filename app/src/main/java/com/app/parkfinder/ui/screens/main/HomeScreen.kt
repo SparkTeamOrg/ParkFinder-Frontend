@@ -47,7 +47,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
-import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.composables.DirectionsPanel
@@ -59,7 +58,7 @@ import org.osmdroid.views.MapView
 @Composable
 fun HomeScreen(
     user: UserDto,
-    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
+    navigateToReservation: (Int, ParkingLotDto, String) -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
@@ -79,9 +78,9 @@ fun HomeScreen(
     }
 
     LaunchedEffect(viewModel.parkingSpotClicked) {
-        viewModel.parkingSpotClicked.collect { spot ->
+        viewModel.parkingSpotClicked.collect { spotId ->
             viewModel.clickedLot?.let {
-                navigateToReservation(spot, it, viewModel.clickedSpotNumber)
+                navigateToReservation(spotId, it, viewModel.clickedSpotNumber)
             }
         }
     }

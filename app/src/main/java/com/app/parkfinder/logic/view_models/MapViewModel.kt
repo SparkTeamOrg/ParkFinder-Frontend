@@ -86,7 +86,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
-    private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
+    private val _parkingSpotClicked = MutableSharedFlow<Int>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
     private val _parkingSpotReserved = MutableSharedFlow<String>()
@@ -471,7 +471,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     clickedGeoPoints = geoPoints
 
                     viewModelScope.launch {
-                        _parkingSpotClicked.emit(spot)
+                        _parkingSpotClicked.emit(spot.id)
                     }
                 }
                 else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {

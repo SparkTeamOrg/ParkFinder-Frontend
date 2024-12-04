@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
-import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.composables.BottomNavigationBar
@@ -30,7 +29,7 @@ fun NavigationScreen (
     removeImage: () -> Unit,
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
     navigateToVehicleInfo: () -> Unit = { ->},
-    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit
+    navigateToReservation: (Int, ParkingLotDto, String) -> Unit
 ) {
 
     val navController = rememberNavController()
