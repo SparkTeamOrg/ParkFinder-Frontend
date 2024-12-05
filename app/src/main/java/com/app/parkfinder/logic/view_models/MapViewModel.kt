@@ -86,7 +86,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
 
-    private val _parkingSpotClicked = MutableSharedFlow<Int>()
+    private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
     private val _parkingSpotReserved = MutableSharedFlow<String>()
@@ -162,7 +162,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     lastLocation = initialLocation
                     mapView.controller.setCenter(initialLocation)
                     getNearbyParkingLots(it.latitude, it.longitude,viewRadius)
-                    drawCircle(it.latitude, it.longitude)
+                    drawCircle(mapView,it.latitude, it.longitude)
                 }
             }
         }
@@ -461,8 +461,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.strokeWidth = 2f
 
             polygon.setOnClickListener{_,_,_ ->
-                if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal
-                    || spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal) {
+                if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
 
                     if(lastLocation == null)
                         Log.d("Mes","Lokacija je null")
@@ -471,11 +470,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     clickedGeoPoints = geoPoints
 
                     viewModelScope.launch {
-                        _parkingSpotClicked.emit(spot.id)
+                        _parkingSpotClicked.emit(spot)
                     }
                 }
                 else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
                     Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
+                }
+                else if(spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal){
+                    Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     Toast.makeText(getApplication(), "Parking spot is temporarily unavailable", Toast.LENGTH_SHORT).show()
@@ -537,7 +539,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     }
 
 
-    private fun drawCircle(latitude: Double, longitude: Double) {
+    private fun drawCircle(mapView: MapView,latitude: Double, longitude: Double) {
         val circle = Polygon(mapView)
         val points = mutableListOf<GeoPoint>()
         val numPoints = 100
@@ -613,7 +615,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         mapView?.overlays?.add(locationOverlay)
 
         getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
-        drawCircle(loc.latitude, loc.longitude)
+        mapView?.let { drawCircle(it,loc.latitude, loc.longitude) }
 
         viewModelScope.launch {
             if(selectedRoute!=null)

@@ -28,34 +28,20 @@ class ReservationViewModel: ViewModel() {
                     }
                 }
                 else {
-                    BackResponse(
+                   val errorResponse = BackResponse(
                         isSuccessful = false,
                         messages = listOf("An error occurred"),
                         data = ReservationDto(-1,-1,-1, Date(), false, Date())
-                    ).let {
-                        _createReservationResult.postValue(
-                            it
-                        )
-                    }
-                }
-
-                response.body()?.let {
-                    _createReservationResult.postValue(it)
+                    )
+                    _createReservationResult.postValue(errorResponse)
                 }
             } catch (e: Exception) {
-                BackResponse(
+                val errorResponse = BackResponse(
                     isSuccessful = false,
                     messages = listOf(e.message ?: "An error occurred"),
                     data = ReservationDto(-1,-1,-1, Date(), false, Date())
-                ).let {
-                    _createReservationResult.postValue(
-                        BackResponse(
-                            isSuccessful = false,
-                            messages = listOf(e.message ?: "An error occurred"),
-                            data = ReservationDto(-1,-1,-1, Date(), false, Date())
-                        )
-                    )
-                }
+                )
+                _createReservationResult.postValue(errorResponse)
             }
         }
     }

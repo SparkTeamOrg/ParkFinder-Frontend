@@ -71,7 +71,7 @@ class NavigationActivity : BaseActivity() {
                     }
                     ,
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
-                    navigateToReservation = { spotId, lot, num -> navigateToReservation(spotId, lot, num) }
+                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
                 )
             }
         }
@@ -178,9 +178,9 @@ class NavigationActivity : BaseActivity() {
         startActivity(intent, options.toBundle())
     }
 
-    private fun navigateToReservation(spotId: Int, lot: ParkingLotDto, spotNumber: String) {
+    private fun navigateToReservation(spot: ParkingSpotDto, lot: ParkingLotDto, spotNumber: String) {
         val intent = Intent(this, ReservationActivity::class.java).apply {
-            putExtra("parking_spot_id", spotId)
+            putExtra("parking_spot", spot)
             putExtra("parking_lot", lot)
             putExtra("spot_number", spotNumber)
         }

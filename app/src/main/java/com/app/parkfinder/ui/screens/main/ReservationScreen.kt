@@ -50,19 +50,38 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
+import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 
 @SuppressLint("DefaultLocale")
 @Composable
 fun ReservationScreen(
     lot: ParkingLotDto,
+    spot: ParkingSpotDto,
     spotNumber: String,
-    startNavigation: (String) -> Unit,
+    comments: List<ReservationCommentDto>,
+    rating: Double,
+    startNavigation: () -> Unit,
     vehicles: List<VehicleDto>,
     selectedVehicle: Int,
     onSelectedVehicleChange: (Int)->Unit
 ) {
-    val status = if (lot.occupied == 0) "Free for reservation" else "Already reserved"
+    val status = when (spot.parkingSpotStatus) {
+        0 -> "Free"
+        1 -> "Reserved"
+        2 -> "Occupied"
+        3 -> "Maintenance"
+        else -> "Unknown status"
+    }
+
+    val statusColor = when (spot.parkingSpotStatus) {
+        0 -> Color(0xFF00AEEF)
+        1 -> Color.Yellow
+        2 -> Color.Red
+        3 -> Color.Gray
+        else -> White
+    }
 
     Column(
         modifier = Modifier
@@ -82,7 +101,7 @@ fun ReservationScreen(
                 text = "Space details",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = White,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 16.dp)
@@ -133,7 +152,7 @@ fun ReservationScreen(
                                 )
                             }
                             Text(
-                                text =  String.format("%.2f", lot.distance) + " km",
+                                text =  String.format("%.2f", lot.distance) + " km away",
                                 fontSize = 16.sp,
                                 color = Color.White,
                                 modifier = Modifier.padding(start = 15.dp)
@@ -163,31 +182,35 @@ fun ReservationScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text = "Spot number",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                )
-                Text(
-                    text = spotNumber,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight(500),
-                    color = Color(0xFF00AEEF)
-                )
+                Row {
+                    Text(
+                        text = "Spot number ",
+                        fontSize = 18.sp,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = spotNumber,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight(500),
+                        color = Color(0xFF00AEEF)
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text = "Status",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                )
-                Text(
-                    text = status,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight(500),
-                    color = if (lot.occupied == 0) Color(0xFF00AEEF) else Color.Red
-                )
+                Row {
+                    Text(
+                        text = "Status ",
+                        fontSize = 18.sp,
+                        color = Color.White,
+                    )
+                    Text(
+                        text = status,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight(500),
+                        color = statusColor
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -211,7 +234,7 @@ fun ReservationScreen(
                         .fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { startNavigation(spotNumber) },
+                        onClick = { startNavigation() },
                         modifier = Modifier
                             .width(220.dp)
                             .height(48.dp)
