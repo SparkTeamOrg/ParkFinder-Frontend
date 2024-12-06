@@ -120,6 +120,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     String::class.java
                 )
 
+                hubConnection?.on("UpdateParkingSpots",
+                    { data ->
+                        // Show a toast message on the UI thread instead of logging
+                        // TODO: Replace with a more appropriate message handling
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(getApplication(), "Received message: $data", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    String::class.java
+                )
+
                 // Start the connection
                 hubConnection?.start()?.blockingAwait()
             } catch (e: Exception) {
@@ -438,9 +449,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     // Red
                     polygon.fillColor = Color.argb(100, 255, 0, 0)
                 }
-                else -> {
+                ParkingSpotStatusEnum.OCCUPIED_BY_SIMULATION.ordinal -> {
+                    // Red
+                    polygon.fillColor = Color.argb(100, 255, 0, 0)
+                }
+                ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE.ordinal -> {
                     // Blue
                     polygon.fillColor = Color.argb(100, 0, 0, 255)
+                }
+                else -> {
+                    // Gray
+                    polygon.fillColor = Color.argb(100, 128, 128, 128)
                 }
             }
 
@@ -461,11 +480,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         selectedRoute = drawRoute(mapView,lastLocation!!,selectedPoint!!)
                     }
                 }
-                else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
-                    Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
-                }
                 else {
-                    Toast.makeText(getApplication(), "Parking spot is temporarily unavailable", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
                 }
 
                 true
