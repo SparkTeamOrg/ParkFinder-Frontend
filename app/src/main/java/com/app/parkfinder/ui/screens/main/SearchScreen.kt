@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Scaffold
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
@@ -32,18 +31,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.models.dtos.UserDto
-import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.composables.BottomNavigationBar
-import com.app.parkfinder.ui.composables.ParkFinderLogo
-import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
 fun SearchScreen(
@@ -121,29 +111,29 @@ fun SearchScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SearchScreenPreview() {
-    ParkFinderTheme {
-        val navController = rememberNavController()
-        Scaffold(
-            topBar = { ParkFinderLogo() },
-            bottomBar = { BottomNavigationBar(navController = navController) }
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = BottomNavItem.Search.route,
-                Modifier.padding(innerPadding)
-            ) {
-                //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen(UserDto()) }
-                //UI for Search
-                composable(BottomNavItem.Search.route) { SearchScreen() }
-                //UI for Profile
-                composable(BottomNavItem.Profile.route) { ProfileScreen({},UserDto(), null, {}, {}, {}) }
-                //UI for Reserved
-                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
-            }
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SearchScreenPreview() {
+//    ParkFinderTheme {
+//        val navController = rememberNavController()
+//        Scaffold(
+//            topBar = { ParkFinderLogo() },
+//            bottomBar = { BottomNavigationBar(navController = navController) }
+//        ) { innerPadding ->
+//            NavHost(
+//                navController = navController,
+//                startDestination = BottomNavItem.Search.route,
+//                Modifier.padding(innerPadding)
+//            ) {
+//                //UI for Home
+//                composable(BottomNavItem.Home.route) { HomeScreen(UserDto(), navigateToReservation = {}) }
+//                //UI for Search
+//                composable(BottomNavItem.Search.route) { SearchScreen() }
+//                //UI for Profile
+//                composable(BottomNavItem.Profile.route) { ProfileScreen({},UserDto(), null, {}, {}, {}) }
+//                //UI for Reserved
+//                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
+//            }
+//        }
+//    }
+//}

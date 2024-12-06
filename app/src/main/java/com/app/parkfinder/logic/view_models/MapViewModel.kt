@@ -35,6 +35,8 @@ import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
@@ -83,6 +85,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions : LiveData<List<NavigationStep>> = _getAllInstructions
+
+    private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
+    val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
+
+    var clickedLot: ParkingLotDto? = null
+    var clickedSpotNumber: String = "No number"
+    private var clickedGeoPoints = mutableListOf<GeoPoint>()
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -161,7 +170,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     lastLocation = initialLocation
                     mapView.controller.setCenter(initialLocation)
                     getNearbyParkingLots(it.latitude, it.longitude,viewRadius)
-                    drawCircle(it.latitude, it.longitude)
+                    drawCircle(mapView,it.latitude, it.longitude)
                 }
             }
         }
@@ -387,6 +396,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.setOnClickListener{_,_,_ ->
                 if (currentParkingLotClickedId != lot.id) {
                     currentParkingLotClickedId = lot.id
+                    clickedLot = lot
                     getParkingSpotsForParkingLot(lot.id)
                 }
                 else {
@@ -467,18 +477,23 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.strokeWidth = 2f
 
             polygon.setOnClickListener{_,_,_ ->
-                if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal
-                    || spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal) {
+                if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
 
                     if(lastLocation == null)
                         Log.d("Mes","Lokacija je null")
 
+                    clickedSpotNumber = "P${pLots.indexOf(spot) + 1}"
+                    clickedGeoPoints = geoPoints
+
                     viewModelScope.launch {
-                        if(selectedRoute!=null)
-                            mapView.overlays.remove(selectedRoute)
-                        selectedPoint = calculateCentroid(geoPoints)
-                        selectedRoute = drawRoute(mapView,lastLocation!!,selectedPoint!!)
+                        _parkingSpotClicked.emit(spot)
                     }
+                }
+                else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
+                    Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
+                }
+                else if(spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal){
+                    Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
@@ -493,7 +508,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
             // Add text overlay with spot number
             val textOverlay = TextOverlay(
-                text = "P" + spotNumber.toString(),
+                text = "P$spotNumber",
                 position = calculateCentroid(geoPoints),
                 textPaint = Paint(
                     Paint.ANTI_ALIAS_FLAG
@@ -540,7 +555,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     }
 
 
-    private fun drawCircle(latitude: Double, longitude: Double) {
+    private fun drawCircle(mapView: MapView,latitude: Double, longitude: Double) {
         val circle = Polygon(mapView)
         val points = mutableListOf<GeoPoint>()
         val numPoints = 100
@@ -562,8 +577,24 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         // Disable default click behavior
         circle.setOnClickListener { _, _, _ -> true }
 
-        mapView?.overlays?.add(circle)
-        mapView?.invalidate() // Refresh the map
+        mapView.overlays?.add(circle)
+        mapView.invalidate() // Refresh the map
+    }
+
+    //draws route from current location to parking spot
+    fun startNavigation(){
+        viewModelScope.launch {
+            if (selectedRoute != null)
+                mapView?.overlays?.remove(selectedRoute)
+            selectedPoint = calculateCentroid(clickedGeoPoints)
+
+            lastLocation?.let {
+                val initialLocation = GeoPoint(it.latitude, it.longitude)
+                mapView?.controller?.setCenter(initialLocation)
+            }
+
+            selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
+        }
     }
 
     fun enableMyLocation() {
@@ -601,7 +632,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         mapView?.overlays?.add(locationOverlay)
 
         getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
-        drawCircle(loc.latitude, loc.longitude)
+        mapView?.let { drawCircle(it,loc.latitude, loc.longitude) }
 
         viewModelScope.launch {
             if(selectedRoute!=null)

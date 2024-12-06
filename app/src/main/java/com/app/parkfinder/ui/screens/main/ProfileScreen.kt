@@ -41,19 +41,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
-import com.app.parkfinder.ui.BottomNavItem
-import com.app.parkfinder.ui.composables.BottomNavigationBar
-import com.app.parkfinder.ui.composables.ParkFinderLogo
-import com.app.parkfinder.ui.theme.ParkFinderTheme
 import java.util.logging.Logger
 
 @Composable
@@ -63,7 +55,7 @@ fun ProfileScreen(
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
-    navigateToVehicleInfo: () -> Unit
+    navigateToVehicleInfo: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -248,7 +240,6 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
 
 @Composable
 fun ProfileImage(profileImage: Uri?) {
-    Log.d("Uri",profileImage.toString())
     val imagePainter = rememberAsyncImagePainter(
         model = profileImage ?: R.drawable.default_profile_picture
     )
@@ -263,37 +254,37 @@ fun ProfileImage(profileImage: Uri?) {
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    ParkFinderTheme {
-        val navController = rememberNavController()
-        Scaffold(
-            topBar = { ParkFinderLogo() },
-            bottomBar = { BottomNavigationBar(navController = navController) }
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = BottomNavItem.Profile.route,
-                Modifier.padding(innerPadding)
-            ) {
-                //UI for Home
-                composable(BottomNavItem.Home.route) { HomeScreen(UserDto()) }
-                //UI for Search
-                composable(BottomNavItem.Search.route) { SearchScreen() }
-                //UI for Profile
-                composable(BottomNavItem.Profile.route) {
-                    ProfileScreen(
-                        {},
-                        UserDto(),
-                        null,
-                        {},
-                        {},
-                        {})
-                }
-                //UI for Reserved
-                composable(BottomNavItem.Reserved.route) { ReservedScreen() }
-            }
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ProfileScreenPreview() {
+//    ParkFinderTheme {
+//        val navController = rememberNavController()
+//        Scaffold(
+//            topBar = { ParkFinderLogo() },
+//            bottomBar = { BottomNavigationBar(navController = navController) }
+//        ) { innerPadding ->
+//            NavHost(
+//                navController = navController,
+//                startDestination = BottomNavItem.Profile.route,
+//                Modifier.padding(innerPadding)
+//            ) {
+//                //UI for Home
+//                composable(BottomNavItem.Home.route) { HomeScreen(UserDto(), {} ) }
+//                //UI for Search
+//                composable(BottomNavItem.Search.route) { SearchScreen() }
+//                //UI for Profile
+//                composable(BottomNavItem.Profile.route) {
+//                    ProfileScreen(
+//                        {},
+//                        UserDto(),
+//                        null,
+//                        {},
+//                        {},
+//                        {})
+//                }
+//                //UI for Reserved
+//                composable(BottomNavItem.Reserved.route) { ReservedScreen() }
+//            }
+//        }
+//    }
+//}
