@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.composables.BottomNavigationBar
@@ -28,7 +29,8 @@ fun NavigationScreen (
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
-    navigateToVehicleInfo: () -> Unit = { ->}
+    navigateToVehicleInfo: () -> Unit = { ->},
+    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -42,7 +44,7 @@ fun NavigationScreen (
             Modifier.padding(innerPadding)
         ) {
             //UI for Home
-            composable(BottomNavItem.Home.route) { HomeScreen(user) }
+            composable(BottomNavItem.Home.route) { HomeScreen(user, navigateToReservation) }
             //UI for Search
             composable(BottomNavItem.Search.route) { SearchScreen(searchFreeParkingsAroundLocation) }
             //UI for Profile
@@ -57,15 +59,16 @@ fun NavigationScreen (
 
 
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    NavigationScreen(
-        logout = {},
-        user = UserDto(),
-        currentImageUrl = null,
-        openImagePicker = {},
-        removeImage = {},
-        navigateToVehicleInfo = {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    NavigationScreen(
+//        logout = {},
+//        user = UserDto(),
+//        currentImageUrl = null,
+//        openImagePicker = {},
+//        removeImage = {},
+//        navigateToVehicleInfo = {},
+//        navigateToReservation = {}
+//    )
+//}
