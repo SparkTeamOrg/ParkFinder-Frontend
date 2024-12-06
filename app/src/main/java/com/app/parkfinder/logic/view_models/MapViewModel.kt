@@ -56,6 +56,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     private var hubConnection: HubConnection? = null
 
+    private val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
     private var steps: List<Step> = emptyList()
     private var instructions = mutableListOf<NavigationStep>()
 
@@ -175,19 +176,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             }
         }
         mapView.overlays.add(locationOverlay)
-        val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
-
-        // Request location updates
-        try {
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                2000L,
-                10f,
-                this
-            )
-        } catch (e: SecurityException) {
-            Log.e("monkey","Location permission required")
-        }
 
         // Disable zoom buttons
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
@@ -197,7 +185,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         startHubConnection()
     }
 
-    private suspend fun geocodeLocation(location: String): GeoPoint? {
+    private suspend fun getLocationCoordinates(location: String): GeoPoint? {
         return try {
             val response = withContext(Dispatchers.IO) {
                 nominatimService.getCoordinates(location, "json", 1,1,"sparkParkFinder").execute()
@@ -217,7 +205,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     fun searchByLocation(location: String, radius: Int)
     {
         viewModelScope.launch {
-            val point = geocodeLocation(location)
+            val point = getLocationCoordinates(location)
             if(point == null)
                 _getAllParkingLotsAroundLocationRes.postValue(null)
             else
@@ -621,8 +609,31 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         super.onCleared()
     }
 
+    fun stopLocationTrack()
+    {
+        Log.d("Serviceee","stopping location track")
+        locationManager.removeUpdates(this)
+    }
+    fun startLocationTrack()
+    {
+        Log.d("Serviceee","starting location track")
+        try {
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                2000L,
+                10f,
+                this
+            )
+        } catch (e: SecurityException) {
+            Log.e("monkey","Location permission required")
+        }
+    }
+
+
+
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
+        Log.d("Serviceeee","Location changed")
         lastLocation = newLocation
         mapView?.overlays?.clear()
 

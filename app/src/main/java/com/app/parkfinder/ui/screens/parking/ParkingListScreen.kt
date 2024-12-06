@@ -4,28 +4,17 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
-import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.composables.ParkFinderLogo
-
-data class ParkingSpace(
-    val name: String,
-    val distance: String,
-    val rating: Float
-)
 
 @SuppressLint("DefaultLocale")
 @Composable
