@@ -2,13 +2,10 @@ package com.app.parkfinder.ui.screens.main
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +31,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -42,6 +40,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -62,13 +61,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
-import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -76,14 +72,14 @@ import java.util.Locale
 @Composable
 fun ReservationScreen(
     lot: ParkingLotDto,
-    spot: ParkingSpotDto,
     spotNumber: String,
     comments: List<ReservationCommentDto>,
     rating: Double,
     startNavigation: () -> Unit,
     vehicles: List<VehicleDto>,
     selectedVehicle: Int,
-    onSelectedVehicleChange: (Int)->Unit
+    onSelectedVehicleChange: (Int)->Unit,
+    onBackClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -100,15 +96,33 @@ fun ReservationScreen(
                     .fillMaxWidth()
                     .height(350.dp)
             )
-            Text(
-                text = "Space details",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = White,
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp)
-            )
+                    .fillMaxSize()
+                    .padding(top = 5.dp, start = 5.dp)
+            ) {
+                IconButton(
+                    onClick = { onBackClick() },
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(Color(0xFF151A24), shape = CircleShape)
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = White
+                    )
+                }
+                Text(
+                    text = "Space details",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                )
+            }
         }
 
         Box(
@@ -286,15 +300,34 @@ fun ReservationScreen(
                     fontWeight = FontWeight.Bold,
                     color = White,
                 )
-
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)  ,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    items(comments) { comment ->
-                        CommentCard(comment)
+                Divider(
+                    color = White.copy(alpha = 0.3f),
+                    thickness = 2.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if(comments.isNotEmpty()) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        items(comments) { comment ->
+                            CommentCard(comment)
+                        }
+                    }
+                }else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                            .padding(top = 20.dp)
+                    ) {
+                        Text(
+                            text = "No reviews yet",
+                            fontSize = 18.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(start = 5.dp)
+                                .align(Alignment.Center)
+                        )
                     }
                 }
             }

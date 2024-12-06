@@ -89,9 +89,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
-    private val _parkingSpotReserved = MutableSharedFlow<String>()
-    val parkingSpotReserved = _parkingSpotReserved.asSharedFlow()
-
     var clickedLot: ParkingLotDto? = null
     var clickedSpotNumber: String = "No number"
     private var clickedGeoPoints = mutableListOf<GeoPoint>()
@@ -122,6 +119,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     .build()
 
                 hubConnection?.on("GetParkingSpots",
+                    { data ->
+                        // Show a toast message on the UI thread instead of logging
+                        // TODO: Replace with a more appropriate message handling
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(getApplication(), "Received message: $data", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    String::class.java
+                )
+
+                hubConnection?.on("UpdateParkingSpots",
                     { data ->
                         // Show a toast message on the UI thread instead of logging
                         // TODO: Replace with a more appropriate message handling
@@ -451,9 +459,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     // Red
                     polygon.fillColor = Color.argb(100, 255, 0, 0)
                 }
-                else -> {
+                ParkingSpotStatusEnum.OCCUPIED_BY_SIMULATION.ordinal -> {
+                    // Red
+                    polygon.fillColor = Color.argb(100, 255, 0, 0)
+                }
+                ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE.ordinal -> {
                     // Blue
                     polygon.fillColor = Color.argb(100, 0, 0, 255)
+                }
+                else -> {
+                    // Gray
+                    polygon.fillColor = Color.argb(100, 128, 128, 128)
                 }
             }
 
@@ -480,7 +496,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    Toast.makeText(getApplication(), "Parking spot is temporarily unavailable", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
                 }
 
                 true
@@ -561,15 +577,22 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         // Disable default click behavior
         circle.setOnClickListener { _, _, _ -> true }
 
-        mapView?.overlays?.add(circle)
-        mapView?.invalidate() // Refresh the map
+        mapView.overlays?.add(circle)
+        mapView.invalidate() // Refresh the map
     }
 
+    //draws route from current location to parking spot
     fun startNavigation(){
         viewModelScope.launch {
             if (selectedRoute != null)
                 mapView?.overlays?.remove(selectedRoute)
             selectedPoint = calculateCentroid(clickedGeoPoints)
+
+            lastLocation?.let {
+                val initialLocation = GeoPoint(it.latitude, it.longitude)
+                mapView?.controller?.setCenter(initialLocation)
+            }
+
             selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
         }
     }
@@ -589,12 +612,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     fun setCenterToMyLocation() {
         locationOverlay?.myLocation?.let {
             mapView?.controller?.setCenter(GeoPoint(it.latitude, it.longitude))
-        }
-    }
-
-    fun setParkingSpotReserved(spotNumber: String){
-        viewModelScope.launch {
-            _parkingSpotReserved.emit(spotNumber)
         }
     }
 

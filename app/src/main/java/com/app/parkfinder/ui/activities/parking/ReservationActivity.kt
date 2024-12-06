@@ -2,10 +2,10 @@ package com.app.parkfinder.ui.activities.parking
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,42 +34,42 @@ class ReservationActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        vehicleViewModel.getUserVehicles()
+
         setContent {
             spot = intent.getParcelableExtra("parking_spot", ParkingSpotDto::class.java)
             val lot = intent.getParcelableExtra("parking_lot", ParkingLotDto::class.java)
             val spotNumber = intent.getStringExtra("spot_number")
 
-            vehicleViewModel.getUserVehicles()
-            spot?.let { reservationHistoryViewModel.getParkingSpotComments(it.id) }
-            spot?.let { reservationHistoryViewModel.getParkingSpotRating(it.id) }
+            LaunchedEffect(spot?.id) {
+                spot?.let {
+                    reservationHistoryViewModel.getParkingSpotComments(it.id)
+                    reservationHistoryViewModel.getParkingSpotRating(it.id)
+                }
+            }
 
             ParkFinderTheme {
                 val userVehicles = vehicleViewModel.userVehiclesResult.observeAsState(BackResponse(isSuccessful = false, messages = emptyList(), data = emptyList()))
                 val comments = reservationHistoryViewModel.parkingSpotCommentsResult.observeAsState(BackResponse(isSuccessful = false, messages = emptyList(), data = emptyList()))
                 val rating = reservationHistoryViewModel.parkingSpotRatingResult.observeAsState(BackResponse(isSuccessful = false, messages = emptyList(), data = -1.0))
 
-                Log.d("Debug", spot?.id.toString())
-                Log.d("Debug", comments.toString())
-                Log.d("Debug", rating.toString())
-
                 if (lot != null && spotNumber != null) {
                     ReservationScreen(
                         lot = lot,
-                        spot = spot!!,
                         spotNumber = spotNumber,
                         comments = comments.value.data,
                         rating = rating.value.data,
                         startNavigation = { startNavigation() },
                         vehicles = userVehicles.value.data,
                         selectedVehicle = selectedVehicle,
-                        onSelectedVehicleChange = { selectedVehicle = it }
+                        onSelectedVehicleChange = { selectedVehicle = it },
+                        onBackClick = { finish() }
                     )
                 }
             }
 
             reservationViewModel.createReservationResult.observe(this) { result ->
                 if (result.isSuccessful) {
-                    Log.d("Debug", result.data.toString())
                     Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
                     NavigationStatus.signalParkingSpotReserved()
                     finish()
