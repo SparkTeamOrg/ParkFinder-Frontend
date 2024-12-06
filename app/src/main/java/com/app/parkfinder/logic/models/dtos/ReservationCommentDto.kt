@@ -6,5 +6,5 @@ data class ReservationCommentDto (
     val rating: Int,
     val userFirstName: String,
     val userLastName: String,
-    val userProfileImage: String
+    val userProfileImage: String?
 )

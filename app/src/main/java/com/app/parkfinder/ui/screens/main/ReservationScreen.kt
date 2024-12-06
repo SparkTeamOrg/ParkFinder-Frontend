@@ -1,11 +1,18 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,11 +22,17 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bookmark
@@ -46,13 +59,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
+import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -67,26 +85,11 @@ fun ReservationScreen(
     selectedVehicle: Int,
     onSelectedVehicleChange: (Int)->Unit
 ) {
-    val status = when (spot.parkingSpotStatus) {
-        0 -> "Free"
-        1 -> "Reserved"
-        2 -> "Occupied"
-        3 -> "Maintenance"
-        else -> "Unknown status"
-    }
-
-    val statusColor = when (spot.parkingSpotStatus) {
-        0 -> Color(0xFF00AEEF)
-        1 -> Color.Yellow
-        2 -> Color.Red
-        3 -> Color.Gray
-        else -> White
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF151A24))
+            .verticalScroll(rememberScrollState()),
     ) {
         Box {
             Image(
@@ -110,52 +113,54 @@ fun ReservationScreen(
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .offset(y = (-50).dp)
-                .background(Color(0xFF151A24), shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                .background(
+                    Color(0xFF151A24),
+                    shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+                )
                 .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Column(
                         Modifier
                             .width(325.dp)
-                            .height(65.dp)
+                            .height(50.dp)
                     ) {
                         Text(
                             text = (
-                                    if (lot.road != null)
-                                        lot.road + " " + lot.city
-                                    else "Unknown road " + lot.city
+                                if (lot.road != null)
+                                    lot.road.toString()
+                                else "Unknown road "
                             ),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = White,
                             modifier = Modifier.weight(1f)
                         )
                         Row(
-                            modifier = Modifier.width(325.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            repeat(5) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Star",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(32.dp)
+                            lot.city?.let {
+                                Text(
+                                    text = it,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = White.copy(alpha = 0.3f),
+                                    modifier = Modifier.padding(end = 10.dp)
                                 )
                             }
                             Text(
                                 text =  String.format("%.2f", lot.distance) + " km away",
-                                fontSize = 16.sp,
-                                color = Color.White,
-                                modifier = Modifier.padding(start = 15.dp)
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF00AEEF),
                             )
                         }
                     }
@@ -174,50 +179,68 @@ fun ReservationScreen(
                             imageVector = Icons.Default.Bookmark,
                             contentDescription = "Bookmark",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
+                                .size(24.dp)
                                 .align(Alignment.Center)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
-                Row {
-                    Text(
-                        text = "Spot number ",
-                        fontSize = 18.sp,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = spotNumber,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight(500),
-                        color = Color(0xFF00AEEF)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row {
-                    Text(
-                        text = "Status ",
-                        fontSize = 18.sp,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = status,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight(500),
-                        color = statusColor
-                    )
-                }
+                RatingStars(rating)
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
+                    text = "Spot number ",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+                Divider(
+                    color = White.copy(alpha = 0.3f),
+                    thickness = 2.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = spotNumber,
+                    fontSize = 18.sp,
+                    color = Color(0xFF00AEEF)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "Status ",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                )
+                Divider(
+                    color = White.copy(alpha = 0.3f),
+                    thickness = 2.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "Free",
+                    fontSize = 18.sp,
+                    color = Color(0xFF00AEEF)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
                     text = "Choose your vehicle",
                     fontSize = 18.sp,
-                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                )
+                Divider(
+                    color = White.copy(alpha = 0.3f),
+                    thickness = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 7.dp)
                 )
                 OutlinedDropdownMenu(
                     label = "",
@@ -227,7 +250,7 @@ fun ReservationScreen(
                     onOptionSelected = { option -> onSelectedVehicleChange(option) }
                 )
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Box(
                     modifier = Modifier
@@ -254,6 +277,130 @@ fun ReservationScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Reviews",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                )
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)  ,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    items(comments) { comment ->
+                        CommentCard(comment)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CommentCard(comment: ReservationCommentDto) {
+    Card(
+        modifier = Modifier
+            .size(220.dp, 300.dp)
+            .padding(8.dp),
+        elevation = 4.dp,
+        backgroundColor = Color(0xFF333333),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Row(modifier = Modifier.padding(8.dp)){
+                Box(modifier = Modifier.size(50.dp)){
+                    ProfileImage(Uri.parse(comment.userProfileImage))
+                }
+                Column(
+                    modifier = Modifier.padding(start = 5.dp)
+                ) {
+                    Text(
+                        text = comment.userFirstName + " " + comment.userLastName,
+                        fontWeight = FontWeight.Bold,
+                        color = White
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        repeat(5) { index ->
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Star",
+                                tint = if (comment.rating > index) Color.Yellow else Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            Box(modifier = Modifier.height(190.dp)) {
+                Text(
+                    text = comment.comment,
+                    color = White.copy(alpha = 0.7f),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .verticalScroll(rememberScrollState()),
+                    textAlign = TextAlign.Left
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp, end = 5.dp),
+                text = formatDate(comment.endTime),
+                textAlign = TextAlign.Right,
+                fontSize = 12.sp,
+                color = White.copy(alpha = 0.5f)
+            )
+        }
+    }
+}
+
+@Composable
+fun RatingStars(rating: Double){
+    Row {
+        if(rating != 0.0) {
+            repeat(5) { index ->
+                val starColor = when {
+                    rating >= index + 1 -> Color.Yellow
+                    rating >= index + 0.5 -> Color.Yellow.copy(alpha = 0.5f)
+                    else -> Color.Gray
+                }
+
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Star",
+                    tint = starColor,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }else{
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Star",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(25.dp)
+                )
+                Text(
+                    text = "Not rated yet",
+                    fontSize = 18.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(start = 5.dp)
+                )
             }
         }
     }
@@ -277,8 +424,8 @@ fun OutlinedDropdownMenu(
             value = showText,
             onValueChange = {},
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color(36, 45, 64),
-                unfocusedBorderColor = White,
+                unfocusedContainerColor = Color(0xFF151A24),
+                unfocusedBorderColor = White.copy(alpha = 0.3f),
                 unfocusedTextColor = White,
                 focusedTextColor = White,
                 errorTextColor = Color.Red
@@ -324,4 +471,15 @@ fun OutlinedDropdownMenu(
             }
         }
     }
+}
+
+fun formatDate(dateString: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSS", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    val date = inputFormat.parse(dateString)
+    return if(date!=null){
+        outputFormat.format(date).toString()
+    }
+    else{ "Error" }
 }

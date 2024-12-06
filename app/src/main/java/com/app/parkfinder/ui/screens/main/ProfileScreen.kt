@@ -240,7 +240,6 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
 
 @Composable
 fun ProfileImage(profileImage: Uri?) {
-    Log.d("Uri",profileImage.toString())
     val imagePainter = rememberAsyncImagePainter(
         model = profileImage ?: R.drawable.default_profile_picture
     )
