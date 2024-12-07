@@ -26,6 +26,8 @@ import com.app.parkfinder.logic.models.OsrmRouteResponse
 import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
+import com.app.parkfinder.logic.models.dtos.UserLocationDto
+import com.app.parkfinder.logic.services.LocationService
 import com.app.parkfinder.logic.services.MapService
 import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
@@ -78,6 +80,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     private val osrmService = OsrmService.create()
     private val nominatimService = NominatimService.create()
+    private val locationUpdateService = RetrofitConfig.createService(LocationService::class.java)
     private val mapService = RetrofitConfig.createService(MapService::class.java)
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getParkingSpotsForParkingLot = MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
@@ -633,6 +636,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
+        //update user location on server
+        viewModelScope.launch {
+            locationUpdateService.updateUserLocation(UserLocationDto(loc.longitude,loc.latitude,true))
+        }
         Log.d("Serviceeee","Location changed")
         lastLocation = newLocation
         mapView?.overlays?.clear()
