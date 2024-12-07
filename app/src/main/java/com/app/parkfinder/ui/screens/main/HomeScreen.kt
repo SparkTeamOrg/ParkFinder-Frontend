@@ -246,11 +246,24 @@ fun HomeScreen(
             }
         }
 
-        ConfirmModal(showModal, onDismiss = { showModal = false }, confirmReservation, cancelReservation, reservationId)
+        ConfirmModal(showModal,
+            onDismiss = { showModal = false },
+            confirmReservation,
+            cancelReservation,
+            reservationId,
+            mapViewModel
+        )
     }
 
 @Composable
-fun ConfirmModal(show: Boolean, onDismiss: () -> Unit, confirm: (Int) -> Unit, cancel: (Int) -> Unit, reservationId: Int?) {
+fun ConfirmModal(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    confirm: (Int) -> Unit,
+    cancel: (Int) -> Unit,
+    reservationId: Int?,
+    mapViewModel: MapViewModel,
+) {
     if (show) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -281,6 +294,11 @@ fun ConfirmModal(show: Boolean, onDismiss: () -> Unit, confirm: (Int) -> Unit, c
                 androidx.compose.material3.Button(
                     onClick = {
                         if (reservationId != null) {
+                            val spotId = mapViewModel.clickedSpotId
+                            val color = android.graphics.Color.argb(100, 255, 0, 0)
+                            if (spotId != null) {
+                                mapViewModel.updateParkingSpotColor(spotId, color)
+                            }
                             confirm(reservationId)
                         }
                         onDismiss()
@@ -296,6 +314,11 @@ fun ConfirmModal(show: Boolean, onDismiss: () -> Unit, confirm: (Int) -> Unit, c
                 androidx.compose.material3.Button(
                     onClick = {
                         if (reservationId != null) {
+                            val spotId = mapViewModel.clickedSpotId
+                            val color = android.graphics.Color.argb(100, 0, 255, 0)
+                            if (spotId != null) {
+                                mapViewModel.updateParkingSpotColor(spotId, color)
+                            }
                             cancel(reservationId)
                         }
                         onDismiss()
@@ -308,4 +331,5 @@ fun ConfirmModal(show: Boolean, onDismiss: () -> Unit, confirm: (Int) -> Unit, c
                 }
             }
         )
-    }}
+    }
+}

@@ -96,8 +96,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     val showConfirmReservationModal: LiveData<Unit?> = _showConfirmReservationModal
 
     var clickedLot: ParkingLotDto? = null
+    var clickedSpotId: Int? = null
     var clickedSpotNumber: String = ""
     private var clickedGeoPoints = mutableListOf<GeoPoint>()
+    private val spotToPolygonMap = mutableMapOf<Int, Polygon>()
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -481,12 +483,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             polygon.strokeColor = Color.RED
             polygon.strokeWidth = 2f
 
+            spotToPolygonMap[spot.id] = polygon
+
             polygon.setOnClickListener{_,_,_ ->
                 if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
 
                     if(lastLocation == null)
                         Log.d("Mes","Lokacija je null")
 
+                    clickedSpotId = spot.id
                     clickedSpotNumber = "P${pLots.indexOf(spot) + 1}"
                     clickedGeoPoints = geoPoints
 
@@ -593,6 +598,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 mapView?.overlays?.remove(selectedRoute)
             selectedPoint = calculateCentroid(clickedGeoPoints)
 
+            clickedSpotId?.let { updateParkingSpotColor(it, Color.argb(100, 255, 255, 0)) }
             setCenterToMyLocation()
 
             selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
@@ -633,6 +639,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         locationOverlay?.disableMyLocation()
         stopHubConnection()
         super.onCleared()
+    }
+
+    fun updateParkingSpotColor(spotId: Int, newColor: Int) {
+        val polygon = spotToPolygonMap[spotId]
+        polygon?.let {
+            it.fillColor = newColor
+            mapView?.invalidate()
+        }
     }
 
     private fun checkIfArrived(currentLocation: GeoPoint, destination: GeoPoint, threshold: Double = 50.0){
