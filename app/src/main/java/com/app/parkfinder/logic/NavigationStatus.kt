@@ -3,13 +3,13 @@ package com.app.parkfinder.logic
 import androidx.lifecycle.MutableLiveData
 
 object NavigationStatus {
-    val isParkingSpotReserved = MutableLiveData(false)
+    val isParkingSpotReserved = MutableLiveData<Int?>()
 
-    fun signalParkingSpotReserved() {
-        isParkingSpotReserved.postValue(true)
+    fun signalParkingSpotReserved(spotNumber: Int) {
+        isParkingSpotReserved.postValue(spotNumber)
     }
 
     fun signalParkingSpotLeft() {
-        isParkingSpotReserved.postValue(false)
+        isParkingSpotReserved.postValue(null)
     }
 }

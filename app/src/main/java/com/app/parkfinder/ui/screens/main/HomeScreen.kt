@@ -1,6 +1,7 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,20 +27,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -56,6 +61,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
 
+@SuppressLint("OpaqueUnitKey")
 @Composable
 fun HomeScreen(
     user: UserDto,
@@ -66,14 +72,25 @@ fun HomeScreen(
     val cycle = LocalLifecycleOwner.current
     var isSidebarVisible by remember { mutableStateOf(false) }
     var steps = mutableListOf<NavigationStep>()
+    var showModal by remember { mutableStateOf(false) }
 
     viewModel.getAllInstructions.observe(cycle){ instructions->
         steps = instructions.toMutableList()
         Log.d("monkey","proslo je " + steps.size)
     }
 
-    NavigationStatus.isParkingSpotReserved.observe(cycle) { isReserved ->
-        if (isReserved) {
+    val show by viewModel.showConfirmReservationModal.observeAsState()
+    LaunchedEffect(show) {
+        if(show!=null) {
+            Log.d("Debug", show.toString())
+            showModal = true
+            viewModel.resetShowModalSignal()
+        }
+    }
+
+    val reserved by NavigationStatus.isParkingSpotReserved.observeAsState(null)
+    LaunchedEffect(reserved) {
+        if(reserved != null){
             viewModel.startNavigation()
         }
     }
@@ -226,4 +243,53 @@ fun HomeScreen(
                 }
             }
         }
+
+        ConfirmModal(showModal, onDismiss = { showModal = false })
     }
+
+@Composable
+fun ConfirmModal(show: Boolean, onDismiss: () -> Unit) {
+
+    if (show) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = "Confirm Reservation",
+                    color = White
+                )
+            },
+            text = {
+                Text(
+                    text = "You have arrived at your destination. Please confirm your reservation to proceed.",
+                    color = White,
+                    fontSize = 16.sp
+                )
+            },
+            containerColor = Color(0xFF151A24),
+            confirmButton = {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        onDismiss()
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF)
+                    )
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        onDismiss()
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }}

@@ -47,8 +47,11 @@ import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
     @SuppressLint("StaticFieldLeak")
@@ -89,8 +92,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
+    private val _showConfirmReservationModal = MutableLiveData<Unit?>()
+    val showConfirmReservationModal: LiveData<Unit?> = _showConfirmReservationModal
+
     var clickedLot: ParkingLotDto? = null
-    var clickedSpotNumber: String = "No number"
+    var clickedSpotNumber: String = ""
     private var clickedGeoPoints = mutableListOf<GeoPoint>()
 
     init {
@@ -321,7 +327,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     instructions.clear()
                     var a  = 0
                     steps.map { step: Step ->
-
 
                         Log.e("${++a} TURN","Action: ${step.maneuver.type}, Name: ${step.name}, Direction: ${step.maneuver.modifier}, Exit: ${step.maneuver.exit}")
 
@@ -588,13 +593,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 mapView?.overlays?.remove(selectedRoute)
             selectedPoint = calculateCentroid(clickedGeoPoints)
 
-            lastLocation?.let {
-                val initialLocation = GeoPoint(it.latitude, it.longitude)
-                mapView?.controller?.setCenter(initialLocation)
-            }
+            setCenterToMyLocation()
 
             selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
         }
+    }
+
+    private fun stopNavigation(){
+        selectedPoint = null
+        mapView?.overlays?.remove(selectedRoute)
+        selectedRoute = null
+        setCenterToMyLocation()
     }
 
     fun enableMyLocation() {
@@ -615,15 +624,47 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
+    fun resetShowModalSignal(){
+        _showConfirmReservationModal.postValue(null)
+    }
+
     fun destroy() {
         locationOverlay?.disableMyLocation()
         stopHubConnection()
         super.onCleared()
     }
 
+    private fun checkIfArrived(currentLocation: GeoPoint, destination: GeoPoint, threshold: Double = 50.0){
+        val distance = calculateDistance(currentLocation, destination)
+        if (distance <= threshold) {
+            _showConfirmReservationModal.postValue(Unit)
+            stopNavigation()
+        }
+    }
+
+    private fun calculateDistance(from: GeoPoint, to: GeoPoint): Double {
+        val lat1 = Math.toRadians(from.latitude)
+        val lon1 = Math.toRadians(from.longitude)
+        val lat2 = Math.toRadians(to.latitude)
+        val lon2 = Math.toRadians(to.longitude)
+
+        val r = 6371e3
+
+        val deltaLat = lat2 - lat1
+        val deltaLon = lon2 - lon1
+
+        val a = sin(deltaLat / 2).pow(2) + cos(lat1) * cos(lat2) * sin(deltaLon / 2).pow(2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return r * c
+    }
+
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
         lastLocation = newLocation
+
+        locationOverlay?.let { selectedPoint?.let { it1 -> checkIfArrived(newLocation, it1) } }
+
         mapView?.overlays?.clear()
 
         if(selectedRoute != null)
