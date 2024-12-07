@@ -6,7 +6,7 @@ data class ReservationDto (
     val id: Int,
     val vehicleId: Int,
     val parkingSpotId: Int,
-    val startTime: Date,
+    val startTime: String,
     val isConfirmed: Boolean,
     val confirmationTime: Date
 )

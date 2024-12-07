@@ -596,6 +596,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             setCenterToMyLocation()
 
             selectedRoute = mapView?.let { drawRoute(it, lastLocation!!, selectedPoint!!) }
+            lastLocation?.let { selectedPoint?.let { it1 -> checkIfArrived(it, it1) } }
         }
     }
 

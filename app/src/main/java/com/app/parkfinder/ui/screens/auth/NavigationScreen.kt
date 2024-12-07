@@ -29,6 +29,8 @@ fun NavigationScreen (
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
+    confirmReservation: (Int) -> Unit,
+    cancelReservation: (Int) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit
 ) {
@@ -44,7 +46,7 @@ fun NavigationScreen (
             Modifier.padding(innerPadding)
         ) {
             //UI for Home
-            composable(BottomNavItem.Home.route) { HomeScreen(user, navigateToReservation) }
+            composable(BottomNavItem.Home.route) { HomeScreen(user, navigateToReservation, confirmReservation, cancelReservation) }
             //UI for Search
             composable(BottomNavItem.Search.route) { SearchScreen(searchFreeParkingsAroundLocation) }
             //UI for Profile

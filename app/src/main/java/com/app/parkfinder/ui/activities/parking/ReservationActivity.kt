@@ -72,8 +72,8 @@ class ReservationActivity : BaseActivity() {
         reservationViewModel.createReservationResult.observe(this) { result ->
             if (result.isSuccessful) {
                 Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
-                val spotId = result.data.parkingSpotId
-                NavigationStatus.signalParkingSpotReserved(spotId)
+                val reservationId = result.data
+                NavigationStatus.signalParkingSpotReserved(reservationId)
                 finish()
             }
             else {

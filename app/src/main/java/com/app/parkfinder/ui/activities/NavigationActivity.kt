@@ -10,9 +10,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
@@ -21,6 +23,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.activities.parking.ReservationActivity
 import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
@@ -32,6 +35,8 @@ import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
+    private val reservationViewModel: ReservationViewModel by viewModels()
+
     private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
     private var user: UserDto = UserDto()
@@ -68,11 +73,30 @@ class NavigationActivity : BaseActivity() {
                     removeImage = { removeImage() },
                     searchFreeParkingsAroundLocation = { loc, rad ->
                         navigateToParkingList(loc,rad)
-                    }
-                    ,
+                    },
+                    confirmReservation = { id -> confirmReservation(id) },
+                    cancelReservation = { id -> cancelReservation(id) },
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
                     navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
                 )
+            }
+        }
+
+        reservationViewModel.confirmReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Reservation confirmed successfully", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+            }
+        }
+
+        reservationViewModel.deleteReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Reservation cancelled", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -161,6 +185,14 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun confirmReservation(id: Int){
+        reservationViewModel.confirmReservation(id)
+    }
+
+    private fun cancelReservation(id: Int){
+        reservationViewModel.deleteReservation(id)
     }
 
     private fun navigateToVehicleInfo() {

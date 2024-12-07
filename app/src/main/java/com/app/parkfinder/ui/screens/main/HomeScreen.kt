@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -66,7 +67,9 @@ import org.osmdroid.views.MapView
 fun HomeScreen(
     user: UserDto,
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
-    viewModel: MapViewModel = viewModel()
+    confirmReservation: (Int) -> Unit,
+    cancelReservation: (Int) -> Unit,
+    mapViewModel: MapViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val cycle = LocalLifecycleOwner.current
@@ -74,31 +77,30 @@ fun HomeScreen(
     var steps = mutableListOf<NavigationStep>()
     var showModal by remember { mutableStateOf(false) }
 
-    viewModel.getAllInstructions.observe(cycle){ instructions->
+    mapViewModel.getAllInstructions.observe(cycle){ instructions->
         steps = instructions.toMutableList()
         Log.d("monkey","proslo je " + steps.size)
     }
 
-    val show by viewModel.showConfirmReservationModal.observeAsState()
+    val show by mapViewModel.showConfirmReservationModal.observeAsState()
     LaunchedEffect(show) {
         if(show!=null) {
-            Log.d("Debug", show.toString())
             showModal = true
-            viewModel.resetShowModalSignal()
+            mapViewModel.resetShowModalSignal()
         }
     }
 
-    val reserved by NavigationStatus.isParkingSpotReserved.observeAsState(null)
-    LaunchedEffect(reserved) {
-        if(reserved != null){
-            viewModel.startNavigation()
+    val reservationId by NavigationStatus.isParkingSpotReserved.observeAsState(null)
+    LaunchedEffect(reservationId) {
+        if(reservationId != null){
+            mapViewModel.startNavigation()
         }
     }
 
-    LaunchedEffect(viewModel.parkingSpotClicked) {
-        viewModel.parkingSpotClicked.collect { spot ->
-            viewModel.clickedLot?.let {
-                navigateToReservation(spot, it, viewModel.clickedSpotNumber)
+    LaunchedEffect(mapViewModel.parkingSpotClicked) {
+        mapViewModel.parkingSpotClicked.collect { spot ->
+            mapViewModel.clickedLot?.let {
+                navigateToReservation(spot, it, mapViewModel.clickedSpotNumber)
             }
         }
     }
@@ -107,7 +109,7 @@ fun HomeScreen(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted: Boolean ->
             if (isGranted) {
-                viewModel.enableMyLocation()
+                mapViewModel.enableMyLocation()
             }
         }
     )
@@ -116,7 +118,7 @@ fun HomeScreen(
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
-            viewModel.enableMyLocation()
+            mapViewModel.enableMyLocation()
         }
     }
 
@@ -142,7 +144,7 @@ fun HomeScreen(
                 controller.setZoom(20)
                 minZoomLevel = 8.0
 
-                viewModel.initializeMap(this)
+                mapViewModel.initializeMap(this)
             }
         },
             update = {
@@ -187,7 +189,7 @@ fun HomeScreen(
 
             // Button to zoom in
             Button(
-                onClick = { viewModel.zoomIn() },
+                onClick = { mapViewModel.zoomIn() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 border = null,
                 modifier = Modifier.size(40.dp)
@@ -207,7 +209,7 @@ fun HomeScreen(
 
             // Button to zoom out
             Button(
-                onClick = { viewModel.zoomOut() },
+                onClick = { mapViewModel.zoomOut() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 border = null,
                 modifier = Modifier.size(40.dp)
@@ -227,7 +229,7 @@ fun HomeScreen(
 
             // Button to return to the current location
             Button(
-                onClick = { viewModel.setCenterToMyLocation() },
+                onClick = { mapViewModel.setCenterToMyLocation() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 border = null,
                 modifier = Modifier.size(40.dp)
@@ -244,32 +246,43 @@ fun HomeScreen(
             }
         }
 
-        ConfirmModal(showModal, onDismiss = { showModal = false })
+        ConfirmModal(showModal, onDismiss = { showModal = false }, confirmReservation, cancelReservation, reservationId)
     }
 
 @Composable
-fun ConfirmModal(show: Boolean, onDismiss: () -> Unit) {
-
+fun ConfirmModal(show: Boolean, onDismiss: () -> Unit, confirm: (Int) -> Unit, cancel: (Int) -> Unit, reservationId: Int?) {
     if (show) {
         AlertDialog(
             onDismissRequest = onDismiss,
             title = {
                 Text(
                     text = "Confirm Reservation",
-                    color = White
+                    color = White,
+                    fontWeight = FontWeight.Bold
                 )
             },
             text = {
-                Text(
-                    text = "You have arrived at your destination. Please confirm your reservation to proceed.",
-                    color = White,
-                    fontSize = 16.sp
-                )
+                Column {
+                    Text(
+                        text = "You have arrived at your destination. Please confirm your reservation to proceed.",
+                        color = White,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+                    Text(
+                        text = "By clicking confirm parking fee will start being charged on an hourly basis from now on.",
+                        color = White.copy(alpha = 0.6f),
+                        fontSize = 12.sp
+                    )
+                }
             },
-            containerColor = Color(0xFF151A24),
+            containerColor = Color(0xFF151A24).copy(alpha = 0.8f),
             confirmButton = {
                 androidx.compose.material3.Button(
                     onClick = {
+                        if (reservationId != null) {
+                            confirm(reservationId)
+                        }
                         onDismiss()
                     },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -282,6 +295,9 @@ fun ConfirmModal(show: Boolean, onDismiss: () -> Unit) {
             dismissButton = {
                 androidx.compose.material3.Button(
                     onClick = {
+                        if (reservationId != null) {
+                            cancel(reservationId)
+                        }
                         onDismiss()
                     },
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
