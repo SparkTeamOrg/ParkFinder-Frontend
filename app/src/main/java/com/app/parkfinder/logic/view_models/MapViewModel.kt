@@ -29,6 +29,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.services.MapService
 import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
+import com.app.parkfinder.utilis.TaggedPolygon
 import com.app.parkfinder.utilis.TextOverlay
 import com.google.gson.JsonParser
 import com.microsoft.signalr.HubConnection
@@ -43,7 +44,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
-import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -73,12 +73,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     private var osrmRouteResponse : OsrmRouteResponse? = null
     private var currentParkingSpotOverlays: MutableList<Overlay> = mutableListOf()
+    private var currentParkingLotOverlays: MutableList<Overlay> = mutableListOf()
     private var currentTextOverlays: MutableList<TextOverlay> = mutableListOf()
     private var currentParkingLotClickedId: Int = -1
 
     private val osrmService = OsrmService.create()
     private val nominatimService = NominatimService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
+
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getParkingSpotsForParkingLot = MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
     private val _getAllParkingLotsAroundLocationRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
@@ -202,8 +204,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-    fun searchByLocation(location: String, radius: Int)
-    {
+    fun searchByLocation(location: String, radius: Int) {
         viewModelScope.launch {
             val point = getLocationCoordinates(location)
             if(point == null)
@@ -307,12 +308,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
                     steps = osrmRouteResponse?.routes?.firstOrNull()?.legs?.firstOrNull()?.steps!!
                     instructions.clear()
-                    var a  = 0
                     steps.map { step: Step ->
-
-
-                        Log.e("${++a} TURN","Action: ${step.maneuver.type}, Name: ${step.name}, Direction: ${step.maneuver.modifier}, Exit: ${step.maneuver.exit}")
-
                         val direction = " " + step.maneuver.modifier // Add space before modifier if present
                         val instruction: String = when (step.maneuver.type) {
                             "turn" -> "Turn$direction onto ${step.name}."
@@ -340,7 +336,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     }
                     _getAllInstructions.postValue(instructions)
                     mapView.overlays.remove(selectedRoute)
-//                    mapView.overlays.removeIf { overlay -> overlay is Polyline }
                     mapView.overlays.add(polyline)
                     polyline.setOnClickListener{_,_,_->
                         mapView.overlays.remove(selectedRoute)
@@ -361,6 +356,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     }
 
     private fun drawParkingLots(mapView: MapView, pLots: List<ParkingLotDto>) {
+        val newParkingLotOverlays = mutableListOf<Overlay>()
+
         for (lot in pLots) {
             val jsonObject = JsonParser.parseString(lot.polygonGeoJson).asJsonObject
             val coordinatesArray = jsonObject.getAsJsonObject("geometry")
@@ -374,11 +371,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 geoPoints.add(GeoPoint(lat, lng))
             }
 
-            val polygon = Polygon(mapView)
+            val polygon = TaggedPolygon(mapView)
+            polygon.tag = lot.id.toString() // Set the tag for the parking lot overlay
+
             polygon.points = geoPoints
-            polygon.fillColor = Color.argb(60, 0, 0, 255) // Semi-transparent blue
-            polygon.strokeColor = Color.RED
-            polygon.strokeWidth = 2f
+            polygon.fillPaint.color = Color.argb(60, 0, 0, 255) // Semi-transparent blue
+            polygon.outlinePaint.color = Color.RED
+            polygon.outlinePaint.strokeWidth = 2f
 
 
             polygon.setOnClickListener{_,_,_ ->
@@ -388,33 +387,44 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     getParkingSpotsForParkingLot(lot.id)
                 }
                 else {
-                    clearParkingSpots()
+                    clearParkingSpotAndTextOverlays()
                     currentParkingLotClickedId = -1
                 }
 
                 true
             }
 
-
             // Add the Polygon to the MapView
-            mapView.overlays.add(polygon)
+            newParkingLotOverlays.add(polygon)
         }
+
+        // Clear parking lot overlays that are not in the new list
+        for (overlay in currentParkingLotOverlays) {
+            if (!newParkingLotOverlays.contains(overlay)) {
+                mapView.overlays.remove(overlay)
+            }
+        }
+
+        // Add new parking lot overlays that are not in the current list
+        for (overlay in newParkingLotOverlays) {
+            if (!currentParkingLotOverlays.contains(overlay)) {
+                mapView.overlays.add(overlay)
+            }
+        }
+
+        currentParkingLotOverlays = newParkingLotOverlays
+
+        // Re-add parking spot overlays to ensure they are on top
+        if (currentParkingSpotOverlays.isNotEmpty()) {
+            mapView.overlays.removeAll(currentParkingSpotOverlays)
+            mapView.overlays.addAll(currentParkingSpotOverlays)
+        }
+
         mapView.invalidate() // Refresh the map
     }
 
     private fun drawParkingSpots(mapView: MapView, pLots: List<ParkingSpotDto>) {
-
-        // Clear existing parking spot overlays
-        for (overlay in currentParkingSpotOverlays) {
-            mapView.overlays.remove(overlay)
-        }
-        currentParkingSpotOverlays.clear()
-
-        // Clear existing text overlays
-        for (overlay in currentTextOverlays) {
-            mapView.overlays.remove(overlay)
-        }
-        currentTextOverlays.clear()
+        clearParkingSpotAndTextOverlays()
 
         var spotNumber = 1
         for(spot in pLots) {
@@ -430,68 +440,65 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 geoPoints.add(GeoPoint(lat, lng))
             }
 
-            val polygon = Polygon(mapView)
+            val polygon = TaggedPolygon(mapView)
+            polygon.tag = spot.id.toString() // Set the tag for the parking spot overlay
             polygon.points = geoPoints
-//            Logger.getLogger("MapViewModel").info("Spot status: ${spot.parkingSpotStatus}")
 
             when (spot.parkingSpotStatus) {
                 ParkingSpotStatusEnum.FREE.ordinal -> {
                     // Green
-                    polygon.fillColor = Color.argb(100, 0, 255, 0)
+                    polygon.fillPaint.color = Color.argb(100, 0, 255, 0)
                 }
                 ParkingSpotStatusEnum.RESERVED.ordinal -> {
                     // Yellow
-                    polygon.fillColor = Color.argb(100, 255, 255, 0)
+                    polygon.fillPaint.color = Color.argb(100, 255, 255, 0)
                 }
                 ParkingSpotStatusEnum.OCCUPIED.ordinal -> {
                     // Red
-                    polygon.fillColor = Color.argb(100, 255, 0, 0)
+                    polygon.fillPaint.color = Color.argb(100, 255, 0, 0)
                 }
                 ParkingSpotStatusEnum.OCCUPIED_BY_SIMULATION.ordinal -> {
                     // Red
-                    polygon.fillColor = Color.argb(100, 255, 0, 0)
+                    polygon.fillPaint.color = Color.argb(100, 255, 0, 0)
                 }
                 ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE.ordinal -> {
                     // Blue
-                    polygon.fillColor = Color.argb(100, 0, 0, 255)
+                    polygon.fillPaint.color = Color.argb(100, 0, 0, 255)
                 }
                 else -> {
                     // Gray
-                    polygon.fillColor = Color.argb(100, 128, 128, 128)
+                    polygon.fillPaint.color = Color.argb(100, 128, 128, 128)
                 }
             }
 
-            polygon.strokeColor = Color.RED
-            polygon.strokeWidth = 2f
+            polygon.outlinePaint.color = Color.RED
+            polygon.outlinePaint.strokeWidth = 2f
 
             polygon.setOnClickListener{_,_,_ ->
-                if (spot.parkingSpotStatus == ParkingSpotStatusEnum.FREE.ordinal) {
+                when (spot.parkingSpotStatus) {
+                    ParkingSpotStatusEnum.FREE.ordinal -> {
 
-                    if(lastLocation == null)
-                        Log.d("Mes","Lokacija je null")
+                        clickedSpotNumber = "P${pLots.indexOf(spot) + 1}"
+                        clickedGeoPoints = geoPoints
 
-                    clickedSpotNumber = "P${pLots.indexOf(spot) + 1}"
-                    clickedGeoPoints = geoPoints
-
-                    viewModelScope.launch {
-                        _parkingSpotClicked.emit(spot)
+                        viewModelScope.launch {
+                            _parkingSpotClicked.emit(spot)
+                        }
                     }
-                }
-                else if (spot.parkingSpotStatus == ParkingSpotStatusEnum.OCCUPIED.ordinal) {
-                    Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
-                }
-                else if(spot.parkingSpotStatus == ParkingSpotStatusEnum.RESERVED.ordinal){
-                    Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
-                }
-                else {
-                    Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
+                    ParkingSpotStatusEnum.OCCUPIED.ordinal -> {
+                        Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
+                    }
+                    ParkingSpotStatusEnum.RESERVED.ordinal -> {
+                        Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 true
             }
 
-            // Add the Polygon to the MapView
-            mapView.overlays.add(polygon)
             currentParkingSpotOverlays.add(polygon)
 
             // Add text overlay with spot number
@@ -505,15 +512,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             textOverlay.textPaint.color = Color.BLACK
             textOverlay.textPaint.textSize = 30f
 
-            mapView.overlays.add(textOverlay)
             currentTextOverlays.add(textOverlay)
 
             spotNumber++
         }
+
+        mapView.overlays.addAll(currentParkingSpotOverlays)
+        mapView.overlays.addAll(currentTextOverlays)
+
         mapView.invalidate() // Refresh the map
     }
 
-    private fun clearParkingSpots() {
+    private fun clearParkingSpotAndTextOverlays() {
         // Clear existing parking spot overlays
         for (overlay in currentParkingSpotOverlays) {
             mapView?.overlays?.remove(overlay)
@@ -525,8 +535,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             mapView?.overlays?.remove(overlay)
         }
         currentTextOverlays.clear()
-
-        mapView?.invalidate() // Refresh the map
     }
 
     private fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
@@ -544,7 +552,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
 
     private fun drawCircle(mapView: MapView,latitude: Double, longitude: Double) {
-        val circle = Polygon(mapView)
+
+        // Remove the previous circle overlay if it exists
+        val previousCircle = mapView.overlays.find { it is TaggedPolygon && it.tag == "location_circle" }
+        if (previousCircle != null) {
+            mapView.overlays.remove(previousCircle)
+        }
+
+        val circle = TaggedPolygon(mapView)
+        circle.tag = "location_circle" // Set the tag for the circle overlay
+
         val points = mutableListOf<GeoPoint>()
         val numPoints = 100
         val radiusInMeters = this.viewRadius * this.kmValue * 111000 // Convert degrees to meters
@@ -558,9 +575,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
 
         circle.points = points
-        circle.fillColor = Color.argb(90, 190, 228, 235) // Semi-transparent light blue
-        circle.strokeColor = Color.RED
-        circle.strokeWidth = 2f
+        circle.fillPaint.color = Color.argb(90, 190, 228, 235) // Semi-transparent light blue
+        circle.outlinePaint.color = Color.RED
+        circle.outlinePaint.strokeWidth = 2f
 
         // Disable default click behavior
         circle.setOnClickListener { _, _, _ -> true }
@@ -570,7 +587,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     }
 
     //draws route from current location to parking spot
-    fun startNavigation(){
+    fun startNavigation() {
         viewModelScope.launch {
             if (selectedRoute != null)
                 mapView?.overlays?.remove(selectedRoute)
@@ -609,14 +626,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         super.onCleared()
     }
 
-    fun stopLocationTrack()
-    {
-        Log.d("Serviceee","stopping location track")
+    fun stopLocationTrack() {
         locationManager.removeUpdates(this)
     }
-    fun startLocationTrack()
-    {
-        Log.d("Serviceee","starting location track")
+
+    fun startLocationTrack() {
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -629,39 +643,69 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-
-
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
-        Log.d("Serviceeee","Location changed")
+
         lastLocation = newLocation
-        mapView?.overlays?.clear()
 
-        if(selectedRoute != null)
-            mapView?.controller?.setCenter(newLocation)
-
-        mapView?.overlays?.add(locationOverlay)
-
-        getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
-        mapView?.let { drawCircle(it,loc.latitude, loc.longitude) }
-
-        viewModelScope.launch {
-            if(selectedRoute!=null)
-                mapView?.overlays?.remove(selectedRoute)
-            if(selectedPoint!=null)
-                selectedRoute = drawRoute(mapView!!,newLocation,selectedPoint!!);
-        }
-
-        if (currentParkingSpotOverlays.isNotEmpty()) {
-            for (overlay in currentParkingSpotOverlays) {
-                mapView?.overlays?.add(overlay)
+        mapView?.let { mapView ->
+            if (selectedRoute != null) {
+                mapView.controller.setCenter(newLocation)
             }
-        }
 
-        if (currentTextOverlays.isNotEmpty()) {
-            for (overlay in currentTextOverlays) {
-                mapView?.overlays?.add(overlay)
+            // Update location overlay
+            locationOverlay?.let {
+                if (!mapView.overlays.contains(it)) {
+                    mapView.overlays.add(it)
+                }
             }
+
+            // Update nearby parking lots
+            getNearbyParkingLots(loc.latitude, loc.longitude, viewRadius)
+
+            // Draw new circle around the new location
+            drawCircle(mapView, loc.latitude, loc.longitude)
+
+            // Update route if necessary
+            viewModelScope.launch {
+                if (selectedRoute != null) {
+                    mapView.overlays.remove(selectedRoute)
+                }
+                if (selectedPoint != null) {
+                    selectedRoute = drawRoute(mapView, newLocation, selectedPoint!!)
+                }
+            }
+
+            // Check if current parking lot clicked is still in view (e.g., if user moves away)
+            if(
+                currentParkingLotClickedId != -1 &&
+                mapView.overlays.contains(currentParkingLotOverlays.find { it is TaggedPolygon && it.tag == currentParkingLotClickedId.toString() }))
+            {
+                // Ensure current parking spot overlays are added
+                if (currentParkingSpotOverlays.isNotEmpty()) {
+                    for (overlay in currentParkingSpotOverlays) {
+                        if (!mapView.overlays.contains(overlay)) {
+                            mapView.overlays.add(overlay)
+                        }
+                    }
+                }
+
+                // Ensure current text overlays are added
+                if (currentTextOverlays.isNotEmpty()) {
+                    for (overlay in currentTextOverlays) {
+                        if (!mapView.overlays.contains(overlay)) {
+                            mapView.overlays.add(overlay)
+                        }
+                    }
+                }
+
+            }
+            else {  // Clear parking spot overlays if the parking lot is not in view
+                clearParkingSpotAndTextOverlays()
+                currentParkingLotClickedId = -1
+            }
+
+            mapView.invalidate() // Refresh the map
         }
     }
 }
