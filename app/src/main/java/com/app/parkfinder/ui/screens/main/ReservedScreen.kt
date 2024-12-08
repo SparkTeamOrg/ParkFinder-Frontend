@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,9 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -26,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,135 +40,184 @@ import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
 
 
-//TODO - Case when there is no reserved parking lot
-
 @Composable
 fun ReservedScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(Color(0xFF1B1B1B))
+            .background(Color(0xFF151A24))
     ) {
-        // Header Image with title
         Box {
             Image(
-                painter = painterResource(id = R.drawable.parking_space_img),  // Replace with your image resource
+                painter = painterResource(id = R.drawable.parking_space),
                 contentDescription = "Parking Spot",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(280.dp)
             )
             Text(
-                text = "Reservation",
+                text = "My Reservations",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 16.dp)
+                    .padding(top = 20.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Reservation details and rating section
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF333333), shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .offset(y = (-50).dp)
+                .background(
+                    Color(0xFF151A24),
+                    shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
+                )
                 .padding(16.dp)
         ) {
-            // Location Title and Bookmark Icon
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Radoja Domanovica 12",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(
-                    imageVector = Icons.Default.Bookmark,  // TODO - Clickable icon and adding it to the favourites
-                    contentDescription = "Bookmark",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+                // Location Title and Bookmark Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        Modifier
+                            .weight(0.8f)
+                            .height(50.dp)
+                    ) {
+                        Text(
+                            text = ("Radoja Domanovica 12"),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = White,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Kragujevac",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = White.copy(alpha = 0.3f),
+                                modifier = Modifier.padding(end = 10.dp)
+                            )
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(55.dp)
+                            .background(
+                                Color(0xFF333333),
+                                shape = CircleShape
+                            )
+                            .clip(CircleShape)
+                            .clickable { /* Handle click here */ }
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Bookmark,
+                            contentDescription = "Bookmark",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            // Rate parking spot
-            Text(
-                text = "Rate parking spot",
-                fontSize = 16.sp,
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Star Rating
-            Row {
-                repeat(5) {
-                    Icon(
-                        imageVector = Icons.Default.Star,  // TODO - Add Clickable event
-                        contentDescription = "Star",
-                        tint = Color.White,
-                        modifier = Modifier.size(32.dp)
+                Row {
+                    Text(
+                        text = "Spot number ",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "P1",
+                        fontSize = 18.sp,
+                        color = Color(0xFF00AEEF)
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            // Comment section
-            Text(
-                text = "Leave comment (optional)",
-                fontSize = 16.sp,
-                color = Color.White
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Comment TextField
-            OutlinedTextField(
-                value = "",
-                onValueChange = { /* Handle comment input */ },
-                placeholder = { Text(text = "Write comment here...", color = Color.Gray) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(0xFF2A2A2A),
-                    cursorColor = Color.White,
-                    focusedBorderColor = Color.Gray,
-                    unfocusedBorderColor = Color.Gray,
-                    textColor = Color.White
-                ),
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Rate and Leave Button
-            Button(
-                onClick = { /* Handle rate and leave action */ }, //TODO - Rate Action
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00AEEF)),
-                shape = RoundedCornerShape(8.dp)
-            ) {
+                // Rate parking spot
                 Text(
-                    text = "Rate and Leave",
-                    color = Color.White,
+                    text = "Rate parking spot",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    color = Color.White
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Star Rating
+                Row {
+                    repeat(5) {
+                        Icon(
+                            imageVector = Icons.Default.Star,  // TODO - Add Clickable event
+                            contentDescription = "Star",
+                            tint = Color.White,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Comment section
+                Text(
+                    text = "Leave comment (optional)",
+                    fontSize = 16.sp,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Comment TextField
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = { /* Handle comment input */ },
+                    placeholder = { Text(text = "Write comment here...", color = Color.Gray) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = Color(0xFF2A2A2A),
+                        cursorColor = Color.White,
+                        focusedBorderColor = Color.Gray,
+                        unfocusedBorderColor = Color.Gray,
+                        textColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Rate and Leave Button
+                Button(
+                    onClick = { /* Handle rate and leave action */ }, //TODO - Rate Action
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00AEEF)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Rate and Leave",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

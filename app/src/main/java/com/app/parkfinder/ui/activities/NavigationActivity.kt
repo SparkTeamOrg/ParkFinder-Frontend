@@ -4,22 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.ComponentName
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.app.parkfinder.R
@@ -32,6 +31,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.activities.parking.ReservationActivity
 import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
@@ -43,6 +43,7 @@ import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
+    private val reservationViewModel: ReservationViewModel by viewModels()
 
     private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
@@ -116,11 +117,30 @@ class NavigationActivity : BaseActivity() {
                     removeImage = { removeImage() },
                     searchFreeParkingsAroundLocation = { loc, rad ->
                         navigateToParkingList(loc,rad)
-                    }
-                    ,
+                    },
+                    confirmReservation = { id -> confirmReservation(id) },
+                    cancelReservation = { id -> cancelReservation(id) },
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
                     navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
                 )
+            }
+        }
+
+        reservationViewModel.confirmReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Reservation confirmed", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+            }
+        }
+
+        reservationViewModel.deleteReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Reservation cancelled", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -209,6 +229,14 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun confirmReservation(id: Int){
+        reservationViewModel.confirmReservation(id)
+    }
+
+    private fun cancelReservation(id: Int){
+        reservationViewModel.deleteReservation(id)
     }
 
     private fun navigateToVehicleInfo() {
