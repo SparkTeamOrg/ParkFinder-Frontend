@@ -351,7 +351,11 @@ fun CommentCard(comment: ReservationCommentDto) {
         ) {
             Row(modifier = Modifier.padding(8.dp)){
                 Box(modifier = Modifier.size(50.dp)){
-                    ProfileImage(Uri.parse(comment.userProfileImage))
+                    var uri: Uri? = null
+                    if(comment.userProfileImage != null) {
+                        uri = Uri.parse(comment.userProfileImage)
+                    }
+                    ProfileImage(uri)
                 }
                 Column(
                     modifier = Modifier.padding(start = 5.dp)
