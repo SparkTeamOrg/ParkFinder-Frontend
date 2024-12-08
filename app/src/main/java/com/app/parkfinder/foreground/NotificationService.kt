@@ -31,10 +31,13 @@ import com.app.parkfinder.BuildConfig
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
+import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.activities.NavigationActivity
+import com.google.gson.JsonParser
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
 import io.reactivex.rxjava3.core.Single
+import org.osmdroid.util.GeoPoint
 
 
 enum class Actions {
@@ -105,7 +108,29 @@ class NotificationService : Service() {
 
             for(spot in parkingSpots)
             {
-                showNotification("New Notification", "Parking spot ${spot.id} is free")
+                //convert to polygon
+                val jsonObject = JsonParser.parseString(spot.polygonGeoJson).asJsonObject
+                val coordinatesArray = jsonObject.getAsJsonObject("geometry")
+                    .getAsJsonArray("coordinates")
+                    .get(0) // gets the first one in the file
+
+                val geoPoints = mutableListOf<GeoPoint>()
+                for (coordinate in coordinatesArray.asJsonArray) {
+                    val lng = coordinate.asJsonArray[0].asDouble
+                    val lat = coordinate.asJsonArray[1].asDouble
+                    geoPoints.add(GeoPoint(lat, lng))
+                }
+
+                val centroid = MapViewModel.calculateCentroid(geoPoints)
+                val userDistanceFromSpot = centroid.distanceToAsDouble(userLocation)
+
+                val radius = 0.03 // 5km in degrees
+
+                //user in range, send notification
+                if(userDistanceFromSpot < radius)
+                    showNotification("New Notification", "Parking spot ${spot.id} is free")
+                else
+                    Log.d("Serviceee","Spot is not in user range")
             }
         }, List::class.java)
 
@@ -146,6 +171,7 @@ class NotificationService : Service() {
 
     companion object {
         var notificationId = 1
+        var userLocation: GeoPoint? = null
     }
     override fun onBind(intent: Intent?): IBinder? = null
 

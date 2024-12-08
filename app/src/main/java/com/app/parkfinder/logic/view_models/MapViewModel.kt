@@ -17,6 +17,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.BuildConfig
+import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
@@ -669,17 +670,20 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         currentTextOverlays.clear()
     }
 
-    private fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
-        var centroidLat = 0.0
-        var centroidLon = 0.0
+    //static functions
+    companion object{
+        fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
+            var centroidLat = 0.0
+            var centroidLon = 0.0
 
-        for (point in points) {
-            centroidLat += point.latitude
-            centroidLon += point.longitude
+            for (point in points) {
+                centroidLat += point.latitude
+                centroidLon += point.longitude
+            }
+
+            val totalPoints = points.size
+            return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
         }
-
-        val totalPoints = points.size
-        return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
     }
 
     private fun drawCircle(mapView: MapView, latitude: Double, longitude: Double) {
@@ -782,6 +786,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
 
         lastLocation = newLocation
+        NotificationService.userLocation = newLocation
 
         mapView?.let { mapView ->
             if (selectedRoute != null) {
