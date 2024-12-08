@@ -26,9 +26,11 @@ import com.app.parkfinder.logic.models.OsrmRouteResponse
 import com.app.parkfinder.logic.models.Step
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotUpdateNotificationDto
 import com.app.parkfinder.logic.services.MapService
 import com.app.parkfinder.logic.services.NominatimService
 import com.app.parkfinder.logic.services.OsrmService
+import com.app.parkfinder.utilis.ParkingSpotStatusEnumDeserializer
 import com.app.parkfinder.utilis.TaggedPolygon
 import com.app.parkfinder.utilis.TextOverlay
 import com.google.gson.JsonParser
@@ -49,6 +51,9 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import kotlin.math.cos
 import kotlin.math.sin
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import com.microsoft.signalr.HubConnectionState
 
 class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
     @SuppressLint("StaticFieldLeak")
@@ -93,8 +98,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
     var clickedLot: ParkingLotDto? = null
+    var shownParkingSpots: List<ParkingSpotDto> = emptyList()
     var clickedSpotNumber: String = "No number"
     private var clickedGeoPoints = mutableListOf<GeoPoint>()
+
+    // Define the custom deserializer
+    val gson = GsonBuilder()
+        .registerTypeAdapter(ParkingSpotStatusEnum::class.java, ParkingSpotStatusEnumDeserializer())
+        .create()
+
+    private val connectionCheckHandler = Handler(Looper.getMainLooper())
+    private val connectionCheckInterval: Long = 10000 // 10 seconds
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -105,9 +119,28 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
         _getParkingSpotsForParkingLot.observeForever { res ->
             if (res.isSuccessful) {
+                shownParkingSpots = res.data
                 mapView?.let { drawParkingSpots(it, res.data) }
             }
         }
+
+        startConnectionCheck()
+    }
+
+    private fun startConnectionCheck() {
+        connectionCheckHandler.postDelayed(object : Runnable {
+            override fun run() {
+                if (hubConnection?.connectionState != HubConnectionState.CONNECTED) {
+                    Log.i("MapViewModel", "Hub connection lost. Attempting to reconnect...")
+                    startHubConnection()
+                }
+                connectionCheckHandler.postDelayed(this, connectionCheckInterval)
+            }
+        }, connectionCheckInterval)
+    }
+
+    private fun stopConnectionCheck() {
+        connectionCheckHandler.removeCallbacksAndMessages(null)
     }
 
     private fun startHubConnection() {
@@ -121,26 +154,53 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     })
                     .build()
 
-                hubConnection?.on("GetParkingSpots",
+                hubConnection?.on("ParkingSpotStatusUpdated",
                     { data ->
-                        // Show a toast message on the UI thread instead of logging
-                        // TODO: Replace with a more appropriate message handling
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(getApplication(), "Received message: $data", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    String::class.java
-                )
+                        val type = object : TypeToken<List<ParkingSpotUpdateNotificationDto>>() {}.type
+                        val notifications: List<ParkingSpotUpdateNotificationDto> = gson.fromJson(data.toString(), type)
 
-                hubConnection?.on("UpdateParkingSpots",
-                    { data ->
-                        // Show a toast message on the UI thread instead of logging
-                        // TODO: Replace with a more appropriate message handling
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(getApplication(), "Received message: $data", Toast.LENGTH_SHORT).show()
+                        for (notification in notifications) {
+                            // Find the parking spot overlay
+                            val parkingSpotOverlay = currentParkingSpotOverlays.find { it is TaggedPolygon && it.tag == notification.parkingSpotId.toString() }
+                            if (parkingSpotOverlay != null) {
+                                val polygon = parkingSpotOverlay as TaggedPolygon
+                                when (notification.getParkingSpotStatusEnum()) {
+                                    ParkingSpotStatusEnum.FREE -> {
+                                        // Green
+                                        polygon.fillPaint.color = Color.argb(100, 0, 255, 0)
+                                        polygon.setOnClickListener { _, _, _ ->
+                                            clickedSpotNumber = "P${currentParkingSpotOverlays.indexOf(polygon) + 1}"
+                                            clickedGeoPoints = polygon.points
+
+                                            val parkingSpotData = shownParkingSpots.find { it.id == notification.parkingSpotId }
+                                            if (parkingSpotData != null) {
+                                                viewModelScope.launch {
+                                                    _parkingSpotClicked.emit(parkingSpotData)
+                                                }
+                                            }
+                                            true
+                                        }
+                                    }
+                                    ParkingSpotStatusEnum.RESERVED, ParkingSpotStatusEnum.OCCUPIED, ParkingSpotStatusEnum.OCCUPIED_BY_SIMULATION, ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE -> {
+                                        // Set appropriate color based on status
+                                        polygon.fillPaint.color = when (notification.getParkingSpotStatusEnum()) {
+                                            ParkingSpotStatusEnum.RESERVED -> Color.argb(100, 255, 255, 0) // Yellow
+                                            ParkingSpotStatusEnum.OCCUPIED, ParkingSpotStatusEnum.OCCUPIED_BY_SIMULATION -> Color.argb(100, 255, 0, 0) // Red
+                                            ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE -> Color.argb(100, 0, 0, 255) // Blue
+                                            else -> Color.argb(100, 128, 128, 128) // Gray
+                                        }
+                                        polygon.setOnClickListener { _, _, _ ->
+                                            Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
+                                            true
+                                        }
+                                    }
+                                }
+
+                                mapView?.invalidate()
+                            }
                         }
                     },
-                    String::class.java
+                    List::class.java
                 )
 
                 // Start the connection
@@ -160,6 +220,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private fun stopHubConnection() {
         hubConnection?.stop()
         hubConnection = null
+    }
+
+    override fun onCleared() {
+        stopConnectionCheck()
+        stopHubConnection()
+        super.onCleared()
     }
 
     fun initializeMap(mapView: MapView) {
@@ -388,6 +454,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 }
                 else {
                     clearParkingSpotAndTextOverlays()
+                    shownParkingSpots = emptyList()
                     currentParkingLotClickedId = -1
                 }
 
@@ -486,10 +553,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         }
                     }
                     ParkingSpotStatusEnum.OCCUPIED.ordinal -> {
-                        Toast.makeText(getApplication(), "Parking spot is occupied", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
                     }
                     ParkingSpotStatusEnum.RESERVED.ordinal -> {
-                        Toast.makeText(getApplication(), "Parking spot is already reserved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         Toast.makeText(getApplication(), "Parking spot is not available for reservation", Toast.LENGTH_SHORT).show()
@@ -549,7 +616,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         val totalPoints = points.size
         return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
     }
-
 
     private fun drawCircle(mapView: MapView,latitude: Double, longitude: Double) {
 
@@ -702,6 +768,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             }
             else {  // Clear parking spot overlays if the parking lot is not in view
                 clearParkingSpotAndTextOverlays()
+                shownParkingSpots = emptyList()
                 currentParkingLotClickedId = -1
             }
 
