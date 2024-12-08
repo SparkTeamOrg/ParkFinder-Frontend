@@ -24,13 +24,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.ui.composables.ParkFinderLogo
 
 @Composable
 fun ParkingSpotListScreen(
     parkingSpaces: List<ParkingSpotDto>,
-    parkingLotName: String = ""
+    parkingLotName: String = "",
+    navigateToReservation: (ParkingSpotDto, String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -52,7 +54,7 @@ fun ParkingSpotListScreen(
                         .fillMaxSize()
                 ) {
                     items(parkingSpaces.size) { index ->
-                        ParkingSpotItem(parkingSpace = parkingSpaces[index], index = index)
+                        ParkingSpotItem(parkingSpace = parkingSpaces[index], index = index, navigateToReservation = navigateToReservation)
                     }
                 }
             }
@@ -62,7 +64,7 @@ fun ParkingSpotListScreen(
 
 
 @Composable
-fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int) {
+fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int,navigateToReservation: (ParkingSpotDto, String) -> Unit,) {
 
     // Map the status to a color
     val statusColor = when (ParkingSpotStatusEnum.fromValue(parkingSpace.parkingSpotStatus)) {
@@ -130,7 +132,7 @@ fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int) {
 
             // Reserve Button
             Button(
-                onClick = { /* Handle Reserve click */ },
+                onClick = { navigateToReservation(parkingSpace,"P${index+1}")},
                 colors = ButtonDefaults.buttonColors(
                     disabledBackgroundColor = Color.Red,
                     backgroundColor = if (parkingSpace.parkingSpotStatus == ParkingSpotStatusEnum.FREE.value) Color(0xFF0077FF) else Color.Red

@@ -157,6 +157,7 @@ fun ProfileScreen(
                 .fillMaxWidth()
         )
         {
+            //FPM
             ToggleSwitch(
                 start = startFpmNotificationService,
                 stop = stopFpmNotificationService
@@ -276,7 +277,7 @@ fun ToggleSwitch(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
-        Text(text = if (isChecked) "FPM On" else "FPM Off", color = Color.White)
+        Text(text = if (isChecked) "FPM On" else "FPM Off", color = Color.White,fontWeight = FontWeight.W700,)
         Spacer(modifier = Modifier.fillMaxWidth())
         Switch(
             checked = isChecked,

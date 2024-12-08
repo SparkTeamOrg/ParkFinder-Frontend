@@ -20,7 +20,7 @@ import com.app.parkfinder.ui.composables.ParkFinderLogo
 @Composable
 fun ParkingListScreen(
     parkingSpaces: List<ParkingLotDto>,
-    navigateToParkingSpots: (lotId:Int,name:String)->Unit = { _: Int, _: String -> }
+    navigateToParkingSpots: (lot:ParkingLotDto,name:String)->Unit = { _: ParkingLotDto, _: String -> }
 ) {
     Scaffold(
         topBar = {
@@ -46,7 +46,7 @@ fun ParkingListScreen(
 @Composable
 fun ParkingItem(
     parkingSpace: ParkingLotDto,
-    navigateToSpots: (lotId:Int,name:String)->Unit = { _: Int, _: String -> }
+    navigateToSpots: (lot:ParkingLotDto,name:String)->Unit = { _: ParkingLotDto, _: String -> }
 ) {
     Card(
         modifier = Modifier
@@ -102,7 +102,7 @@ fun ParkingItem(
                     color = Color.Yellow
                 )
                 Button(
-                    onClick = { navigateToSpots(parkingSpace.id,if(parkingSpace.town==null) parkingSpace.city +", " + parkingSpace.road else parkingSpace.town +", " + parkingSpace.road)},
+                    onClick = { navigateToSpots(parkingSpace,if(parkingSpace.town==null) parkingSpace.city +", " + parkingSpace.road else parkingSpace.town +", " + parkingSpace.road)},
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF0077FF))
                 ) {
                     Text(text = "See details", color = Color.White)

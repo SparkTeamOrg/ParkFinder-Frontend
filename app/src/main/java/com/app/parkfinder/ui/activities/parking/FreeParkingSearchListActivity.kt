@@ -53,10 +53,10 @@ class FreeParkingSearchListActivity : ComponentActivity() {
     }
 
 
-    private fun navigateToParkingSpotsList(parkingLotId: Int, parkingName:String)
+    private fun navigateToParkingSpotsList(parkingLot: ParkingLotDto, parkingName:String)
     {
         val intent = Intent(this,ParkingSpotListActivity::class.java).apply {
-            putExtra("parkingLotId",parkingLotId)
+            putExtra("parkingLot",parkingLot)
             putExtra("parkingName",parkingName)
         }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
