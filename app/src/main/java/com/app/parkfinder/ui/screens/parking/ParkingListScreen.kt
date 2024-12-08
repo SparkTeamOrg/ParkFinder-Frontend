@@ -18,7 +18,10 @@ import com.app.parkfinder.ui.composables.ParkFinderLogo
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
+fun ParkingListScreen(
+    parkingSpaces: List<ParkingLotDto>,
+    navigateToParkingSpots: (lotId:Int,name:String)->Unit = { _: Int, _: String -> }
+) {
     Scaffold(
         topBar = {
             ParkFinderLogo()
@@ -33,7 +36,7 @@ fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
                 items(parkingSpaces.size) { index ->
                     val roundedValue = String.format("%.2f", parkingSpaces[index].distance).toDouble()
                     parkingSpaces[index].distance = roundedValue
-                    ParkingItem(parkingSpace = parkingSpaces[index])
+                    ParkingItem(parkingSpace = parkingSpaces[index], navigateToSpots = navigateToParkingSpots)
                 }
             }
         }
@@ -41,7 +44,10 @@ fun ParkingListScreen(parkingSpaces: List<ParkingLotDto>) {
 }
 
 @Composable
-fun ParkingItem(parkingSpace: ParkingLotDto) {
+fun ParkingItem(
+    parkingSpace: ParkingLotDto,
+    navigateToSpots: (lotId:Int,name:String)->Unit = { _: Int, _: String -> }
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -91,12 +97,12 @@ fun ParkingItem(parkingSpace: ParkingLotDto) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "⭐ 0.0",
+                    text = "⭐ ${parkingSpace.rating}",
                     fontSize = 14.sp,
                     color = Color.Yellow
                 )
                 Button(
-                    onClick = { /* Handle details click */ },
+                    onClick = { navigateToSpots(parkingSpace.id,if(parkingSpace.town==null) parkingSpace.city +", " + parkingSpace.road else parkingSpace.town +", " + parkingSpace.road)},
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF0077FF))
                 ) {
                     Text(text = "See details", color = Color.White)
@@ -106,9 +112,3 @@ fun ParkingItem(parkingSpace: ParkingLotDto) {
     }
 }
 
-@Composable
-fun ParkingScreenPreview(
-    parkings: List<ParkingLotDto>
-) {
-    ParkingListScreen(parkings)
-}

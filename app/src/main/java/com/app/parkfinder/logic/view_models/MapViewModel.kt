@@ -91,14 +91,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getParkingSpotsForParkingLot =
         MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
+    private val _getParkingSpotsForParkingLotSearch =
+        MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
     private val _getAllParkingLotsAroundLocationRes =
         MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
+    private val _getParkingSpotUpdates = MutableLiveData<List<ParkingSpotUpdateNotificationDto>>()
 
     val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> =
         _getAllParkingLotsAroundLocationRes
     val getAllInstructions: LiveData<List<NavigationStep>> = _getAllInstructions
-
+    val getParkingSpotUpdate: LiveData<List<ParkingSpotUpdateNotificationDto>> = _getParkingSpotUpdates
+    val getParkingSpotsForParkingLotSearch: LiveData<BackResponse<List<ParkingSpotDto>>> = _getParkingSpotsForParkingLotSearch
     private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
 
@@ -167,7 +171,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                             object : TypeToken<List<ParkingSpotUpdateNotificationDto>>() {}.type
                         val notifications: List<ParkingSpotUpdateNotificationDto> =
                             gson.fromJson(data.toString(), type)
-
+                        _getParkingSpotUpdates.postValue(notifications)//post updates
                         for (notification in notifications) {
                             // Find the parking spot overlay
                             val parkingSpotOverlay =
@@ -315,6 +319,14 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
+    fun getParkingLotSpotsSearch(lotId:Int)
+    {
+        viewModelScope.launch {
+            getParkingSpotsForParkingLot(lotId,true)
+        }
+    }
+
+
     private fun getNearbyParkingLots(
         lat: Double,
         long: Double,
@@ -358,13 +370,16 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-    private fun getParkingSpotsForParkingLot(parkingLotId: Int) {
+    private fun getParkingSpotsForParkingLot(parkingLotId: Int, isSearch: Boolean = false) {
         viewModelScope.launch {
             try {
                 val response = mapService.getParkingSpotsForParkingLot(parkingLotId)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        _getParkingSpotsForParkingLot.postValue(it)
+                        if(isSearch)
+                            _getParkingSpotsForParkingLotSearch.postValue(it)
+                        else
+                            _getParkingSpotsForParkingLot.postValue(it)
                     }
                 } else {
                     BackResponse(
@@ -372,7 +387,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         messages = listOf("An error occurred"),
                         data = emptyList<ParkingSpotDto>()
                     ).let {
-                        _getParkingSpotsForParkingLot.postValue(it)
+                        if(isSearch)
+                            _getParkingSpotsForParkingLotSearch.postValue(it)
+                        else
+                            _getParkingSpotsForParkingLot.postValue(it)
                     }
                 }
             } catch (e: Exception) {
@@ -381,7 +399,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     messages = listOf(e.message ?: "An error occurred"),
                     data = emptyList<ParkingSpotDto>()
                 ).let {
-                    _getParkingSpotsForParkingLot.postValue(it)
+                    if(isSearch)
+                        _getParkingSpotsForParkingLotSearch.postValue(it)
+                    else
+                        _getParkingSpotsForParkingLot.postValue(it)
                 }
             }
         }
