@@ -7,6 +7,8 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 import android.app.Service
 import android.content.Context
@@ -43,6 +45,7 @@ class NotificationService : Service() {
 
     private var hubConnection: HubConnection? = null
     private val channelId = "HubNotificationChannel"
+    private val gson = Gson()
 
     override fun onCreate() {
         super.onCreate()
@@ -59,6 +62,7 @@ class NotificationService : Service() {
 
     @SuppressLint("InlinedApi")
     private fun startForegroundService() {
+        Log.d("Serviceee","Starting foreground service")
         val openAppIntent = Intent(this, NavigationActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -91,14 +95,25 @@ class NotificationService : Service() {
         Log.d("Serviceee","Connection with hub started")
         hubConnection?.on("SendNotification", { message ->
             Log.d("Serviceee","Received: ${message}")
-            val parkingSpots = message.mapNotNull { it as? ParkingSpotDto }
-            showNotification("New Notification", parkingSpots.size.toString())
+
+            // Convert the raw `message` to a JSON string
+            val messageJson = gson.toJson(message)
+
+            // Parse the JSON string to a list of ParkingSpotDto objects
+            val parkingSpotsType = object : TypeToken<List<ParkingSpotDto>>() {}.type
+            val parkingSpots: List<ParkingSpotDto> = gson.fromJson(messageJson, parkingSpotsType)
+
+            for(spot in parkingSpots)
+            {
+                showNotification("New Notification", "Parking spot ${spot.id} is free")
+            }
         }, List::class.java)
 
         hubConnection?.start()?.blockingAwait()
     }
 
     private fun stopForegroundService() {
+        Log.d("Serviceee","Stopping foreground service")
         hubConnection?.stop()?.blockingAwait()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -137,6 +152,7 @@ class NotificationService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         stopForegroundService()
+        Log.d("Serviceee","Stopping foreground service")
     }
 
 }

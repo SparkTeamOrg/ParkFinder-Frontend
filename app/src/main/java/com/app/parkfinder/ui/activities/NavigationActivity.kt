@@ -68,7 +68,7 @@ class NavigationActivity : BaseActivity() {
     {
         val stopIntent = Intent(this, NotificationService::class.java)
         stopIntent.action = Actions.STOP.toString()
-        stopService(stopIntent)
+        startService(stopIntent)
     }
 
     @SuppressLint("InlinedApi")
@@ -108,6 +108,7 @@ class NavigationActivity : BaseActivity() {
             ParkFinderTheme {
                 NavigationScreen(
                     startFpmNotificationService = { startFpmNotificationService()},
+                    stopFpmNotificationService = {stopFpmNotificationService()},
                     logout = { logout() },
                     user = user,
                     currentImageUrl = currentImageUrl,

@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -35,6 +36,10 @@ import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +62,8 @@ fun ProfileScreen(
     openImagePicker: () -> Unit = {},
     removeImage: () -> Unit = {},
     navigateToVehicleInfo: () -> Unit = {},
-    startFpmNotificationService: ()->Unit = {}
+    startFpmNotificationService: ()->Unit = {},
+    stopFpmNotificationService: ()->Unit = {},
     ) {
     Column(
         modifier = Modifier
@@ -151,12 +157,10 @@ fun ProfileScreen(
                 .fillMaxWidth()
         )
         {
-
-            Button(
-                onClick = {startFpmNotificationService()}
-            ) {
-                Text("FPM mode")
-            }
+            ToggleSwitch(
+                start = startFpmNotificationService,
+                stop = stopFpmNotificationService
+            )
 
             // Menu Items
             MenuItem(icon = Icons.Default.Wallet, title = "Balance")
@@ -261,6 +265,32 @@ fun ProfileImage(profileImage: Uri?) {
         contentScale = ContentScale.Crop
     )
 }
+@Composable
+fun ToggleSwitch(
+    start:()->Unit = {},
+    stop: ()->Unit = {}
+) {
+    var isChecked by remember { mutableStateOf(false) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Text(text = if (isChecked) "FPM On" else "FPM Off", color = Color.White)
+        Spacer(modifier = Modifier.fillMaxWidth())
+        Switch(
+            checked = isChecked,
+            onCheckedChange = {
+                isChecked = it
+                if(isChecked)
+                    start()
+                else
+                    stop()
+            }
+        )
+    }
+}
+
 
 //@Preview(showBackground = true)
 //@Composable

@@ -27,6 +27,7 @@ import com.app.parkfinder.ui.screens.main.SearchScreen
 @Composable
 fun NavigationScreen (
     startFpmNotificationService: ()->Unit = {},
+    stopFpmNotificationService: ()->Unit = {},
     logout: () -> Unit,
     user: UserDto,
     currentImageUrl: Uri?,
@@ -75,7 +76,7 @@ fun NavigationScreen (
             //UI for Profile
             composable(BottomNavItem.Profile.route) {
                 mapViewModel.stopLocationTrack()
-                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo,startFpmNotificationService)
+                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo,startFpmNotificationService,stopFpmNotificationService)
             }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
