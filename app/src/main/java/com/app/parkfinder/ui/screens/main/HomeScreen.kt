@@ -3,7 +3,6 @@ package com.app.parkfinder.ui.screens.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -49,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.NavigationStatus
@@ -161,10 +159,10 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .background(Color.Black.copy(alpha = 0.7f))
                     .padding(16.dp)
-                    .align(Alignment.TopCenter)
+                    .align(Alignment.BottomCenter)
             ) {
                 Text(
-                    text = step.instruction,
+                    text = step.instruction + " in " + step.distance + " meters" + " (" + step.duration + " seconds)",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
