@@ -132,6 +132,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             override fun run() {
                 if (hubConnection?.connectionState != HubConnectionState.CONNECTED) {
                     Log.i("MapViewModel", "Hub connection lost. Attempting to reconnect...")
+                    hubConnection = null
                     startHubConnection()
                 }
                 connectionCheckHandler.postDelayed(this, connectionCheckInterval)
@@ -207,12 +208,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 hubConnection?.start()?.blockingAwait()
             } catch (e: Exception) {
                 Log.e("MapViewModel", "Error starting hub connection", e)
-                if (e.message?.contains("Unauthorized") == true) {
-                    Toast.makeText(getApplication(), "Unauthorized access. Please log in again.", Toast.LENGTH_SHORT).show()
-                    // Handle unauthorized access, e.g., redirect to login screen
-                } else {
-                    Toast.makeText(getApplication(), "Error starting hub connection: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+//                if (e.message?.contains("Unauthorized") == true) {
+//                    Toast.makeText(getApplication(), "Unauthorized access. Please log in again.", Toast.LENGTH_SHORT).show()
+//                    // Handle unauthorized access, e.g., redirect to login screen
+//                } else {
+//                    Toast.makeText(getApplication(), "Error starting hub connection: ${e.message}", Toast.LENGTH_SHORT).show()
+//                }
             }
         }
     }
