@@ -1,19 +1,30 @@
 package com.app.parkfinder.ui.activities
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityOptions
+import android.content.ComponentName
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.app.parkfinder.R
+import com.app.parkfinder.foreground.Actions
+import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
@@ -32,6 +43,7 @@ import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
+
     private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
     private var user: UserDto = UserDto()
@@ -43,9 +55,43 @@ class NavigationActivity : BaseActivity() {
         if (result.isSuccessful) result.uriContent?.let { uploadImage(it) }
     }
 
+    @SuppressLint("NewApi")
+    private fun startFpmNotificationService()
+    {
+        Intent(applicationContext,NotificationService::class.java).also {
+            it.action = Actions.START.toString()
+            startService(it)
+        }
+    }
+
+    private fun stopFpmNotificationService()
+    {
+        val stopIntent = Intent(this, NotificationService::class.java)
+        stopIntent.action = Actions.STOP.toString()
+        startService(stopIntent)
+    }
+
+    @SuppressLint("InlinedApi")
+    fun checkAndRequestPermissions(activity: Activity): Boolean {
+        val requiredPermissions = arrayOf(
+            Manifest.permission.POST_NOTIFICATIONS,
+            Manifest.permission.FOREGROUND_SERVICE,
+            Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC
+        )
+
+        val permissionsNeeded = requiredPermissions.filter {
+            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (permissionsNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(activity, permissionsNeeded.toTypedArray(), 101)
+        }
+        return true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        checkAndRequestPermissions(this)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { /* This disables any action on back button click */}
         })
@@ -61,6 +107,8 @@ class NavigationActivity : BaseActivity() {
         setContent {
             ParkFinderTheme {
                 NavigationScreen(
+                    startFpmNotificationService = { startFpmNotificationService()},
+                    stopFpmNotificationService = {stopFpmNotificationService()},
                     logout = { logout() },
                     user = user,
                     currentImageUrl = currentImageUrl,
