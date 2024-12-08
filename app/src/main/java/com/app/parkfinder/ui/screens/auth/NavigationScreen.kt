@@ -2,7 +2,6 @@ package com.app.parkfinder.ui.screens.auth
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -34,6 +33,8 @@ fun NavigationScreen (
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
+    confirmReservation: (Int) -> Unit,
+    cancelReservation: (Int) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
     mapViewModel: MapViewModel = viewModel()
@@ -65,7 +66,7 @@ fun NavigationScreen (
 //            }
             //UI for Home
             composable(BottomNavItem.Home.route) {
-                HomeScreen(user, navigateToReservation,mapViewModel)
+                HomeScreen(user, navigateToReservation,confirmReservation, cancelReservation, mapViewModel)
                 mapViewModel.startLocationTrack()
             }
             //UI for Search

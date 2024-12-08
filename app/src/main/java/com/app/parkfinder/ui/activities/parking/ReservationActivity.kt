@@ -67,16 +67,17 @@ class ReservationActivity : BaseActivity() {
                     )
                 }
             }
+        }
 
-            reservationViewModel.createReservationResult.observe(this) { result ->
-                if (result.isSuccessful) {
-                    Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
-                    NavigationStatus.signalParkingSpotReserved()
-                    finish()
-                }
-                else {
-                    Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
-                }
+        reservationViewModel.createReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
+                val reservationId = result.data
+                NavigationStatus.signalParkingSpotReserved(reservationId)
+                finish()
+            }
+            else {
+                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
             }
         }
     }
