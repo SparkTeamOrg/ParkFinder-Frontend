@@ -2,16 +2,19 @@ package com.app.parkfinder.ui.screens.auth
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
+import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.composables.BottomNavigationBar
 import com.app.parkfinder.ui.composables.ParkFinderLogo
@@ -32,7 +35,8 @@ fun NavigationScreen (
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
-    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit
+    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
+    mapViewModel: MapViewModel = viewModel()
 ) {
 
     val navController = rememberNavController()
@@ -45,14 +49,40 @@ fun NavigationScreen (
             startDestination = BottomNavItem.Home.route,
             Modifier.padding(innerPadding)
         ) {
+//            val currentRoute = navController.currentBackStackEntry?.destination?.route
+//            currentRoute?.let { route ->
+//                // Perform specific logic for the clicked navigation item
+//                when (route) {
+//                    BottomNavItem.Home.route ->{
+//                        Log.d("Serviceee","Home route")
+//                        mapViewModel.startLocationTrack()
+//                    }
+//                    else -> {
+//                        Log.d("Serviceee","Other routes")
+//                        mapViewModel.stopLocationTrack()
+//                    }
+//                }
+//            }
             //UI for Home
-            composable(BottomNavItem.Home.route) { HomeScreen(user, navigateToReservation, confirmReservation, cancelReservation) }
+            composable(BottomNavItem.Home.route) {
+                HomeScreen(user, navigateToReservation,confirmReservation, cancelReservation, mapViewModel)
+                mapViewModel.startLocationTrack()
+            }
             //UI for Search
-            composable(BottomNavItem.Search.route) { SearchScreen(searchFreeParkingsAroundLocation) }
+            composable(BottomNavItem.Search.route) {
+                mapViewModel.stopLocationTrack()
+                SearchScreen(searchFreeParkingsAroundLocation)
+            }
             //UI for Profile
-            composable(BottomNavItem.Profile.route) { ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo) }
+            composable(BottomNavItem.Profile.route) {
+                mapViewModel.stopLocationTrack()
+                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo)
+            }
             //UI for Reserved
-            composable(BottomNavItem.Reserved.route){ ReservedScreen() }
+            composable(BottomNavItem.Reserved.route){
+                mapViewModel.stopLocationTrack()
+                ReservedScreen()
+            }
         }
     }
 

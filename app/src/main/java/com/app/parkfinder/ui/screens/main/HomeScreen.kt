@@ -69,7 +69,7 @@ fun HomeScreen(
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
-    mapViewModel: MapViewModel = viewModel(),
+    mapViewModel: MapViewModel
 ) {
     val context = LocalContext.current
     val cycle = LocalLifecycleOwner.current
@@ -294,11 +294,6 @@ fun ConfirmModal(
                 androidx.compose.material3.Button(
                     onClick = {
                         if (reservationId != null) {
-                            val spotId = mapViewModel.clickedSpotId
-                            val color = android.graphics.Color.argb(100, 255, 0, 0)
-                            if (spotId != null) {
-                                mapViewModel.updateParkingSpotColor(spotId, color)
-                            }
                             confirm(reservationId)
                         }
                         onDismiss()
@@ -314,11 +309,6 @@ fun ConfirmModal(
                 androidx.compose.material3.Button(
                     onClick = {
                         if (reservationId != null) {
-                            val spotId = mapViewModel.clickedSpotId
-                            val color = android.graphics.Color.argb(100, 0, 255, 0)
-                            if (spotId != null) {
-                                mapViewModel.updateParkingSpotColor(spotId, color)
-                            }
                             cancel(reservationId)
                         }
                         onDismiss()

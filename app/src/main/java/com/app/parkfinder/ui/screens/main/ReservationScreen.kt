@@ -140,11 +140,12 @@ fun ReservationScreen(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
                         Modifier
-                            .width(325.dp)
+                            .weight(0.8f)
                             .height(50.dp)
                     ) {
                         Text(
@@ -308,7 +309,6 @@ fun ReservationScreen(
                 if(comments.isNotEmpty()) {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
@@ -351,7 +351,11 @@ fun CommentCard(comment: ReservationCommentDto) {
         ) {
             Row(modifier = Modifier.padding(8.dp)){
                 Box(modifier = Modifier.size(50.dp)){
-                    ProfileImage(Uri.parse(comment.userProfileImage))
+                    var uri: Uri? = null
+                    if(comment.userProfileImage != null) {
+                        uri = Uri.parse(comment.userProfileImage)
+                    }
+                    ProfileImage(uri)
                 }
                 Column(
                     modifier = Modifier.padding(start = 5.dp)
