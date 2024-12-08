@@ -78,7 +78,7 @@ class NotificationService : Service() {
             this,
             notificationId,
             notification,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING else 0
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
         )
 
 
