@@ -123,6 +123,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private val connectionCheckHandler = Handler(Looper.getMainLooper())
     private val connectionCheckInterval: Long = 10000 // 10 seconds
 
+    private val _currentNavigationStep = MutableLiveData<NavigationStep?>()
+    val currentNavigationStep: LiveData<NavigationStep?> = _currentNavigationStep
+
     init {
         _getAllParkingLotsRes.observeForever { res ->
             if (res?.isSuccessful == true) {
@@ -449,8 +452,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         instructions.add(item)
                     }
                     _getAllInstructions.postValue(instructions)
+                    _currentNavigationStep.postValue(instructions.get(1))
+
                     mapView.overlays.remove(selectedRoute)
                     mapView.overlays.add(polyline)
+
                     polyline.setOnClickListener { _, _, _ ->
                         mapView.overlays.remove(selectedRoute)
                         instructions.clear()
