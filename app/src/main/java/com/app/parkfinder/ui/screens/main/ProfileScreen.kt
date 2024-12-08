@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
@@ -53,10 +54,11 @@ fun ProfileScreen(
     logout : ()->Unit,
     user: UserDto,
     currentImageUrl: Uri?,
-    openImagePicker: () -> Unit,
-    removeImage: () -> Unit,
-    navigateToVehicleInfo: () -> Unit,
-) {
+    openImagePicker: () -> Unit = {},
+    removeImage: () -> Unit = {},
+    navigateToVehicleInfo: () -> Unit = {},
+    startFpmNotificationService: ()->Unit = {}
+    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,16 +152,22 @@ fun ProfileScreen(
         )
         {
 
+            Button(
+                onClick = {startFpmNotificationService()}
+            ) {
+                Text("FPM mode")
+            }
+
             // Menu Items
             MenuItem(icon = Icons.Default.Wallet, title = "Balance")
             MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
             MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
             MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
-            MenuItem(
-                icon = Icons.Outlined.Notifications,
-                title = "Notifications",
-                notificationCount = 5
-            )
+//            MenuItem(
+//                icon = Icons.Outlined.Notifications,
+//                title = "Notifications",
+//                notificationCount = 5
+//            )
             MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center")
         }
         Spacer(modifier = Modifier.weight(1f))

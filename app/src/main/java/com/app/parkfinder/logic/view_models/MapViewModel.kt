@@ -614,12 +614,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     fun stopLocationTrack()
     {
-        Log.d("Serviceee","stopping location track")
+//        Log.d("Serviceee","stopping location track")
         locationManager.removeUpdates(this)
     }
     fun startLocationTrack()
     {
-        Log.d("Serviceee","starting location track")
+//        Log.d("Serviceee","starting location track")
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
