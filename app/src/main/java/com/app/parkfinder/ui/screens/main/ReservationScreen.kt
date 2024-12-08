@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -318,14 +317,16 @@ fun ReservationScreen(
                     }
                 }else {
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .padding(top = 20.dp)
                     ) {
                         Text(
                             text = "No reviews yet",
                             fontSize = 18.sp,
                             color = Color.Gray,
-                            modifier = Modifier.padding(start = 5.dp)
+                            modifier = Modifier
+                                .padding(start = 5.dp)
                                 .align(Alignment.Center)
                         )
                     }
@@ -346,8 +347,7 @@ fun CommentCard(comment: ReservationCommentDto) {
         border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(modifier = Modifier.padding(8.dp)){
                 Box(modifier = Modifier.size(50.dp)){

@@ -8,7 +8,7 @@
 
         <!-- Local IP address of backend server for testing on real device -->
         <!-- CAN CHANGE: SET THE FOLLOWING LINE TO THE IP ADDRESS OF YOUR SERVER -->
-        <domain includeSubdomains="true">192.168.1.218</domain>
+        <domain includeSubdomains="true">192.168.25.236</domain>
 
         <!-- Server IP address -->
         <!-- DO NOT CHANGE THE FOLLOWING LINE -->

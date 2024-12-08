@@ -16,13 +16,44 @@ import java.util.Date
 class ReservationViewModel: ViewModel() {
     private val reservationService = RetrofitConfig.createService(ReservationService:: class.java)
 
+    private val _getConfirmedReservationResult = MutableLiveData<BackResponse<List<ReservationDto>>>()
     private val _createReservationResult = MutableLiveData<BackResponse<Int>>()
     private val _confirmReservationResult = MutableLiveData<BackResponse<ReservationDto>>()
     private val _deleteReservationResult = MutableLiveData<BackResponse<Boolean>>()
 
+    val getConfirmedReservationResult: LiveData<BackResponse<List<ReservationDto>>> = _getConfirmedReservationResult
     val createReservationResult: LiveData<BackResponse<Int>> = _createReservationResult
     val confirmReservationResult: LiveData<BackResponse<ReservationDto>> = _confirmReservationResult
     val deleteReservationResult: LiveData<BackResponse<Boolean>> = _deleteReservationResult
+
+    fun getConfirmedReservation() {
+        viewModelScope.launch {
+            try {
+                val response = reservationService.getConfirmedReservation()
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        _getConfirmedReservationResult.postValue(it)
+                    }
+                }
+                else {
+                    val errorResponse = BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = emptyList<ReservationDto>()
+                    )
+                    _getConfirmedReservationResult.postValue(errorResponse)
+                }
+            } catch (e: Exception) {
+                val errorResponse = BackResponse(
+                    isSuccessful = false,
+                    messages = listOf(e.message ?: "An error occurred"),
+                    data = emptyList<ReservationDto>()
+                )
+                _getConfirmedReservationResult.postValue(errorResponse)
+            }
+        }
+    }
 
     fun createReservation(createReservationDto: CreateReservationDto) {
         viewModelScope.launch {
