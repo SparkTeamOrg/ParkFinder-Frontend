@@ -3,7 +3,6 @@ package com.app.parkfinder.ui.screens.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -51,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
@@ -70,23 +70,34 @@ fun HomeScreen(
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val cycle = LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     var isSidebarVisible by remember { mutableStateOf(false) }
     var steps = mutableListOf<NavigationStep>()
     var showModal by remember { mutableStateOf(false) }
     var showCancelButton by remember { mutableStateOf(false) }
 
-    mapViewModel.getAllInstructions.observe(cycle){ instructions->
+    mapViewModel.getAllInstructions.observe(lifecycleOwner) { instructions ->
         steps = instructions.toMutableList()
-        Log.d("monkey","proslo je " + steps.size)
     }
+
+    mapViewModel.navigationActive.observe(lifecycleOwner) { active ->
+        if (!active) {
+            // Reset the sidebar visibility when navigation is over
+            isSidebarVisible = false
+
+            // Reset the instructions
+            steps.clear()
+        }
+    }
+
+    val currentStep by mapViewModel.currentNavigationStep.observeAsState()
 
     val show by mapViewModel.showConfirmReservationModal.observeAsState()
     LaunchedEffect(show) {
-        if(show!=null) {
+        if (show != null) {
             showModal = true
             mapViewModel.resetShowModalSignal()
             showCancelButton = false
@@ -155,6 +166,25 @@ fun HomeScreen(
             update = {
 
             })
+
+        // Display the current navigation step at the top of the screen
+        currentStep?.let { step ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+                Text(
+                    text = step.instruction + " in " + step.distance + " meters" + " (" + step.duration + " seconds)",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
         // Sidebar
         AnimatedVisibility(
             visible = isSidebarVisible,
@@ -175,7 +205,7 @@ fun HomeScreen(
         FloatingActionButton(
             onClick = { isSidebarVisible = !isSidebarVisible },
             modifier = Modifier
-                .padding(300.dp,16.dp,0.dp,0.dp)
+                .padding(300.dp, 16.dp, 0.dp, 0.dp)
                 .align(Alignment.TopStart)
         ) {
             Icon(
@@ -208,80 +238,80 @@ fun HomeScreen(
         }
     }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .padding(end = 16.dp, top = 16.dp, start = 5.dp)
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier
+            .padding(end = 16.dp, top = 16.dp, start = 5.dp)
+    ) {
+
+        // Button to zoom in
+        Button(
+            onClick = { mapViewModel.zoomIn() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
         ) {
-
-            // Button to zoom in
-            Button(
-                onClick = { mapViewModel.zoomIn() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
+            Box(
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "+",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Button to zoom out
-            Button(
-                onClick = { mapViewModel.zoomOut() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "-",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Button to return to the current location
-            Button(
-                onClick = { mapViewModel.setCenterToMyLocation() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MyLocation,
-                        contentDescription = null,
-                        tint = Color.Black
-                    )
-                }
+                Text(
+                    text = "+",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
             }
         }
 
-        ConfirmModal(showModal,
-            onDismiss = { showModal = false },
-            confirmReservation,
-            cancelReservation,
-            reservationId,
-            mapViewModel
-        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Button to zoom out
+        Button(
+            onClick = { mapViewModel.zoomOut() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Button to return to the current location
+        Button(
+            onClick = { mapViewModel.setCenterToMyLocation() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = null,
+                    tint = Color.Black
+                )
+            }
+        }
     }
+
+    ConfirmModal(showModal,
+        onDismiss = { showModal = false },
+        confirmReservation,
+        cancelReservation,
+        reservationId,
+        mapViewModel
+    )
+}
 
 @Composable
 fun ConfirmModal(
@@ -323,6 +353,7 @@ fun ConfirmModal(
                     onClick = {
                         if (reservationId != null) {
                             confirm(reservationId)
+                            mapViewModel.stopNavigation()
                         }
                         onDismiss()
                     },
@@ -338,6 +369,7 @@ fun ConfirmModal(
                     onClick = {
                         if (reservationId != null) {
                             cancel(reservationId)
+                            mapViewModel.stopNavigation()
                         }
                         onDismiss()
                     },

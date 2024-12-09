@@ -19,6 +19,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.BuildConfig
 import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 import com.app.parkfinder.logic.models.BackResponse
@@ -80,6 +81,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     private var selectedRoute: Polyline? = null
     private var selectedPoint: GeoPoint? = null
+    private var navigatingToParkingSpotId = -1
 
     private var osrmRouteResponse: OsrmRouteResponse? = null
     private var currentParkingSpotOverlays: MutableList<Overlay> = mutableListOf()
@@ -125,6 +127,12 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     private val connectionCheckHandler = Handler(Looper.getMainLooper())
     private val connectionCheckInterval: Long = 10000 // 10 seconds
+
+    private val _currentNavigationStep = MutableLiveData<NavigationStep?>()
+    val currentNavigationStep: LiveData<NavigationStep?> = _currentNavigationStep
+
+    private val _navigationActive = MutableLiveData<Boolean>()
+    val navigationActive: LiveData<Boolean> = _navigationActive
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -181,8 +189,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         _getParkingSpotUpdates.postValue(notifications)//post updates
                         for (notification in notifications) {
                             // Find the parking spot overlay
-                            val parkingSpotOverlay =
-                                currentParkingSpotOverlays.find { it is TaggedPolygon && it.tag == notification.parkingSpotId.toString() }
+                            val parkingSpotOverlay = currentParkingSpotOverlays.find { it is TaggedPolygon && it.tag == notification.parkingSpotId.toString() }
                             if (parkingSpotOverlay != null) {
                                 val polygon = parkingSpotOverlay as TaggedPolygon
                                 when (notification.getParkingSpotStatusEnum()) {
@@ -239,8 +246,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                                         }
                                     }
                                 }
-
                                 mapView?.invalidate()
+                            }
+
+                            // In case we are navigating to a parking spot and its status changes to unavailable
+                            // stop the navigation and show a message to the user that the spot is no longer available
+                            if (navigatingToParkingSpotId == notification.parkingSpotId &&
+                                notification.getParkingSpotStatusEnum() != ParkingSpotStatusEnum.FREE
+                            ) {
+                                stopNavigation()
                             }
                         }
                     },
@@ -470,14 +484,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                         instructions.add(item)
                     }
                     _getAllInstructions.postValue(instructions)
+                    _currentNavigationStep.postValue(instructions.get(1))
+
                     mapView.overlays.remove(selectedRoute)
                     mapView.overlays.add(polyline)
+
                     polyline.setOnClickListener { _, _, _ ->
                         mapView.overlays.remove(selectedRoute)
                         instructions.clear()
                         _getAllInstructions.postValue(instructions)
                         selectedRoute = null
                         selectedPoint = null
+                        navigatingToParkingSpotId = -1
                         true
                     }
                     mapView.invalidate()
@@ -758,8 +776,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         viewModelScope.launch {
             if (selectedRoute != null)
                 mapView?.overlays?.remove(selectedRoute)
-            val points = getParkingSpotPoints(spot)
-            selectedPoint = calculateCentroid(points)
+            clickedGeoPoints = getParkingSpotPoints(spot)
+            selectedPoint = calculateCentroid(clickedGeoPoints)
+            navigatingToParkingSpotId = spot.id
 
             setCenterToMyLocation()
 
@@ -770,10 +789,17 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     fun stopNavigation(){
         selectedPoint = null
+        navigatingToParkingSpotId = -1
         mapView?.overlays?.remove(selectedRoute)
         selectedRoute = null
         clickedGeoPoints = emptyList<GeoPoint>().toMutableList()
         setCenterToMyLocation()
+
+        _navigationActive.postValue(false)
+        _currentNavigationStep.postValue(null)
+        NavigationStatus.isParkingSpotReserved.postValue(null)
+        NavigationStatus.isSpotSelected.postValue(null)
+
         mapView?.invalidate()
     }
 
@@ -804,11 +830,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         super.onCleared()
     }
 
-    fun stopLocationTrack() {
+    private fun stopLocationTrack() {
         locationManager.removeUpdates(this)
     }
 
-    fun startLocationTrack() {
+    private fun startLocationTrack() {
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -825,7 +851,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         val distance = calculateDistance(currentLocation, destination)
         if (distance <= threshold) {
             _showConfirmReservationModal.postValue(Unit)
-            stopNavigation()
         }
     }
 
@@ -849,12 +874,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
 
-        Log.d("Serviceee","Location Changed")
-
         lastLocation = newLocation
         NotificationService.userLocation = newLocation
 
-//        locationOverlay?.let { selectedPoint?.let { it1 -> checkIfArrived(newLocation, it1) } }
         selectedPoint?.let { it1 -> checkIfArrived(newLocation, it1) }
         if(isMapView) {
             mapView?.let { mapView ->
