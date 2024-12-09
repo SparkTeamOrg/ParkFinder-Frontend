@@ -1,6 +1,8 @@
 package com.app.parkfinder.ui.activities.parking
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -10,6 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import com.app.parkfinder.MainActivity
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.CreateReservationDto
@@ -19,6 +23,7 @@ import com.app.parkfinder.logic.view_models.ReservationHistoryViewModel
 import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
+import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.screens.main.ReservationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
@@ -73,8 +78,10 @@ class ReservationActivity : BaseActivity() {
             if (result.isSuccessful) {
                 Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
                 val reservationId = result.data
-                NavigationStatus.signalParkingSpotReserved(reservationId)
-                finish()
+                NavigationStatus.signalParkingSpotReserved(reservationId,spot)
+                val newIntent = Intent(this, NavigationActivity::class.java)
+                val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+                startActivity(newIntent, options.toBundle())
             }
             else {
                 Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()

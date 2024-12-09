@@ -119,7 +119,7 @@ fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int,navigateToReservati
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Spot number: P${index+1}",
+                    text = "Spot number: P${index+1} ${parkingSpace.id}",
                     fontSize = 18.sp,
                     color = Color.White
                 )
