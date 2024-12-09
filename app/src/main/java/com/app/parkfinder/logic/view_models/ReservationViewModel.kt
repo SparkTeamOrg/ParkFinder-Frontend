@@ -7,21 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.ConfirmedReservationDto
 import com.app.parkfinder.logic.models.dtos.CreateReservationDto
 import com.app.parkfinder.logic.models.dtos.ReservationDto
 import com.app.parkfinder.logic.services.ReservationService
 import kotlinx.coroutines.launch
-import java.util.Date
 
 class ReservationViewModel: ViewModel() {
     private val reservationService = RetrofitConfig.createService(ReservationService:: class.java)
 
-    private val _getConfirmedReservationResult = MutableLiveData<BackResponse<List<ReservationDto>>>()
+    private val _getConfirmedReservationResult = MutableLiveData<BackResponse<List<ConfirmedReservationDto>>>()
     private val _createReservationResult = MutableLiveData<BackResponse<Int>>()
     private val _confirmReservationResult = MutableLiveData<BackResponse<ReservationDto>>()
     private val _deleteReservationResult = MutableLiveData<BackResponse<Boolean>>()
 
-    val getConfirmedReservationResult: LiveData<BackResponse<List<ReservationDto>>> = _getConfirmedReservationResult
+    val getConfirmedReservationResult: LiveData<BackResponse<List<ConfirmedReservationDto>>> = _getConfirmedReservationResult
     val createReservationResult: LiveData<BackResponse<Int>> = _createReservationResult
     val confirmReservationResult: LiveData<BackResponse<ReservationDto>> = _confirmReservationResult
     val deleteReservationResult: LiveData<BackResponse<Boolean>> = _deleteReservationResult
@@ -40,7 +40,7 @@ class ReservationViewModel: ViewModel() {
                     val errorResponse = BackResponse(
                         isSuccessful = false,
                         messages = listOf("An error occurred"),
-                        data = emptyList<ReservationDto>()
+                        data = emptyList<ConfirmedReservationDto>()
                     )
                     _getConfirmedReservationResult.postValue(errorResponse)
                 }
@@ -48,7 +48,7 @@ class ReservationViewModel: ViewModel() {
                 val errorResponse = BackResponse(
                     isSuccessful = false,
                     messages = listOf(e.message ?: "An error occurred"),
-                    data = emptyList<ReservationDto>()
+                    data = emptyList<ConfirmedReservationDto>()
                 )
                 _getConfirmedReservationResult.postValue(errorResponse)
             }
@@ -98,7 +98,7 @@ class ReservationViewModel: ViewModel() {
                     val errorResponse = BackResponse(
                         isSuccessful = false,
                         messages = listOf("An error occurred"),
-                        data = ReservationDto(-1,-1,-1, "", false, Date())
+                        data = ReservationDto(-1,-1,-1, "", false, "")
                     )
                     _confirmReservationResult.postValue(errorResponse)
                 }
@@ -107,7 +107,7 @@ class ReservationViewModel: ViewModel() {
                 val errorResponse = BackResponse(
                     isSuccessful = false,
                     messages = listOf(e.message ?: "An error occurred"),
-                    data = ReservationDto(-1,-1,-1, "", false, Date())
+                    data = ReservationDto(-1,-1,-1, "", false, "")
                 )
                 _confirmReservationResult.postValue(errorResponse)
             }

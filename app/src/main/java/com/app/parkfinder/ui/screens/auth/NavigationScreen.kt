@@ -14,6 +14,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
+import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.BottomNavItem
 import com.app.parkfinder.ui.composables.BottomNavigationBar
 import com.app.parkfinder.ui.composables.ParkFinderLogo
@@ -35,9 +36,11 @@ fun NavigationScreen (
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
+    addReservationHistory: (Int, Int, String) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
-    mapViewModel: MapViewModel = viewModel()
+    mapViewModel: MapViewModel = viewModel(),
+    reservationViewModel: ReservationViewModel
 ) {
 
     val navController = rememberNavController()
@@ -82,7 +85,7 @@ fun NavigationScreen (
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
                 MapViewModel.isMapView = false
-                ReservedScreen()
+                ReservedScreen(reservationViewModel, addReservationHistory)
             }
         }
     }
