@@ -59,11 +59,12 @@ import kotlin.math.sin
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.microsoft.signalr.HubConnectionState
+import kotlin.math.log
 import kotlin.math.sqrt
 
 class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
     @SuppressLint("StaticFieldLeak")
-    var mapView: MapView? = null
+//    var mapView: MapView? = null
 
     private var hubConnection: HubConnection? = null
 
@@ -288,7 +289,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     }
 
     fun initializeMap(mapView: MapView) {
-        this.mapView = mapView
+        MapViewModel.mapView = mapView
         val locationProvider = GpsMyLocationProvider(getApplication())
         locationOverlay = MyLocationNewOverlay(locationProvider, mapView).apply {
             enableMyLocation()
@@ -703,6 +704,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     companion object{
         var lastLocation: GeoPoint? = null
         var isMapView: Boolean = false
+        var mapView: MapView? = null
         fun getParkingSpotPoints(spot:ParkingSpotDto): MutableList<GeoPoint>
         {
             val jsonObject = JsonParser.parseString(spot.polygonGeoJson).asJsonObject
@@ -873,7 +875,9 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
-
+        if(mapView==null)
+            Log.d("Servicee","MAP IS NULL")
+        Log.d("Serviceee","Location changed")
         lastLocation = newLocation
         NotificationService.userLocation = newLocation
 
