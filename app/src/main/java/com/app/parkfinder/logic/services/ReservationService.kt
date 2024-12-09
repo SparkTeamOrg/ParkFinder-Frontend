@@ -1,6 +1,7 @@
 package com.app.parkfinder.logic.services
 
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.ConfirmedReservationDto
 import com.app.parkfinder.logic.models.dtos.CreateReservationDto
 import com.app.parkfinder.logic.models.dtos.ReservationDto
 import retrofit2.Response
@@ -14,7 +15,7 @@ import retrofit2.http.Path
 interface ReservationService {
     @GET("reservation/all-confirmed")
     suspend fun getConfirmedReservation(
-    ): Response<BackResponse<List<ReservationDto>>>
+    ): Response<BackResponse<List<ConfirmedReservationDto>>>
 
     @POST("reservation/new")
     suspend fun createReservation(

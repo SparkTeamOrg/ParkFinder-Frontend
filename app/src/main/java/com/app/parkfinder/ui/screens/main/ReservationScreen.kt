@@ -64,8 +64,7 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.app.parkfinder.utilis.formatDate
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -508,15 +507,4 @@ fun OutlinedDropdownMenu(
             }
         }
     }
-}
-
-fun formatDate(dateString: String): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSS", Locale.getDefault())
-    val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-
-    val date = inputFormat.parse(dateString)
-    return if(date!=null){
-        outputFormat.format(date).toString()
-    }
-    else{ "Error" }
 }

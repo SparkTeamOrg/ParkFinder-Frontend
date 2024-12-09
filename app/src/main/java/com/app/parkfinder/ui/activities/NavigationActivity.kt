@@ -19,6 +19,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.app.parkfinder.R
@@ -26,11 +27,14 @@ import com.app.parkfinder.foreground.Actions
 import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
+import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.CreateReservationHistoryDto
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.logic.view_models.ReservationHistoryViewModel
 import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.activities.parking.ReservationActivity
@@ -44,6 +48,7 @@ import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
     private val reservationViewModel: ReservationViewModel by viewModels()
+    private val reservationHistoryViewModel: ReservationHistoryViewModel by viewModels()
 
     private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
@@ -105,7 +110,13 @@ class NavigationActivity : BaseActivity() {
             currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
         }
 
+        reservationViewModel.getConfirmedReservation()
+
         setContent {
+            val confirmedReservations by reservationViewModel.getConfirmedReservationResult.observeAsState(
+                BackResponse(isSuccessful = false, messages = emptyList(), data = emptyList())
+            )
+
             ParkFinderTheme {
                 NavigationScreen(
                     startFpmNotificationService = { startFpmNotificationService()},
@@ -120,8 +131,10 @@ class NavigationActivity : BaseActivity() {
                     },
                     confirmReservation = { id -> confirmReservation(id) },
                     cancelReservation = { id -> cancelReservation(id) },
+                    addReservationHistory = { vehicleId, rating, comment -> addReservationHistory(vehicleId, rating, comment) },
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
-                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
+                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
+                    reservationViewModel = reservationViewModel
                 )
             }
         }
@@ -141,6 +154,16 @@ class NavigationActivity : BaseActivity() {
             }
             else {
                 Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+            }
+        }
+
+        reservationHistoryViewModel.createReservationHistoryResult.observe(this) { result ->
+            if (result.item1.isSuccessful) {
+                reservationViewModel.getConfirmedReservation()
+                Toast.makeText(this, "Reservation completed", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.item1.messages.joinToString(), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -237,6 +260,19 @@ class NavigationActivity : BaseActivity() {
 
     private fun cancelReservation(id: Int){
         reservationViewModel.deleteReservation(id)
+    }
+
+    private fun addReservationHistory(vehicleId: Int, rating: Int, comment: String){
+        var com : String? = comment
+        if(comment.isEmpty()){
+            com = null
+        }
+        val createReservationHistoryDto = CreateReservationHistoryDto(
+            vehicleId = vehicleId,
+            rating = rating,
+            comment = com
+        )
+        reservationHistoryViewModel.addReservationHistory(createReservationHistoryDto)
     }
 
     private fun navigateToVehicleInfo() {
