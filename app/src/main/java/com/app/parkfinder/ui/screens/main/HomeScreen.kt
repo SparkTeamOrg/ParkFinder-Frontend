@@ -81,6 +81,16 @@ fun HomeScreen(
         steps = instructions.toMutableList()
     }
 
+    mapViewModel.navigationActive.observe(lifecycleOwner) { active ->
+        if (!active) {
+            // Reset the sidebar visibility when navigation is over
+            isSidebarVisible = false
+
+            // Reset the instructions
+            steps.clear()
+        }
+    }
+
     val currentStep by mapViewModel.currentNavigationStep.observeAsState()
 
     val show by mapViewModel.showConfirmReservationModal.observeAsState()
