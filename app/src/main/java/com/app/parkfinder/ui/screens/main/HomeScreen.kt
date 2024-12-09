@@ -92,9 +92,10 @@ fun HomeScreen(
     }
 
     val reservationId by NavigationStatus.isParkingSpotReserved.observeAsState(null)
+    val spot by NavigationStatus.isSpotSelected.observeAsState(null)
     LaunchedEffect(reservationId) {
-        if (reservationId != null) {
-            mapViewModel.startNavigation()
+        if(reservationId != null && spot != null){
+            mapViewModel.startNavigation(spot!!)
         }
     }
 
