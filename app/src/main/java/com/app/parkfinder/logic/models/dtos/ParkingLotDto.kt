@@ -17,6 +17,7 @@ data class ParkingLotDto (
     var postCode: Int?,
     var country: String?,
     var countryCode: String?,
-    var distance: Double
+    var distance: Double = 0.0,
+    var rating: Double = 0.0
 
 ): Parcelable

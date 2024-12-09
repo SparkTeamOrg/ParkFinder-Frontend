@@ -70,21 +70,21 @@ fun NavigationScreen (
             //UI for Home
             composable(BottomNavItem.Home.route) {
                 HomeScreen(user, navigateToReservation,confirmReservation, cancelReservation, mapViewModel)
-                mapViewModel.startLocationTrack()
+                MapViewModel.isMapView = true
             }
             //UI for Search
             composable(BottomNavItem.Search.route) {
-                mapViewModel.stopLocationTrack()
+                MapViewModel.isMapView = false
                 SearchScreen(searchFreeParkingsAroundLocation)
             }
             //UI for Profile
             composable(BottomNavItem.Profile.route) {
-                mapViewModel.stopLocationTrack()
+                MapViewModel.isMapView = false
                 ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo,startFpmNotificationService,stopFpmNotificationService)
             }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
-                mapViewModel.stopLocationTrack()
+                MapViewModel.isMapView = false
                 ReservedScreen(reservationViewModel, addReservationHistory)
             }
         }

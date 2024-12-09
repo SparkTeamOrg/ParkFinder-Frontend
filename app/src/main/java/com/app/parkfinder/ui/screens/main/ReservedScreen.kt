@@ -150,12 +150,11 @@ fun ReservedScreen(
 
                         var comment by remember { mutableStateOf("") }
                         var rating by remember { mutableIntStateOf(0) }
-
                         Column(
                             modifier = Modifier.fillMaxSize()
                                 .fillMaxSize()
                                 .padding(horizontal = 16.dp)
-                                .verticalScroll(ScrollState(0))
+                                .verticalScroll(rememberScrollState())
                         ) {
                             // Location Title and Bookmark Icon
                             Row(

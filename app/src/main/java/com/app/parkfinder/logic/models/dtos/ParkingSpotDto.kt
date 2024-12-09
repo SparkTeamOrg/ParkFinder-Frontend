@@ -8,5 +8,6 @@ data class ParkingSpotDto (
     var id : Int,
     var polygonGeoJson : String,
     var parkingSpotStatus: Int,
-    var parkingLotId: Int
+    var parkingLotId: Int,
+    var rating: Double = 0.0
 ): Parcelable

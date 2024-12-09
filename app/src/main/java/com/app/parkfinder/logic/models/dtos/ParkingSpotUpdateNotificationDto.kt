@@ -4,7 +4,7 @@ import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 
 data class ParkingSpotUpdateNotificationDto (
     val parkingSpotId: Int,
-    val parkingSpotStatus: Int
+    var parkingSpotStatus: Int
 ) {
     fun getParkingSpotStatusEnum(): ParkingSpotStatusEnum {
         return ParkingSpotStatusEnum.entries.firstOrNull { it.ordinal == parkingSpotStatus }
