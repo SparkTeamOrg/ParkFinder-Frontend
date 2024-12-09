@@ -353,6 +353,7 @@ fun ConfirmModal(
                     onClick = {
                         if (reservationId != null) {
                             confirm(reservationId)
+                            mapViewModel.stopNavigation()
                         }
                         onDismiss()
                     },
@@ -368,6 +369,7 @@ fun ConfirmModal(
                     onClick = {
                         if (reservationId != null) {
                             cancel(reservationId)
+                            mapViewModel.stopNavigation()
                         }
                         onDismiss()
                     },

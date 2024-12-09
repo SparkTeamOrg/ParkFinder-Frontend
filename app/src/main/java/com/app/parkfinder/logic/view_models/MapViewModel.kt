@@ -19,6 +19,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.BuildConfig
 import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 import com.app.parkfinder.logic.models.BackResponse
@@ -775,8 +776,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         viewModelScope.launch {
             if (selectedRoute != null)
                 mapView?.overlays?.remove(selectedRoute)
-            val points = getParkingSpotPoints(spot)
-            selectedPoint = calculateCentroid(points)
+            clickedGeoPoints = getParkingSpotPoints(spot)
+            selectedPoint = calculateCentroid(clickedGeoPoints)
             navigatingToParkingSpotId = spot.id
 
             setCenterToMyLocation()
@@ -796,6 +797,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
         _navigationActive.postValue(false)
         _currentNavigationStep.postValue(null)
+        NavigationStatus.isParkingSpotReserved.postValue(null)
+        NavigationStatus.isSpotSelected.postValue(null)
 
         mapView?.invalidate()
     }
@@ -827,11 +830,11 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         super.onCleared()
     }
 
-    fun stopLocationTrack() {
+    private fun stopLocationTrack() {
         locationManager.removeUpdates(this)
     }
 
-    fun startLocationTrack() {
+    private fun startLocationTrack() {
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -848,7 +851,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         val distance = calculateDistance(currentLocation, destination)
         if (distance <= threshold) {
             _showConfirmReservationModal.postValue(Unit)
-            stopNavigation()
         }
     }
 
