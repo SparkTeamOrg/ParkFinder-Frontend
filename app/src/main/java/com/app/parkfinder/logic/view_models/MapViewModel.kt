@@ -740,7 +740,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-    private fun stopNavigation(){
+    fun stopNavigation(){
         selectedPoint = null
         mapView?.overlays?.remove(selectedRoute)
         selectedRoute = null
