@@ -19,6 +19,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.app.parkfinder.R
@@ -26,6 +27,7 @@ import com.app.parkfinder.foreground.Actions
 import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
+import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
@@ -105,7 +107,13 @@ class NavigationActivity : BaseActivity() {
             currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
         }
 
+        reservationViewModel.getConfirmedReservation()
+
         setContent {
+            val confirmedReservations by reservationViewModel.getConfirmedReservationResult.observeAsState(
+                BackResponse(isSuccessful = false, messages = emptyList(), data = emptyList())
+            )
+
             ParkFinderTheme {
                 NavigationScreen(
                     startFpmNotificationService = { startFpmNotificationService()},
@@ -121,7 +129,8 @@ class NavigationActivity : BaseActivity() {
                     confirmReservation = { id -> confirmReservation(id) },
                     cancelReservation = { id -> cancelReservation(id) },
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
-                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) }
+                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
+                    reservationViewModel = reservationViewModel
                 )
             }
         }

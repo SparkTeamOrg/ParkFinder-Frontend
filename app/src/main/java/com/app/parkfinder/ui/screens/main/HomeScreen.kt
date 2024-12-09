@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
@@ -266,7 +265,7 @@ fun ConfirmModal(
 ) {
     if (show) {
         AlertDialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {},
             title = {
                 Text(
                     text = "Confirm Reservation",
