@@ -786,7 +786,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-    private fun stopNavigation(){
+    fun stopNavigation(){
         selectedPoint = null
         navigatingToParkingSpotId = -1
         mapView?.overlays?.remove(selectedRoute)

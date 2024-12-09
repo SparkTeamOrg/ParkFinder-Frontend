@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.FloatingActionButton
@@ -76,6 +77,7 @@ fun HomeScreen(
     var isSidebarVisible by remember { mutableStateOf(false) }
     var steps = mutableListOf<NavigationStep>()
     var showModal by remember { mutableStateOf(false) }
+    var showCancelButton by remember { mutableStateOf(false) }
 
     mapViewModel.getAllInstructions.observe(lifecycleOwner) { instructions ->
         steps = instructions.toMutableList()
@@ -98,6 +100,7 @@ fun HomeScreen(
         if (show != null) {
             showModal = true
             mapViewModel.resetShowModalSignal()
+            showCancelButton = false
         }
     }
 
@@ -106,6 +109,7 @@ fun HomeScreen(
     LaunchedEffect(reservationId) {
         if(reservationId != null && spot != null){
             mapViewModel.startNavigation(spot!!)
+            showCancelButton = true
         }
     }
 
@@ -211,6 +215,29 @@ fun HomeScreen(
         }
     }
 
+    if(showCancelButton) {
+        Button(
+            onClick = {
+                reservationId?.let { cancelReservation(it) }
+                mapViewModel.stopNavigation()
+                showCancelButton = false
+            },
+            modifier = Modifier
+                .padding(160.dp, 16.dp, 0.dp, 0.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Red,
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                text = "Cancel",
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Top,
@@ -297,7 +324,7 @@ fun ConfirmModal(
 ) {
     if (show) {
         AlertDialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {},
             title = {
                 Text(
                     text = "Confirm Reservation",
