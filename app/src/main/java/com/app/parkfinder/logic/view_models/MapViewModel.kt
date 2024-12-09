@@ -269,6 +269,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     override fun onCleared() {
         stopConnectionCheck()
         stopHubConnection()
+        stopLocationTrack()
         super.onCleared()
     }
 
@@ -293,7 +294,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.zoomController.setZoomInEnabled(false)
         mapView.zoomController.setZoomOutEnabled(false)
-
+        startLocationTrack()
         startHubConnection()
     }
 
@@ -797,7 +798,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     fun resetShowModalSignal(){
         _showConfirmReservationModal.postValue(null)
     }
-
     fun destroy() {
         locationOverlay?.disableMyLocation()
         stopHubConnection()
@@ -856,7 +856,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
 //        locationOverlay?.let { selectedPoint?.let { it1 -> checkIfArrived(newLocation, it1) } }
         selectedPoint?.let { it1 -> checkIfArrived(newLocation, it1) }
-//        if(isMapView) {
+        if(isMapView) {
             mapView?.let { mapView ->
                 if (selectedRoute != null) {
                     mapView.controller.setCenter(newLocation)
@@ -916,6 +916,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
                 mapView.invalidate() // Refresh the map
             }
-//        }
+        }
     }
 }
