@@ -59,18 +59,10 @@ class NotificationService : Service() {
 
     @SuppressLint("InlinedApi")
     private fun startForegroundService() {
-        Log.d("Serviceee","Starting foreground service")
-        val openAppIntent = Intent(this, NavigationActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val openAppPendingIntent = PendingIntent.getActivity(
-            this, 0, openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle("FPM On")
             .setContentText("Listening for free parking spots...")
-            .setContentIntent(openAppPendingIntent)
             .setOngoing(true)
             .build()
 
@@ -80,7 +72,6 @@ class NotificationService : Service() {
             notification,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
         )
-
 
         // Initialize and start the HubConnection
         hubConnection = HubConnectionBuilder.create(BuildConfig.BACKEND_URL + "notificationHub")
