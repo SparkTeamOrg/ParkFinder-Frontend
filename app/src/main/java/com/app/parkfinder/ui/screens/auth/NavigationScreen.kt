@@ -36,6 +36,7 @@ fun NavigationScreen (
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
+    addReservationHistory: (Int, Int, String) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
     mapViewModel: MapViewModel = viewModel(),
@@ -84,7 +85,7 @@ fun NavigationScreen (
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
                 mapViewModel.stopLocationTrack()
-                ReservedScreen(reservationViewModel)
+                ReservedScreen(reservationViewModel, addReservationHistory)
             }
         }
     }

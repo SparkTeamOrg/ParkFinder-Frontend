@@ -7,7 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.CreateReservationHistoryDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
+import com.app.parkfinder.logic.models.dtos.ReservationHistoryApiResponse
+import com.app.parkfinder.logic.models.dtos.ReservationHistoryDto
 import com.app.parkfinder.logic.services.ReservationHistoryService
 import kotlinx.coroutines.launch
 
@@ -16,9 +19,11 @@ class ReservationHistoryViewModel : ViewModel() {
 
     private val _parkingSpotCommentsResult = MutableLiveData<BackResponse<List<ReservationCommentDto>>>()
     private val _parkingSpotRatingResult = MutableLiveData<BackResponse<Double>>()
+    private val _createReservationHistoryResult = MutableLiveData<ReservationHistoryApiResponse>()
 
     val parkingSpotCommentsResult: LiveData<BackResponse<List<ReservationCommentDto>>> = _parkingSpotCommentsResult
     val parkingSpotRatingResult: LiveData<BackResponse<Double>> = _parkingSpotRatingResult
+    val createReservationHistoryResult: LiveData<ReservationHistoryApiResponse> = _createReservationHistoryResult
 
     fun getParkingSpotComments(parkingSpotId: Int) {
         viewModelScope.launch {
@@ -38,7 +43,6 @@ class ReservationHistoryViewModel : ViewModel() {
                     _parkingSpotCommentsResult.postValue(errorResponse)
                 }
             } catch (e: Exception) {
-                Log.d("Debug", e.toString())
                 val errorResponse = BackResponse(
                     isSuccessful = false,
                     messages = listOf(e.message ?: "An error occurred"),
@@ -73,6 +77,39 @@ class ReservationHistoryViewModel : ViewModel() {
                     data = -1.0
                 )
                 _parkingSpotRatingResult.postValue(errorResponse)
+            }
+        }
+    }
+
+    fun addReservationHistory(createReservationHistoryDto: CreateReservationHistoryDto) {
+        viewModelScope.launch {
+            try {
+                val response = reservationHistoryService.addReservationHistory(createReservationHistoryDto)
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        _createReservationHistoryResult.postValue(it)
+                    }
+                }
+                else {
+                    val errorResponse = ReservationHistoryApiResponse(
+                        item1 = BackResponse(
+                            isSuccessful = false,
+                            messages = emptyList(),
+                            data = ReservationHistoryDto(-1, -1, -1, -1, "", "", 0.0, -1)
+                        ), -1
+                    )
+                    _createReservationHistoryResult.postValue(errorResponse)
+                }
+            } catch (e: Exception) {
+                val errorResponse = ReservationHistoryApiResponse(
+                    item1 = BackResponse(
+                        isSuccessful = false,
+                        messages = emptyList(),
+                        data = ReservationHistoryDto(-1, -1, -1, -1, "", "", 0.0, -1)
+                    ), -1
+                )
+                _createReservationHistoryResult.postValue(errorResponse)
             }
         }
     }
