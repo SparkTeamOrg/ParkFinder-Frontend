@@ -201,17 +201,20 @@ fun HomeScreen(
                     .align(Alignment.CenterStart)
             )
         }
-        // Toggle Sidebar Button
-        FloatingActionButton(
-            onClick = { isSidebarVisible = !isSidebarVisible },
-            modifier = Modifier
-                .padding(300.dp, 16.dp, 0.dp, 0.dp)
-                .align(Alignment.TopStart)
-        ) {
-            Icon(
-                imageVector = if (isSidebarVisible) Icons.Default.Close else Icons.Default.Menu,
-                contentDescription = "Toggle Sidebar"
-            )
+
+        if(showCancelButton) {
+            // Toggle Sidebar Button
+            FloatingActionButton(
+                onClick = { isSidebarVisible = !isSidebarVisible },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = if (isSidebarVisible) Icons.Default.Close else Icons.Default.Menu,
+                    contentDescription = "Toggle Sidebar"
+                )
+            }
         }
     }
 
