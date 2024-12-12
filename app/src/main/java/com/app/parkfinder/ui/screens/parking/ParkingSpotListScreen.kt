@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
-import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.ui.composables.ParkFinderLogo
 
@@ -39,7 +38,7 @@ fun ParkingSpotListScreen(
             ParkFinderLogo()
         },
         content = { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues).background(Color(0xFF1E1E1E))) {
+            Column(modifier = Modifier.padding(paddingValues).background(Color(0xFF151A24))) {
                 Text(
                     text = parkingLotName,
                     fontSize = 20.sp,
@@ -47,7 +46,7 @@ fun ParkingSpotListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .background(Color(0xFF1E1E1E))
+                        .background(Color(0xFF151A24))
                 )
                 LazyColumn(
                     modifier = Modifier
