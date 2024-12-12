@@ -262,6 +262,89 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     List::class.java
                 )
 
+                hubConnection?.on(
+                    "ParkingLotCreated",
+                    { data ->
+                        val jsonObject = JsonParser.parseString(data.polygonGeoJson).asJsonObject
+                        val coordinatesArray = jsonObject.getAsJsonObject("geometry")
+                            .getAsJsonArray("coordinates")
+                            .get(0) // gets the first one in the file
+
+                        val geoPoints = mutableListOf<GeoPoint>()
+                        for (coordinate in coordinatesArray.asJsonArray) {
+                            val lng = coordinate.asJsonArray[0].asDouble
+                            val lat = coordinate.asJsonArray[1].asDouble
+                            geoPoints.add(GeoPoint(lat, lng))
+                        }
+
+                        if (mapView != null) {
+                            val polygon = TaggedPolygon(mapView!!)
+                            polygon.tag = data.id.toString() // Set the tag for the parking lot overlay
+
+                            polygon.points = geoPoints
+                            polygon.fillPaint.color = Color.argb(60, 0, 0, 255) // Semi-transparent blue
+                            polygon.outlinePaint.color = Color.RED
+                            polygon.outlinePaint.strokeWidth = 2f
+
+                            polygon.setOnClickListener { _, _, _ ->
+                                if (currentParkingLotClickedId != data.id) {
+                                    currentParkingLotClickedId = data.id
+                                    clickedLot = data
+                                    getParkingSpotsForParkingLot(data.id)
+                                } else {
+                                    clearParkingSpotAndTextOverlays()
+                                    shownParkingSpots = emptyList()
+                                    currentParkingLotClickedId = -1
+                                }
+
+                                true
+                            }
+
+                            // Check the distance between the new parking lot and the current location
+                            lastLocation?.let {
+                                val distance = calculateDistance(
+                                    GeoPoint(it.latitude, it.longitude),
+                                    calculateCentroid(geoPoints)
+                                )
+                                if (distance <= viewRadius * kmValue * 111000) {
+                                    mapView!!.overlays.add(polygon)
+                                    mapView!!.invalidate()
+                                }
+                            }
+                        }
+
+                    },
+                    ParkingLotDto::class.java
+                )
+
+                hubConnection?.on(
+                    "ParkingLotsDeleted",
+                    { data ->
+                        // Iterate through the parking lots that were deleted
+                        val type = object : TypeToken<List<Int>>() {}.type
+                        val deletedParkingLotIds: List<Int> = gson.fromJson(data.toString(), type)
+
+                        // Remove the parking lot overlays that were deleted
+                        for (deletedParkingLotId in deletedParkingLotIds) {
+                            val deletedOverlay = currentParkingLotOverlays.find { it is TaggedPolygon && it.tag == deletedParkingLotId.toString() }
+                            if (deletedOverlay != null) {
+                                mapView?.overlays?.remove(deletedOverlay)
+                                currentParkingLotOverlays.remove(deletedOverlay)
+
+                                // In case that the parking lot was clicked, clear the parking spot overlays
+                                if (currentParkingLotClickedId == deletedParkingLotId) {
+                                    clearParkingSpotAndTextOverlays()
+                                    shownParkingSpots = emptyList()
+                                    currentParkingLotClickedId = -1
+                                }
+                            }
+                        }
+
+                        mapView?.invalidate()   // Refresh the map
+                    },
+                    List::class.java
+                )
+
                 // Start the connection
                 hubConnection?.start()?.blockingAwait()
             } catch (e: Exception) {
