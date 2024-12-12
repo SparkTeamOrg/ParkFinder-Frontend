@@ -1,7 +1,7 @@
 package com.app.parkfinder.ui.screens.main
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -53,7 +53,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.view_models.ReservationViewModel
@@ -92,7 +91,7 @@ fun ReservedScreen(
                 text = "My Reservations",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = White,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 20.dp)
@@ -199,7 +198,7 @@ fun ReservedScreen(
                                     Icon(
                                         imageVector = Icons.Default.Bookmark,
                                         contentDescription = "Bookmark",
-                                        tint = Color.White,
+                                        tint = White,
                                         modifier = Modifier
                                             .size(24.dp)
                                             .align(Alignment.Center)
@@ -212,7 +211,7 @@ fun ReservedScreen(
                             Text(
                                 text = "Zone",
                                 fontSize = 16.sp,
-                                color = Color.White
+                                color = White
                             )
                             Divider(
                                 color = White.copy(alpha = 0.3f),
@@ -230,7 +229,7 @@ fun ReservedScreen(
                             Text(
                                 text = "Start time",
                                 fontSize = 16.sp,
-                                color = Color.White
+                                color = White
                             )
                             Divider(
                                 color = White.copy(alpha = 0.3f),
@@ -248,7 +247,7 @@ fun ReservedScreen(
                             Text(
                                 text = "Vehicle",
                                 fontSize = 16.sp,
-                                color = Color.White
+                                color = White
                             )
                             Divider(
                                 color = White.copy(alpha = 0.3f),
@@ -267,7 +266,7 @@ fun ReservedScreen(
                                 text = "Finish your reservation",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White,
+                                color = White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                                     .padding(bottom = 10.dp)
                             )
@@ -283,7 +282,7 @@ fun ReservedScreen(
                             Text(
                                 text = "Rate parking spot",
                                 fontSize = 16.sp,
-                                color = Color.White,
+                                color = White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
 
@@ -336,10 +335,10 @@ fun ReservedScreen(
                                     .height(100.dp),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
                                     backgroundColor = Color(0xFF2A2A2A),
-                                    cursorColor = Color.White,
+                                    cursorColor = White,
                                     focusedBorderColor = Color.Gray,
                                     unfocusedBorderColor = Color.Gray,
-                                    textColor = Color.White
+                                    textColor = White
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             )
@@ -371,12 +370,12 @@ fun ReservedScreen(
                                         backgroundColor = Color(0xFF0FCFFF),
                                         disabledBackgroundColor = Color(0xFF0FCFFF).copy(alpha = 0.3f)
                                     ),
-                                    enabled = (rating >= 3 || (rating<3 && comment.isNotEmpty())),
+                                    enabled = (rating >= 3 || comment.isNotEmpty()),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text(
                                         text = "Rate and Leave",
-                                        color = Color.White,
+                                        color = White,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -394,20 +393,29 @@ fun ReservedScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF151A24))
-                .padding(top = 80.dp)
+                .padding(top = 100.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(400.dp)
-                    .background(White.copy(alpha = 0.1f), shape = CircleShape)
                     .align(Alignment.Center)
             ) {
+                Canvas(
+                    modifier = Modifier.fillMaxSize()
+                        .offset(y = 200.dp)
+                ) {
+                    drawCircle(
+                        color = Color(0xFF1D2535).copy(alpha = 0.5f),
+                        radius = 1000f,
+                        center = center
+                    )
+                }
                 Icon(
                     imageVector = Icons.Default.AutoStories,
-                    contentDescription = "No active reservations",
+                    contentDescription = "No reservation icon",
                     modifier = Modifier
-                        .size(300.dp)
-                        .align(Alignment.Center),
+                        .size(400.dp)
+                        .padding(bottom = 80.dp)
+                        .align(Alignment.BottomCenter),
                     tint = Color(0xFF151A24)
                 )
             }
@@ -418,7 +426,7 @@ fun ReservedScreen(
                     text = "No active reservations",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = White.copy(alpha = 0.3f),
+                    color = Color(0xFF1D2535),
                     modifier = Modifier
                         .padding(top = 8.dp)
                         .align(Alignment.Center)

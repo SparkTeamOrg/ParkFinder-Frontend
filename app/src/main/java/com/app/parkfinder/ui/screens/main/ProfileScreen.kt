@@ -58,8 +58,9 @@ fun ProfileScreen(
     openImagePicker: () -> Unit = {},
     removeImage: () -> Unit = {},
     navigateToVehicleInfo: () -> Unit = {},
-    startFpmNotificationService: ()->Unit = {},
-    stopFpmNotificationService: ()->Unit = {},
+    startFpmNotificationService: () -> Unit = {},
+    stopFpmNotificationService: () -> Unit = {},
+    navigateToHelpCenter: () -> Unit
     ) {
     Column(
         modifier = Modifier
@@ -169,7 +170,7 @@ fun ProfileScreen(
 //                title = "Notifications",
 //                notificationCount = 5
 //            )
-            MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center")
+            MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center", handleClick = navigateToHelpCenter)
         }
         Spacer(modifier = Modifier.weight(1f))
 

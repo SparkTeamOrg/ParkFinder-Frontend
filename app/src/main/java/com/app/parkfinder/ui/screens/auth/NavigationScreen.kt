@@ -39,6 +39,7 @@ fun NavigationScreen (
     addReservationHistory: (Int, Int, String) -> Unit,
     navigateToVehicleInfo: () -> Unit = { ->},
     navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
+    navigateToHelpCenter: () -> Unit,
     mapViewModel: MapViewModel = viewModel(),
     reservationViewModel: ReservationViewModel
 ) {
@@ -80,7 +81,7 @@ fun NavigationScreen (
             //UI for Profile
             composable(BottomNavItem.Profile.route) {
                 MapViewModel.isMapView = false
-                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo,startFpmNotificationService,stopFpmNotificationService)
+                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo, startFpmNotificationService,stopFpmNotificationService, navigateToHelpCenter)
             }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
