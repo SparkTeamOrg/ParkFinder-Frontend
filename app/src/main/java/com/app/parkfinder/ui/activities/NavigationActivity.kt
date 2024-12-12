@@ -134,6 +134,7 @@ class NavigationActivity : BaseActivity() {
                     addReservationHistory = { vehicleId, rating, comment -> addReservationHistory(vehicleId, rating, comment) },
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
                     navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
+                    navigateToHelpCenter = { navigateToHelpCenter() },
                     reservationViewModel = reservationViewModel
                 )
             }
@@ -273,6 +274,12 @@ class NavigationActivity : BaseActivity() {
             comment = com
         )
         reservationHistoryViewModel.addReservationHistory(createReservationHistoryDto)
+    }
+
+    private fun navigateToHelpCenter() {
+        val intent = Intent(this, HelpCenterActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
     }
 
     private fun navigateToVehicleInfo() {
