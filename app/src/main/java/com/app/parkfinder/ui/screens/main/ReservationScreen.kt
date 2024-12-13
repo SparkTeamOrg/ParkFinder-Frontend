@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +30,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Comment
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -79,70 +79,71 @@ fun ReservationScreen(
     onSelectedVehicleChange: (Int)->Unit,
     onBackClick: () -> Unit
 ) {
+    Box(
+        modifier = Modifier
+            .height(280.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.parking_space),  // Replace with your image resource
+            contentDescription = "Parking Spot",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(310.dp)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 5.dp, start = 5.dp)
+        ) {
+            IconButton(
+                onClick = { onBackClick() },
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(Color(0xFF151A24), shape = CircleShape)
+            ) {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = White
+                )
+            }
+            Text(
+                text = "Space details",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = White,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp)
+            )
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF151A24))
-            .verticalScroll(rememberScrollState()),
-    ) {
-        Box {
-            Image(
-                painter = painterResource(id = R.drawable.parking_space),  // Replace with your image resource
-                contentDescription = "Parking Spot",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(350.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 5.dp, start = 5.dp)
-            ) {
-                IconButton(
-                    onClick = { onBackClick() },
-                    modifier = Modifier
-                        .size(60.dp)
-                        .background(Color(0xFF151A24), shape = CircleShape)
-                ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = White
-                    )
-                }
-                Text(
-                    text = "Space details",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp)
-                )
-            }
-        }
-
+            .padding(top = 250.dp)
+            .background(
+                Color(0xFF151A24),
+                shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+        ) {
         Box(
             modifier = Modifier
-                .offset(y = (-50).dp)
                 .background(
                     Color(0xFF151A24),
                     shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)
                 )
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
+            Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(
-                        Modifier
+                        Modifier.fillMaxWidth()
                             .weight(0.8f)
                             .height(50.dp)
                     ) {
@@ -199,135 +200,156 @@ fun ReservationScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(5.dp))
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    Spacer(modifier = Modifier.height(5.dp))
 
-                RatingStars(rating)
+                    RatingStars(rating)
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text = "Spot number ",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                )
-                Divider(
-                    color = White.copy(alpha = 0.3f),
-                    thickness = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text = spotNumber,
-                    fontSize = 18.sp,
-                    color = Color(0xFF00AEEF)
-                )
+                    Text(
+                        text = "Spot number ",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                    )
+                    Divider(
+                        color = White.copy(alpha = 0.3f),
+                        thickness = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = spotNumber,
+                        fontSize = 18.sp,
+                        color = Color(0xFF00AEEF)
+                    )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Status ",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                )
-                Divider(
-                    color = White.copy(alpha = 0.3f),
-                    thickness = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text = "Free",
-                    fontSize = 18.sp,
-                    color = Color(0xFF00AEEF)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = "Status ",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = White,
+                    )
+                    Divider(
+                        color = White.copy(alpha = 0.3f),
+                        thickness = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = "Free",
+                        fontSize = 18.sp,
+                        color = Color(0xFF00AEEF)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "Choose your vehicle",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                )
-                Divider(
-                    color = White.copy(alpha = 0.3f),
-                    thickness = 2.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 7.dp)
-                )
-                OutlinedDropdownMenu(
-                    label = "",
-                    selectedText = "Select a vehicle",
-                    options = vehicles,
-                    icon = Icons.Default.DirectionsCar,
-                    onOptionSelected = { option -> onSelectedVehicleChange(option) }
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Button(
-                        onClick = { startNavigation() },
+                    Text(
+                        text = "Choose your vehicle",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = White,
+                    )
+                    Divider(
+                        color = White.copy(alpha = 0.3f),
+                        thickness = 2.dp,
                         modifier = Modifier
-                            .width(220.dp)
-                            .height(48.dp)
-                            .align(Alignment.Center),
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFF00AEEF),
-                            disabledBackgroundColor = Color(0xFF0FCFFF).copy(alpha = 0.3f),
-                        ),
-                        shape = RoundedCornerShape(10.dp),
-                        enabled = selectedVehicle != 0,
-                    ) {
-                        Text(
-                            text = "Reserve and navigate",
-                            color = if(selectedVehicle!=0) White else White.copy(alpha = 0.3f),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                            .fillMaxWidth()
+                            .padding(bottom = 7.dp)
+                    )
+                    OutlinedDropdownMenu(
+                        label = "",
+                        selectedText = "Select a vehicle",
+                        options = vehicles,
+                        icon = Icons.Default.DirectionsCar,
+                        onOptionSelected = { option -> onSelectedVehicleChange(option) }
+                    )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(30.dp))
 
-                Text(
-                    text = "Reviews",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                )
-                Divider(
-                    color = White.copy(alpha = 0.3f),
-                    thickness = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                if(comments.isNotEmpty()) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        items(comments) { comment ->
-                            CommentCard(comment)
-                        }
-                    }
-                }else {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = { startNavigation() },
+                            modifier = Modifier
+                                .width(220.dp)
+                                .height(48.dp)
+                                .align(Alignment.Center),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFF00AEEF),
+                                disabledBackgroundColor = Color(0xFF0FCFFF).copy(alpha = 0.3f),
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = selectedVehicle != 0,
+                        ) {
+                            Text(
+                                text = "Reserve and navigate",
+                                color = if (selectedVehicle != 0) White else White.copy(alpha = 0.3f),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "No reviews yet",
-                            fontSize = 18.sp,
-                            color = Color.Gray,
-                            modifier = Modifier
-                                .padding(start = 5.dp)
-                                .align(Alignment.Center)
+                            text = "Reviews",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = White,
                         )
+                        Text(
+                            text = " (${comments.size})",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = White.copy(alpha = 0.5f),
+                        )
+                    }
+                    Divider(
+                        color = White.copy(alpha = 0.3f),
+                        thickness = 2.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (comments.isNotEmpty()) {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 10.dp)
+                        ) {
+                            items(comments) { comment ->
+                                CommentCard(comment)
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Comment,
+                                contentDescription = "Comment",
+                                Modifier.size(60.dp),
+                                tint = Color.Gray
+                            )
+                            Text(
+                                text = "No reviews yet",
+                                fontSize = 18.sp,
+                                color = Color.Gray,
+                                modifier = Modifier
+                                    .padding(start = 5.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -339,11 +361,10 @@ fun ReservationScreen(
 fun CommentCard(comment: ReservationCommentDto) {
     Card(
         modifier = Modifier
-            .size(220.dp, 300.dp)
-            .padding(8.dp),
+            .size(200.dp, 260.dp),
         elevation = 4.dp,
         backgroundColor = Color(0xFF333333),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+        border = BorderStroke(1.dp, White.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -379,7 +400,7 @@ fun CommentCard(comment: ReservationCommentDto) {
                 }
             }
 
-            Box(modifier = Modifier.height(190.dp)) {
+            Box(modifier = Modifier.height(165.dp)) {
                 Text(
                     text = comment.comment,
                     color = White.copy(alpha = 0.7f),
