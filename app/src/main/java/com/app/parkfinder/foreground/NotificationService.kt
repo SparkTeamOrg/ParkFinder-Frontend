@@ -4,35 +4,26 @@ package com.app.parkfinder.foreground
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-
 import android.os.Build
-
 import android.os.IBinder
-import android.util.Log
-
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.app.parkfinder.BuildConfig
-
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.view_models.MapViewModel
-import com.app.parkfinder.ui.activities.NavigationActivity
 import com.google.gson.JsonParser
 import com.microsoft.signalr.HubConnection
 import com.microsoft.signalr.HubConnectionBuilder
 import io.reactivex.rxjava3.core.Single
 import org.osmdroid.util.GeoPoint
-
 
 enum class Actions {
     START, STOP
@@ -61,9 +52,12 @@ class NotificationService : Service() {
     private fun startForegroundService() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setContentTitle("FPM On")
+            .setContentTitle("Find Parking Mode On")
             .setContentText("Listening for free parking spots...")
             .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(false)
+            .setOnlyAlertOnce(true)
             .build()
 
         ServiceCompat.startForeground(
@@ -80,9 +74,8 @@ class NotificationService : Service() {
                 Single.just((AppPreferences.accessToken) ?: "")
             })
             .build()
-        Log.d("Serviceee","Connection with hub started")
+
         hubConnection?.on("SendNotification", { message ->
-            Log.d("Serviceee","Received: ${message}")
 
             // Convert the raw `message` to a JSON string
             val messageJson = gson.toJson(message)
@@ -91,8 +84,8 @@ class NotificationService : Service() {
             val parkingSpotsType = object : TypeToken<List<ParkingSpotDto>>() {}.type
             val parkingSpots: List<ParkingSpotDto> = gson.fromJson(messageJson, parkingSpotsType)
 
-            for(spot in parkingSpots)
-            {
+            var freeSpotsAroundUser = 0
+            for(spot in parkingSpots) {
                 //convert to polygon
                 val jsonObject = JsonParser.parseString(spot.polygonGeoJson).asJsonObject
                 val coordinatesArray = jsonObject.getAsJsonObject("geometry")
@@ -109,21 +102,28 @@ class NotificationService : Service() {
                 val centroid = MapViewModel.calculateCentroid(geoPoints)
                 val userDistanceFromSpot = centroid.distanceToAsDouble(userLocation)
 
-                val radius = 0.03 // 5km in degrees
+                val viewRadius = 5 // in kilometers
+                val kmValue = 0.006 // 1km in degrees
 
                 //user in range, send notification
-                if(userDistanceFromSpot < radius)
-                    showNotification("New Notification", "Parking spot ${spot.id} is free")
-                else
-                    Log.d("Serviceee","Spot is not in user range")
+                if(userDistanceFromSpot < viewRadius * kmValue * 111000) {
+                    freeSpotsAroundUser += 1
+                }
             }
+
+            if (freeSpotsAroundUser > 0) {
+                if (freeSpotsAroundUser == 1)
+                    showNotification("Free parking spots found", "There is $freeSpotsAroundUser free parking spot around you. Check it out!")
+                else
+                    showNotification("Free parking spots found", "There are $freeSpotsAroundUser free parking spots around you. Check them out!")
+            }
+
         }, List::class.java)
 
         hubConnection?.start()?.blockingAwait()
     }
 
     private fun stopForegroundService() {
-        Log.d("Serviceee","Stopping foreground service")
         hubConnection?.stop()?.blockingAwait()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -136,9 +136,11 @@ class NotificationService : Service() {
             .setContentText(message)
             .setSmallIcon(R.mipmap.ic_launcher_round) // Use your app's icon
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setAutoCancel(true)
+            .setFullScreenIntent(null, true)    // Ensure heads-up notification
             .build()
 
-        Log.d("Serviceee","Creating notification $message")
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.notify(++notificationId, notification)
     }
@@ -163,7 +165,5 @@ class NotificationService : Service() {
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         stopForegroundService()
-        Log.d("Serviceee","Stopping foreground service")
     }
-
 }

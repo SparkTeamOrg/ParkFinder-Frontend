@@ -32,10 +32,6 @@ import androidx.compose.material.icons.filled.StackedBarChart
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,9 +41,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
+import com.app.parkfinder.logic.view_models.ProfileViewModel
 import java.util.logging.Logger
 
 @Composable
@@ -60,7 +58,8 @@ fun ProfileScreen(
     navigateToVehicleInfo: () -> Unit = {},
     startFpmNotificationService: () -> Unit = {},
     stopFpmNotificationService: () -> Unit = {},
-    navigateToHelpCenter: () -> Unit
+    navigateToHelpCenter: () -> Unit,
+    profileViewModel: ProfileViewModel = viewModel()
     ) {
     Column(
         modifier = Modifier
@@ -156,8 +155,15 @@ fun ProfileScreen(
         {
             //FPM
             ToggleSwitch(
-                start = startFpmNotificationService,
-                stop = stopFpmNotificationService
+                isChecked = profileViewModel.isFpmOn,
+                onCheckedChange = { isChecked ->
+                    profileViewModel.isFpmOn = isChecked
+                    if(isChecked)
+                        startFpmNotificationService()
+                    else {
+                        stopFpmNotificationService()
+                    }
+                }
             )
 
             // Menu Items
@@ -165,11 +171,6 @@ fun ProfileScreen(
             MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
             MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
             MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
-//            MenuItem(
-//                icon = Icons.Outlined.Notifications,
-//                title = "Notifications",
-//                notificationCount = 5
-//            )
             MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center", handleClick = navigateToHelpCenter)
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -263,13 +264,12 @@ fun ProfileImage(profileImage: Uri?) {
         contentScale = ContentScale.Crop
     )
 }
+
 @Composable
 fun ToggleSwitch(
-    start:()->Unit = {},
-    stop: ()->Unit = {}
+    isChecked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(false) }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
@@ -278,49 +278,7 @@ fun ToggleSwitch(
         Spacer(modifier = Modifier.fillMaxWidth())
         Switch(
             checked = isChecked,
-            onCheckedChange = {
-                isChecked = it
-                if(isChecked)
-                    start()
-                else
-                    stop()
-            }
+            onCheckedChange = onCheckedChange
         )
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ProfileScreenPreview() {
-//    ParkFinderTheme {
-//        val navController = rememberNavController()
-//        Scaffold(
-//            topBar = { ParkFinderLogo() },
-//            bottomBar = { BottomNavigationBar(navController = navController) }
-//        ) { innerPadding ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = BottomNavItem.Profile.route,
-//                Modifier.padding(innerPadding)
-//            ) {
-//                //UI for Home
-//                composable(BottomNavItem.Home.route) { HomeScreen(UserDto(), {} ) }
-//                //UI for Search
-//                composable(BottomNavItem.Search.route) { SearchScreen() }
-//                //UI for Profile
-//                composable(BottomNavItem.Profile.route) {
-//                    ProfileScreen(
-//                        {},
-//                        UserDto(),
-//                        null,
-//                        {},
-//                        {},
-//                        {})
-//                }
-//                //UI for Reserved
-//                composable(BottomNavItem.Reserved.route) { ReservedScreen() }
-//            }
-//        }
-//    }
-//}
