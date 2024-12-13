@@ -425,8 +425,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-    fun getParkingLotSpotsSearch(lotId:Int)
-    {
+    fun getParkingLotSpotsSearch(lotId:Int) {
         viewModelScope.launch {
             getParkingSpotsForParkingLot(lotId,true)
         }
@@ -909,6 +908,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     fun resetShowModalSignal(){
         _showConfirmReservationModal.postValue(null)
     }
+
     fun destroy() {
         locationOverlay?.disableMyLocation()
         stopHubConnection()
