@@ -91,7 +91,7 @@ fun UserStatisticsPage(
             }
 
             val labels = statistic.vehicles.map { vehicle ->
-                "${vehicle.brandName} ${vehicle.vehicleModel}"
+                "${vehicle.brandName} ${vehicle.modelName}"
             }
 
             MultiBarChartComposable(
