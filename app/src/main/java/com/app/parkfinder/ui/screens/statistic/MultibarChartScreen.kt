@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.logic.view_models.StatisticsViewModel
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
@@ -23,7 +25,9 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import okhttp3.internal.wait
 
 @Composable
-fun UserStatisticsPage() {
+fun UserStatisticsPage(
+    statisticsModel: StatisticsViewModel = viewModel()
+) {
     val darkBackground = Color(0xFF1C1C1E)
     val cardBackground = Color(0xFF2C2C2E)
     val highlightColor = Color(0xFF00E5FF)
