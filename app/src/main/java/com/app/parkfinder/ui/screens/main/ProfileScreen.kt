@@ -58,6 +58,7 @@ fun ProfileScreen(
     navigateToVehicleInfo: () -> Unit = {},
     startFpmNotificationService: () -> Unit = {},
     stopFpmNotificationService: () -> Unit = {},
+    navigateToStatistics: () -> Unit = {},
     navigateToHelpCenter: () -> Unit,
     profileViewModel: ProfileViewModel = viewModel()
     ) {
@@ -169,7 +170,7 @@ fun ProfileScreen(
             // Menu Items
             MenuItem(icon = Icons.Default.Wallet, title = "Balance")
             MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
-            MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
+            MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics", handleClick = navigateToStatistics)
             MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
             MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center", handleClick = navigateToHelpCenter)
         }

@@ -38,6 +38,7 @@ import com.app.parkfinder.logic.view_models.ReservationHistoryViewModel
 import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.activities.parking.ReservationActivity
+import com.app.parkfinder.ui.activities.statistic.StatisticsActivity
 import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -135,7 +136,8 @@ class NavigationActivity : BaseActivity() {
                     navigateToVehicleInfo = { navigateToVehicleInfo() },
                     navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
                     navigateToHelpCenter = { navigateToHelpCenter() },
-                    reservationViewModel = reservationViewModel
+                    reservationViewModel = reservationViewModel,
+                    navigateToStatistics = {navigateToStatistics()}
                 )
             }
         }
@@ -293,6 +295,13 @@ class NavigationActivity : BaseActivity() {
             putExtra("location",location)
             putExtra("radius",radius)
         }
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToStatistics()
+    {
+        val intent = Intent(this, StatisticsActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
