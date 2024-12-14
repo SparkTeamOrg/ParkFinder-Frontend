@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Switch
@@ -27,11 +28,18 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.StackedBarChart
 import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +55,14 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.ProfileViewModel
 import java.util.logging.Logger
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.text.style.TextAlign
+import com.app.parkfinder.utilis.validateUserName
 
 @Composable
 fun ProfileScreen(
@@ -59,8 +75,12 @@ fun ProfileScreen(
     startFpmNotificationService: () -> Unit = {},
     stopFpmNotificationService: () -> Unit = {},
     navigateToHelpCenter: () -> Unit,
-    profileViewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel(),
+    updateUserName: (String) -> Unit
     ) {
+    var showUpdateModal by remember { mutableStateOf(false) }
+    var showDeletionModal by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +109,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(50.dp)
                         .clip(CircleShape)
-                        .border(width = 3.dp, color = Color.White, shape = CircleShape)
+                        .border(width = 3.dp, color = White, shape = CircleShape)
                         .background(Color(0xFF0FCFFF))
                         .clickable{ openImagePicker() }
                 ) {
@@ -99,7 +119,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.Center),
-                        tint = Color.White
+                        tint = White
                     )
                 }
             }
@@ -113,17 +133,17 @@ fun ProfileScreen(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .border(width = 3.dp, color = Color.White, shape = CircleShape)
+                            .border(width = 3.dp, color = White, shape = CircleShape)
                             .background(Color.Red)
-                            .clickable { removeImage() }
+                            .clickable { showDeletionModal = true }
                     ) {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete Image",
                             modifier = Modifier
                                 .size(30.dp)
                                 .align(Alignment.Center),
-                            tint = Color.White
+                            tint = White
                         )
                     }
                 }
@@ -137,7 +157,7 @@ fun ProfileScreen(
             text = user.Fullname,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = White
         )
 
         // Email
@@ -145,6 +165,13 @@ fun ProfileScreen(
             text = user.Email,
             fontSize = 14.sp,
             color = Color.Gray
+        )
+
+        Text(
+            text = "Edit",
+            fontSize = 14.sp,
+            color = Color(0xFF00AEEF),
+            modifier = Modifier.clickable{ showUpdateModal = true  }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -197,6 +224,9 @@ fun ProfileScreen(
             )
         }
     }
+
+    EditNameDialog(onDismiss = { showUpdateModal = false }, updateUserName = updateUserName, currentName = user.Fullname, showUpdateModal)
+    ConfirmImageDeletionDialog(onDismiss = { showDeletionModal = false }, removeImage = removeImage, showDeletionModal)
 }
 
 @Composable
@@ -215,7 +245,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
         Icon(
             imageVector = icon,
             contentDescription = title,
-            tint = Color.White,
+            tint = White,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -223,7 +253,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
             text = title,
             fontSize = 16.sp,
             fontWeight = FontWeight.W700,
-            color = Color.White,
+            color = White,
             modifier = Modifier.weight(1f)
         )
         if (notificationCount != null && notificationCount > 0) {
@@ -234,7 +264,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
             ) {
                 Text(
                     text = "$notificationCount",
-                    color = Color.White,
+                    color = White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -243,7 +273,7 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = Color.White,
+            tint = White,
             modifier = Modifier.size(24.dp)
         )
     }
@@ -274,11 +304,155 @@ fun ToggleSwitch(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
-        Text(text = if (isChecked) "FPM On" else "FPM Off", color = Color.White,fontWeight = FontWeight.W700,)
+        Text(text = if (isChecked) "FPM On" else "FPM Off", color = White,fontWeight = FontWeight.W700)
         Spacer(modifier = Modifier.fillMaxWidth())
         Switch(
             checked = isChecked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun EditNameDialog(
+    onDismiss: () -> Unit,
+    updateUserName: (String) -> Unit,
+    currentName: String,
+    showModal: Boolean
+) {
+    var fullName by remember { mutableStateOf(currentName) }
+
+    if(showModal) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Edit",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = White,
+                        modifier = Modifier.padding(end = 5.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        tint = White,
+                        contentDescription = "Edit"
+                    )
+                }
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "Set a new name",
+                        color = White,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 6.dp)
+                    )
+                    OutlinedTextField(
+                        value = fullName,
+                        onValueChange = { fullName = it },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color(0xFF151A24),
+                            unfocusedBorderColor = White,
+                            unfocusedTextColor = White,
+                            focusedTextColor = White
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = "Both first and last name must start with an uppercase letter and contain only lowercase alphabetic characters.",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 15.dp),
+                        textAlign = TextAlign.Justify
+                    )
+                }
+            },
+            containerColor = Color(0xFF151A24),
+            confirmButton = {
+                Button(
+                    onClick = {
+                        updateUserName(fullName)
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = White,
+                        containerColor = Color(0xFF0FCFFF),
+                        disabledContentColor = White.copy(alpha = 0.3f),
+                        disabledContainerColor = Color(0xFF0FCFFF).copy(alpha = 0.3f)
+                    ),
+                    enabled = (fullName != currentName && validateUserName(fullName))
+                ) {
+                    Text("Update")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                        fullName = currentName
+                   },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = White,
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ConfirmImageDeletionDialog(
+    onDismiss: () -> Unit,
+    removeImage: () -> Unit,
+    showModal: Boolean
+) {
+    if(showModal) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = "Confirm removal",
+                    color = White
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to remove your profile image?",
+                    color = White,
+                    fontSize = 16.sp
+                )
+            },
+            containerColor = Color(0xFF151A24),
+            confirmButton = {
+                Button(
+                    onClick = {
+                        removeImage()
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text("Yes, Remove")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF)
+                    )
+                ) {
+                    Text("Cancel")
+                }
+            }
         )
     }
 }
