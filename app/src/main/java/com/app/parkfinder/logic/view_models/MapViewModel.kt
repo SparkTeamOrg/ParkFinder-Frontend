@@ -59,24 +59,18 @@ import kotlin.math.sin
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.microsoft.signalr.HubConnectionState
-import kotlin.math.log
 import kotlin.math.sqrt
 
 class MapViewModel(application: Application) : AndroidViewModel(application), LocationListener {
-    @SuppressLint("StaticFieldLeak")
-//    var mapView: MapView? = null
-
+    // ================ Variables ================
     private var hubConnection: HubConnection? = null
 
-    private val locationManager =
-        getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
+    private val locationManager = getApplication<Application>().getSystemService(LOCATION_SERVICE) as LocationManager
     private var steps: List<Step> = emptyList()
     private var instructions = mutableListOf<NavigationStep>()
 
-    // 0.03 is approximately 5km
-    private val viewRadius: Int = 5 // in kilometers
-
-    private val kmValue = 0.006 // 1km in degrees
+    private val viewRadius: Int = 5     // in kilometers
+    private val kmValue = 0.006         // 1km in degrees
 
     private var locationOverlay: MyLocationNewOverlay? = null
 
@@ -89,51 +83,83 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
     private var currentParkingLotOverlays: MutableList<Overlay> = mutableListOf()
     private var currentTextOverlays: MutableList<TextOverlay> = mutableListOf()
     private var currentParkingLotClickedId: Int = -1
+    var clickedLot: ParkingLotDto? = null
+    var clickedSpotNumber: String = ""
+    private var shownParkingSpots: List<ParkingSpotDto> = emptyList()
+    private var clickedGeoPoints = mutableListOf<GeoPoint>()
 
+    // ================ Services ================
     private val osrmService = OsrmService.create()
     private val nominatimService = NominatimService.create()
     private val mapService = RetrofitConfig.createService(MapService::class.java)
 
+    // ================ LiveData ================
     private val _getAllParkingLotsRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
-    private val _getParkingSpotsForParkingLot =
-        MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
-    private val _getParkingSpotsForParkingLotSearch =
-        MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
-    private val _getAllParkingLotsAroundLocationRes =
-        MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
+    private val _getParkingSpotsForParkingLot = MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
+    private val _getParkingSpotsForParkingLotSearch = MutableLiveData<BackResponse<List<ParkingSpotDto>>>()
+    private val _getAllParkingLotsAroundLocationRes = MutableLiveData<BackResponse<List<ParkingLotDto>>?>()
     private val _getAllInstructions = MutableLiveData<List<NavigationStep>>()
     private val _getParkingSpotUpdates = MutableLiveData<List<ParkingSpotUpdateNotificationDto>>()
+    private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
+    private val _showConfirmReservationModal = MutableLiveData<Unit?>()
+    private val _currentNavigationStep = MutableLiveData<NavigationStep?>()
+    private val _navigationActive = MutableLiveData<Boolean>()
 
-    val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> =
-        _getAllParkingLotsAroundLocationRes
+    // ================ Exposed LiveData ================
+    val getAllParkingLotsAroundLocationRes: MutableLiveData<BackResponse<List<ParkingLotDto>>?> = _getAllParkingLotsAroundLocationRes
     val getAllInstructions: LiveData<List<NavigationStep>> = _getAllInstructions
     val getParkingSpotUpdate: LiveData<List<ParkingSpotUpdateNotificationDto>> = _getParkingSpotUpdates
     val getParkingSpotsForParkingLotSearch: LiveData<BackResponse<List<ParkingSpotDto>>> = _getParkingSpotsForParkingLotSearch
-    private val _parkingSpotClicked = MutableSharedFlow<ParkingSpotDto>()
     val parkingSpotClicked = _parkingSpotClicked.asSharedFlow()
-
-    private val _showConfirmReservationModal = MutableLiveData<Unit?>()
     val showConfirmReservationModal: LiveData<Unit?> = _showConfirmReservationModal
+    val currentNavigationStep: LiveData<NavigationStep?> = _currentNavigationStep
+    val navigationActive: LiveData<Boolean> = _navigationActive
 
-    var clickedLot: ParkingLotDto? = null
-    var clickedSpotNumber: String = ""
-    private var shownParkingSpots: List<ParkingSpotDto> = emptyList()
-
-    private var clickedGeoPoints = mutableListOf<GeoPoint>()
-
-    // Define the custom deserializer
+    // ================ Gson ================
     private val gson: Gson = GsonBuilder()
         .registerTypeAdapter(ParkingSpotStatusEnum::class.java, ParkingSpotStatusEnumDeserializer())
         .create()
 
+    // ================ Handlers ================
     private val connectionCheckHandler = Handler(Looper.getMainLooper())
     private val connectionCheckInterval: Long = 10000 // 10 seconds
 
-    private val _currentNavigationStep = MutableLiveData<NavigationStep?>()
-    val currentNavigationStep: LiveData<NavigationStep?> = _currentNavigationStep
+    // ================ Companion Object ================
+    // Static variables and functions
+    companion object {
+        var lastLocation: GeoPoint? = null
+        var isMapView: Boolean = false
+        var mapView: MapView? = null
+        private const val KEY_NAVIGATING_TO_PARKING_SPOT = "navigating_to_parking_spot"
 
-    private val _navigationActive = MutableLiveData<Boolean>()
-    val navigationActive: LiveData<Boolean> = _navigationActive
+        fun getParkingSpotPoints(spot:ParkingSpotDto): MutableList<GeoPoint> {
+            val jsonObject = JsonParser.parseString(spot.polygonGeoJson).asJsonObject
+            val coordinatesArray = jsonObject.getAsJsonObject("geometry")
+                .getAsJsonArray("coordinates")
+                .get(0) // gets the first one in the file
+
+            val geoPoints = mutableListOf<GeoPoint>()
+            for (coordinate in coordinatesArray.asJsonArray) {
+                val lng = coordinate.asJsonArray[0].asDouble
+                val lat = coordinate.asJsonArray[1].asDouble
+                geoPoints.add(GeoPoint(lat, lng))
+            }
+            return geoPoints
+        }
+
+        fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
+            var centroidLat = 0.0
+            var centroidLon = 0.0
+
+            for (point in points) {
+                centroidLat += point.latitude
+                centroidLon += point.longitude
+            }
+
+            val totalPoints = points.size
+            return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
+        }
+    }
 
     init {
         _getAllParkingLotsRes.observeForever { res ->
@@ -431,13 +457,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         }
     }
 
-
-    private fun getNearbyParkingLots(
-        lat: Double,
-        long: Double,
-        radius: Int,
-        isSearch: Boolean = false
-    ) {
+    private fun getNearbyParkingLots(lat: Double, long: Double, radius: Int, isSearch: Boolean = false) {
         viewModelScope.launch {
             try {
                 val response = mapService.GetAllNearbyParkingLots(radius * kmValue, lat, long)
@@ -782,40 +802,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
         currentTextOverlays.clear()
     }
 
-    //static functions
-    companion object{
-        var lastLocation: GeoPoint? = null
-        var isMapView: Boolean = false
-        var mapView: MapView? = null
-        fun getParkingSpotPoints(spot:ParkingSpotDto): MutableList<GeoPoint>
-        {
-            val jsonObject = JsonParser.parseString(spot.polygonGeoJson).asJsonObject
-            val coordinatesArray = jsonObject.getAsJsonObject("geometry")
-                .getAsJsonArray("coordinates")
-                .get(0) // gets the first one in the file
-
-            val geoPoints = mutableListOf<GeoPoint>()
-            for (coordinate in coordinatesArray.asJsonArray) {
-                val lng = coordinate.asJsonArray[0].asDouble
-                val lat = coordinate.asJsonArray[1].asDouble
-                geoPoints.add(GeoPoint(lat, lng))
-            }
-            return geoPoints
-        }
-        fun calculateCentroid(points: List<GeoPoint>): GeoPoint {
-            var centroidLat = 0.0
-            var centroidLon = 0.0
-
-            for (point in points) {
-                centroidLat += point.latitude
-                centroidLon += point.longitude
-            }
-
-            val totalPoints = points.size
-            return GeoPoint(centroidLat / totalPoints, centroidLon / totalPoints)
-        }
-    }
-
     private fun drawCircle(mapView: MapView, latitude: Double, longitude: Double) {
 
         // Remove the previous circle overlay if it exists
@@ -958,9 +944,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
 
     override fun onLocationChanged(loc: Location) {
         val newLocation = GeoPoint(loc.latitude, loc.longitude)
-        if(mapView==null)
-            Log.d("Servicee","MAP IS NULL")
-        Log.d("Serviceee","Location changed")
+
         lastLocation = newLocation
         NotificationService.userLocation = newLocation
 
