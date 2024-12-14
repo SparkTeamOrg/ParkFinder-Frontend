@@ -76,7 +76,8 @@ fun ProfileScreen(
     stopFpmNotificationService: () -> Unit = {},
     navigateToHelpCenter: () -> Unit,
     profileViewModel: ProfileViewModel = viewModel(),
-    updateUserName: (String) -> Unit
+    updateUserName: (String) -> Unit,
+    navigateToBalanceScreen: () -> Unit = {}
     ) {
     var showUpdateModal by remember { mutableStateOf(false) }
     var showDeletionModal by remember { mutableStateOf(false) }
@@ -194,7 +195,7 @@ fun ProfileScreen(
             )
 
             // Menu Items
-            MenuItem(icon = Icons.Default.Wallet, title = "Balance")
+            MenuItem(icon = Icons.Default.Wallet, title = "Balance", handleClick = navigateToBalanceScreen)
             MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
             MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics")
             MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
