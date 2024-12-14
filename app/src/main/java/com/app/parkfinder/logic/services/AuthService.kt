@@ -3,6 +3,7 @@ package com.app.parkfinder.logic.services
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
 import com.app.parkfinder.logic.models.dtos.TokenDto
+import com.app.parkfinder.logic.models.dtos.UpdateUserNameDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -49,5 +50,10 @@ interface AuthService {
     @POST("auth/password/reset")
     suspend fun resetPassword(
         @Body resetPasswordDto: ResetPasswordDto
+    ): Response<BackResponse<String>>
+
+    @PUT("auth/update")
+    suspend fun updateUser(
+        @Body updateUserNameDto: UpdateUserNameDto
     ): Response<BackResponse<String>>
 }

@@ -31,9 +31,11 @@ import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.CreateReservationHistoryDto
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
+import com.app.parkfinder.logic.models.dtos.UpdateUserNameDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.logic.view_models.ReservationHistoryViewModel
 import com.app.parkfinder.logic.view_models.ReservationViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
@@ -48,12 +50,13 @@ import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
+    private val authViewModel: AuthViewModel by viewModels()
     private val reservationViewModel: ReservationViewModel by viewModels()
     private val reservationHistoryViewModel: ReservationHistoryViewModel by viewModels()
 
     private val imageService = RetrofitConfig.createService(ImageService::class.java)
     private var currentImageUrl by mutableStateOf<Uri?>(null)
-    private var user: UserDto = UserDto()
+    private var user by mutableStateOf(UserDto())
 
     private var pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) ImageUtils.openCropper(uri, cropImage)
@@ -137,6 +140,7 @@ class NavigationActivity : BaseActivity() {
                     navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
                     navigateToHelpCenter = { navigateToHelpCenter() },
                     reservationViewModel = reservationViewModel,
+                    updateUserName = { fullName -> updateUserName(fullName) },
                     navigateToStatistics = {navigateToStatistics()}
                 )
             }
@@ -167,6 +171,16 @@ class NavigationActivity : BaseActivity() {
             }
             else {
                 Toast.makeText(this, result.item1.messages.joinToString(), Toast.LENGTH_LONG).show()
+            }
+        }
+
+        authViewModel.updateUserNameResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                user = user.copy(Fullname = result.data)
+                Toast.makeText(this, "Name changed successfully", Toast.LENGTH_LONG).show()
+            }
+            else {
+                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -255,6 +269,14 @@ class NavigationActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun updateUserName(fullName: String){
+        val updateUserNameDto = UpdateUserNameDto(
+            firstName = fullName.split(" ")[0],
+            lastName = fullName.split(" ")[1]
+        )
+        authViewModel.updateUserName(updateUserNameDto)
     }
 
     private fun confirmReservation(id: Int){
