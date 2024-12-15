@@ -1,6 +1,7 @@
 package com.app.parkfinder.logic.view_models
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,9 @@ import com.app.parkfinder.logic.models.dtos.CreateReservationHistoryDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.ReservationHistoryApiResponse
 import com.app.parkfinder.logic.models.dtos.ReservationHistoryDto
+import com.app.parkfinder.logic.models.dtos.ReservationHistoryItemDto
+import com.app.parkfinder.logic.models.dtos.pagination.BasePaginationResult
+import com.app.parkfinder.logic.models.dtos.pagination.ReservationHistoryPaginationRequest
 import com.app.parkfinder.logic.services.ReservationHistoryService
 import kotlinx.coroutines.launch
 
@@ -20,10 +24,12 @@ class ReservationHistoryViewModel : ViewModel() {
     private val _parkingSpotCommentsResult = MutableLiveData<BackResponse<List<ReservationCommentDto>>>()
     private val _parkingSpotRatingResult = MutableLiveData<BackResponse<Double>>()
     private val _createReservationHistoryResult = MutableLiveData<ReservationHistoryApiResponse>()
+    private val _paginateReservationHistoryResult = MutableLiveData<BackResponse<BasePaginationResult<ReservationHistoryItemDto>>>()
 
     val parkingSpotCommentsResult: LiveData<BackResponse<List<ReservationCommentDto>>> = _parkingSpotCommentsResult
     val parkingSpotRatingResult: LiveData<BackResponse<Double>> = _parkingSpotRatingResult
     val createReservationHistoryResult: LiveData<ReservationHistoryApiResponse> = _createReservationHistoryResult
+    val paginateReservationHistoryResult: LiveData<BackResponse<BasePaginationResult<ReservationHistoryItemDto>>> = _paginateReservationHistoryResult
 
     fun getParkingSpotComments(parkingSpotId: Int) {
         viewModelScope.launch {
@@ -110,6 +116,43 @@ class ReservationHistoryViewModel : ViewModel() {
                     ), -1
                 )
                 _createReservationHistoryResult.postValue(errorResponse)
+            }
+        }
+    }
+
+    fun getPaginatedReservationHistory(request: ReservationHistoryPaginationRequest) {
+
+        viewModelScope.launch {
+            try {
+                val response = reservationHistoryService.getPaginatedReservationHistory(
+                    page = request.page,
+                    limit = request.limit,
+                    sortBy = request.sortBy,
+                    sortDescending = request.sortDescending,
+                    vehicleId = request.vehicleId,
+                    startDate = request.startDate,
+                    endDate = request.endDate
+                )
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        _paginateReservationHistoryResult.postValue(it)
+                    }
+                }
+                else {
+                    val errorResponse = BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = BasePaginationResult(-1,-1,-1,-1, emptyList<ReservationHistoryItemDto>())
+                    )
+                    _paginateReservationHistoryResult.postValue(errorResponse)
+                }
+            } catch (e: Exception) {
+                val errorResponse = BackResponse(
+                    isSuccessful = false,
+                    messages = listOf(e.message ?: "An error occurred"),
+                    data = BasePaginationResult(-1,-1,-1,-1, emptyList<ReservationHistoryItemDto>())
+                )
+                _paginateReservationHistoryResult.postValue(errorResponse)
             }
         }
     }

@@ -13,3 +13,14 @@ fun formatDate(dateString: String): String {
     }
     else{ "Error" }
 }
+
+fun formatDateFirstDate(dateString: String): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSS", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    val date = inputFormat.parse(dateString)
+    return if(date!=null){
+        outputFormat.format(date).toString()
+    }
+    else{ "Error" }
+}

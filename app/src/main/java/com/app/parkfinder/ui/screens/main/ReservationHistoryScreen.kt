@@ -1,6 +1,7 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -29,6 +30,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,55 +43,53 @@ import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.currentCompositionErrors
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
+import com.app.parkfinder.logic.models.dtos.ReservationHistoryItemDto
+import com.app.parkfinder.logic.models.dtos.VehicleDto
+import com.app.parkfinder.utilis.formatDate
+import com.app.parkfinder.utilis.formatDateFirstDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -97,8 +98,21 @@ import java.util.Locale
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ReservationHistoryScreen(
+    vehicles: List<VehicleDto>,
+    onSelectedStartDateChanged: (String?) -> Unit,
+    onSelectedEndDateChanged: (String?) -> Unit,
+    onSelectedVehicleIdChanged: (Int?) -> Unit,
+    onSelectedSortOptionChanged: (String) -> Unit,
+    onSelectedAscDscOptionChanged: (String) -> Unit,
+    selectedSortOption: String,
+    selectedAscDscOption: String,
+    getPaginatedReservationHistory: (Int) -> Unit,
+    reservationHistory: List<ReservationHistoryItemDto>,
+    isHistoryLoading: Boolean,
     onBackClick: () -> Unit
 ) {
+    var currentPage by remember { mutableIntStateOf(1) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -154,27 +168,78 @@ fun ReservationHistoryScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            FilterBar()
-            ReservationHistoryItem("Zmaj Jovina",
-                "Kragujvac",
-                4,
-                "08/11/2024 3:15",
-                450.69
+        FilterBar(
+            vehicles = vehicles,
+            onSelectedStartDateChanged = onSelectedStartDateChanged,
+            onSelectedEndDateChanged = onSelectedEndDateChanged,
+            onSelectedVehicleIdChanged = onSelectedVehicleIdChanged,
+            onSelectedSortOptionChanged = onSelectedSortOptionChanged,
+            onSelectedAscDscOptionChanged = onSelectedAscDscOptionChanged,
+            selectedSortOption = selectedSortOption,
+            selectedAscDscOption = selectedAscDscOption,
+            getPaginatedReservationHistory = getPaginatedReservationHistory,
+            currentPage = currentPage
+        )
+
+    }
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .padding(top = 230.dp, bottom = 16.dp)
+            .padding(horizontal = 16.dp)
+    ) {
+
+        items(reservationHistory) { item ->
+            ReservationHistoryItem(
+                road = item.parkingSpotParkingLotRoad,
+                city = item.parkingSpotParkingLotCity,
+                rating = item.rating,
+                price = item.price,
+                startDate = item.startTime,
+                endDate = item.endTime,
+                vehicleInfo = "${item.vehicleVehicleModelVehicleBrandName} ${item.vehicleVehicleModelName} ${item.vehicleLicencePlate}"
             )
+        }
+
+        item {
+            if (isHistoryLoading) {
+                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+            }
+        }
+    }
+    LaunchedEffect(listState.firstVisibleItemIndex) {
+        if (listState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.last()
+            if (lastVisibleItem.index == reservationHistory.size.minus(1)) {
+                Log.d("Debug",reservationHistory.size.toString())
+                currentPage += 1
+                getPaginatedReservationHistory(currentPage)
+            }
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FilterBar() {
+fun FilterBar(
+    vehicles: List<VehicleDto>,
+    onSelectedStartDateChanged: (String?) -> Unit,
+    onSelectedEndDateChanged: (String?) -> Unit,
+    onSelectedVehicleIdChanged: (Int?) -> Unit,
+    onSelectedSortOptionChanged: (String) -> Unit,
+    onSelectedAscDscOptionChanged: (String) -> Unit,
+    selectedSortOption: String,
+    selectedAscDscOption: String,
+    getPaginatedReservationHistory: (Int) -> Unit,
+    currentPage: Int
+) {
     var isExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(16.dp)
+            .zIndex(1f)
     ) {
         Row(
             modifier = Modifier
@@ -198,7 +263,7 @@ fun FilterBar() {
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = if (!isExpanded) Icons.Filled.ArrowDropDown else Icons.Filled.ArrowDropUp,
                 contentDescription = "Expand/Collapse",
                 tint = White,
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -208,23 +273,28 @@ fun FilterBar() {
         AnimatedVisibility(
             visible = isExpanded,
             enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+            exit = fadeOut() + shrinkVertically(),
         ) {
             Column {
                 OutlinedDropdownMenu(
                     label = "Select a vehicle",
                     selectedText = "",
-                    options = emptyMap(),
+                    options = vehicles,
                     icon = Icons.Default.DirectionsCar,
-                    isError = false,
-                    onOptionSelected = {}
+                    onOptionSelected = onSelectedVehicleIdChanged
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    DatePicker("Newer than")
-                    DatePicker("Earlier than")
+                    DatePicker(
+                        showText = "Newer than",
+                        onDateSelected = onSelectedStartDateChanged
+                    )
+                    DatePicker(
+                        showText = "Earlier than",
+                        onDateSelected = onSelectedEndDateChanged
+                    )
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -233,14 +303,20 @@ fun FilterBar() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    SortByGroup()
+                    SortByGroup(
+                        selectedOption = selectedSortOption,
+                        onSelectedOptionChanged = onSelectedSortOptionChanged
+                    )
                     Column(
                         modifier = Modifier.padding(start = 10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        AscDscGroup()
+                        AscDscGroup(
+                            selectedOption = selectedAscDscOption,
+                            onSelectedOptionChanged = onSelectedAscDscOptionChanged
+                        )
                         Button(
-                            onClick = { },
+                            onClick = { getPaginatedReservationHistory(currentPage) },
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonColors(
                                 containerColor = Color(0xFF00AEEF),
@@ -265,7 +341,9 @@ fun ReservationHistoryItem(
     road: String,
     city: String,
     rating: Int,
-    date: String,
+    startDate: String,
+    endDate: String,
+    vehicleInfo: String,
     price: Double) {
 
     Card(
@@ -279,25 +357,9 @@ fun ReservationHistoryItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF2A2A2A))
-                .padding(16.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(White, shape = RoundedCornerShape(50))
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = "P",
-                    color = Gray,
-                    fontSize = 24.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
             Column{
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -310,13 +372,15 @@ fun ReservationHistoryItem(
                         color = White
                     )
                     Text(
-                        text = "03:15 - 05:00",
+                        text = "${price.toInt()} rsd",
                         fontSize = 14.sp,
-                        color = White
+                        color = Gray
                     )
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -325,18 +389,16 @@ fun ReservationHistoryItem(
                         fontSize = 14.sp,
                         color = Gray
                     )
-                    Text(
-                        text = "$price rsd",
-                        fontSize = 14.sp,
-                        color = Gray
-                    )
                 }
                 Row(
-                    modifier = Modifier.padding(top = 4.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ){
+                    Text(
+                        text = "Your review: ",
+                        fontSize = 14.sp,
+                        color = White
+                    )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -349,8 +411,38 @@ fun ReservationHistoryItem(
                             )
                         }
                     }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
                     Text(
-                        text = "08/11/2024",
+                        text = "Vehicle: ",
+                        fontSize = 14.sp,
+                        color = White
+                    )
+                    Text(
+                        text = vehicleInfo,
+                        fontSize = 14.sp,
+                        color = Gray
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        text = "Time span: ",
+                        fontSize = 14.sp,
+                        color = White
+                    )
+                    Text(
+                        text = formatDateFirstDate(startDate) + " - ",
+                        fontSize = 14.sp,
+                        color = Gray
+                    )
+                    Text(
+                        text = formatDate(endDate),
                         fontSize = 14.sp,
                         color = Gray
                     )
@@ -361,12 +453,13 @@ fun ReservationHistoryItem(
 }
 
 @Composable
-fun AscDscGroup() {
-    var selectedOption by remember { mutableStateOf("Option 1") }
-
+fun AscDscGroup(
+    selectedOption: String,
+    onSelectedOptionChanged: (String) -> Unit
+) {
     Box(
         modifier = Modifier
-            .border(1.dp, White, RoundedCornerShape(8.dp))
+            .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
             .width(170.dp),
     ) {
         Column(
@@ -375,24 +468,25 @@ fun AscDscGroup() {
             RadioButtonWithTitle(
                 text = "Ascending",
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = "Ascending" }
+                onOptionSelected = { onSelectedOptionChanged("Ascending") }
             )
             RadioButtonWithTitle(
                 text = "Descending",
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = "Descending" }
+                onOptionSelected = { onSelectedOptionChanged("Descending") }
             )
         }
     }
 }
 
 @Composable
-fun SortByGroup() {
-    var selectedOption by remember { mutableStateOf("Option 1") }
-
+fun SortByGroup(
+    selectedOption: String,
+    onSelectedOptionChanged: (String) -> Unit
+) {
     Box(
         modifier = Modifier
-            .border(1.dp, White, RoundedCornerShape(8.dp))
+            .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
             .width(170.dp),
     ) {
         Text(
@@ -410,17 +504,17 @@ fun SortByGroup() {
             RadioButtonWithTitle(
                 text = "Date",
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = "Date" }
+                onOptionSelected = { onSelectedOptionChanged("Date") }
             )
             RadioButtonWithTitle(
                 text = "Rating",
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = "Rating" }
+                onOptionSelected = { onSelectedOptionChanged("Rating") }
             )
             RadioButtonWithTitle(
                 text = "Price",
                 selectedOption = selectedOption,
-                onOptionSelected = { selectedOption = "Price" }
+                onOptionSelected = { onSelectedOptionChanged("Price") }
             )
         }
     }
@@ -454,7 +548,8 @@ fun RadioButtonWithTitle(
 
 @Composable
 fun DatePicker(
-    text: String
+    showText: String,
+    onDateSelected: (String?) -> Unit
 ) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
@@ -463,7 +558,7 @@ fun DatePicker(
         value = selectedDate?.let { convertMillisToDate(it) } ?: "",
         onValueChange = { },
         label = { Text(
-            text = text,
+            text = showText,
             color = White
         ) },
         trailingIcon = {
@@ -476,7 +571,7 @@ fun DatePicker(
         shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedTextColor = White,
-            unfocusedBorderColor = White,
+            unfocusedBorderColor = White.copy(alpha = 0.3f),
             focusedTextColor = White
         ),
         modifier = Modifier
@@ -495,7 +590,10 @@ fun DatePicker(
 
     if (showModal) {
         DatePickerModal(
-            onDateSelected = { selectedDate = it },
+            onDateSelected = {
+                selectedDate = it
+                onDateSelected(it?.let { it1 -> convertMillisToDate(it1) })
+            },
             onDismiss = { showModal = false }
         )
     }
@@ -569,85 +667,12 @@ fun convertMillisToDate(millis: Long): String {
     return formatter.format(Date(millis))
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun OutlinedDropdownMenu(
-    label: String,
-    selectedText: String,
-    options: Map<Int,String>,
-    icon: ImageVector,
-    isError: Boolean,
-    onOptionSelected: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var showText by remember { mutableStateOf(selectedText) }
-    var errorOccurred by remember { mutableStateOf(isError) }
-
-    LaunchedEffect(isError) {
-        errorOccurred = isError
-    }
-
-    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            readOnly = true,
-            value = showText,
-            onValueChange = {},
-            isError = errorOccurred,
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color(0xFF151A24),
-                unfocusedBorderColor = White,
-                unfocusedTextColor = White,
-                focusedTextColor = White,
-                errorTextColor = Color.Red
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = "Car Icon",
-                    tint = if(errorOccurred) Color.Red else White
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Dropdown Icon",
-                    tint = if(errorOccurred) Color.Red else White
-                )
-            },
-            label = { Text(label, color = if (errorOccurred) Color.Red else White) },
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color(36, 45, 64))
-        ) {
-            options.forEach { opt ->
-                DropdownMenuItem(
-                    text = { Text(opt.value, color = White) },
-                    onClick = {
-                        expanded = false
-                        onOptionSelected(opt.key)
-                        showText = opt.value
-                        errorOccurred = false
-                    },
-                    modifier = Modifier.background(Color(36, 45, 64))
-                )
-            }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ReservationHistoryPreview() {
-    ReservationHistoryScreen(
-        onBackClick = {}
-    )
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//@Preview(showBackground = true)
+//@Composable
+//fun ReservationHistoryPreview() {
+//    ReservationHistoryScreen(
+//        vehicles = emptyList(),
+//        onBackClick = {}
+//    )
+//}
