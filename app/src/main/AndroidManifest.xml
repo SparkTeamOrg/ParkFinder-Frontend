@@ -145,6 +145,11 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.AddBalanceActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/CustomCropTheme" />
 

@@ -14,7 +14,7 @@ class TransactionPagingSource(
             val page = params.key ?: 1
             val response = balanceService.getTransactions(page, params.loadSize)
             if (response.isSuccessful) {
-                val transactions = response.data.items ?: emptyList()
+                val transactions = response.body()?.data?.items ?: emptyList()
                 LoadResult.Page(
                     data = transactions,
                     prevKey = if (page == 1) null else page - 1,

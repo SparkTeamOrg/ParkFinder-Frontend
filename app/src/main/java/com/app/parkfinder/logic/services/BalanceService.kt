@@ -1,9 +1,12 @@
 package com.app.parkfinder.logic.services
 
 import com.app.parkfinder.logic.models.BackResponse
+import com.app.parkfinder.logic.models.dtos.AddTransactionDto
 import com.app.parkfinder.logic.models.dtos.TransactionDto
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface BalanceService {
@@ -15,7 +18,12 @@ interface BalanceService {
     suspend fun getTransactions(
         @Query("page") page: Int,
         @Query("pageSize") size: Int
-    ): BackResponse<BasePaginationResultTemp<TransactionDto>>
+    ): Response<BackResponse<BasePaginationResultTemp<TransactionDto>>>
+
+    @POST("transaction/add")
+    suspend fun addBalance(
+        @Body addTransactionDto: AddTransactionDto
+    ): Response<BackResponse<TransactionDto?>>
 }
 
 data class BasePaginationResultTemp<T>(
