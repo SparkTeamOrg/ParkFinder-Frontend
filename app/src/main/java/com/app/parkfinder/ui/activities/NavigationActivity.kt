@@ -141,7 +141,8 @@ class NavigationActivity : BaseActivity() {
                     navigateToHelpCenter = { navigateToHelpCenter() },
                     reservationViewModel = reservationViewModel,
                     updateUserName = { fullName -> updateUserName(fullName) },
-                    navigateToStatistics = {navigateToStatistics()}
+                    navigateToStatistics = { navigateToStatistics() },
+                    navigateToBalanceScreen = { navigateToBalanceScreen() },
                 )
             }
         }
@@ -308,6 +309,12 @@ class NavigationActivity : BaseActivity() {
 
     private fun navigateToVehicleInfo() {
         val intent = Intent(this, VehicleInfoActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToBalanceScreen() {
+        val intent = Intent(this, BalanceActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

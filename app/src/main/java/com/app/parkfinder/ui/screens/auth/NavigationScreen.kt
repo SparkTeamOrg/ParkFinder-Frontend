@@ -43,7 +43,8 @@ fun NavigationScreen (
     mapViewModel: MapViewModel = viewModel(),
     reservationViewModel: ReservationViewModel,
     updateUserName: (String) -> Unit,
-    navigateToStatistics: ()->Unit = {}
+    navigateToStatistics: ()->Unit = {},
+    navigateToBalanceScreen: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -83,7 +84,20 @@ fun NavigationScreen (
             //UI for Profile
             composable(BottomNavItem.Profile.route) {
                 MapViewModel.isMapView = false
-                ProfileScreen(logout, user, currentImageUrl, openImagePicker, removeImage, navigateToVehicleInfo, startFpmNotificationService,stopFpmNotificationService,navigateToStatistics ,navigateToHelpCenter, updateUserName =  updateUserName)
+                ProfileScreen(
+                    logout = logout,
+                    user = user,
+                    currentImageUrl = currentImageUrl,
+                    openImagePicker = openImagePicker,
+                    removeImage = removeImage,
+                    navigateToVehicleInfo = navigateToVehicleInfo,
+                    startFpmNotificationService = startFpmNotificationService,
+                    stopFpmNotificationService = stopFpmNotificationService,
+                    navigateToHelpCenter = navigateToHelpCenter,
+                    updateUserName = updateUserName,
+                    navigateToBalanceScreen = navigateToBalanceScreen,
+                    navigateToStatistics = navigateToStatistics
+                )
             }
             //UI for Reserved
             composable(BottomNavItem.Reserved.route){
