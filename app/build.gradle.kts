@@ -105,4 +105,8 @@ dependencies {
 
     // SignalR
     implementation (libs.signalr)
+
+    //charts
+    implementation (libs.mpandroidchart)
+    implementation (libs.androidx.foundation)
 }

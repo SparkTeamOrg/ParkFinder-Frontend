@@ -43,6 +43,7 @@ fun NavigationScreen (
     mapViewModel: MapViewModel = viewModel(),
     reservationViewModel: ReservationViewModel,
     updateUserName: (String) -> Unit,
+    navigateToStatistics: ()->Unit = {},
     navigateToBalanceScreen: () -> Unit
 ) {
 
@@ -94,7 +95,8 @@ fun NavigationScreen (
                     stopFpmNotificationService = stopFpmNotificationService,
                     navigateToHelpCenter = navigateToHelpCenter,
                     updateUserName = updateUserName,
-                    navigateToBalanceScreen = navigateToBalanceScreen
+                    navigateToBalanceScreen = navigateToBalanceScreen,
+                    navigateToStatistics = navigateToStatistics
                 )
             }
             //UI for Reserved
