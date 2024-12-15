@@ -3,8 +3,11 @@ package com.app.parkfinder.logic.view_models
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.app.parkfinder.logic.RetrofitConfig
-import com.app.parkfinder.logic.models.dtos.TransactionDto
+import com.app.parkfinder.logic.paging.TransactionPagingSource
 import com.app.parkfinder.logic.services.BalanceService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,12 +20,13 @@ class BalanceViewModel() : ViewModel() {
     private val _balance = MutableStateFlow<Double?>(null)
     val balance: StateFlow<Double?> = _balance
 
-    private val _transactions = MutableStateFlow<List<TransactionDto>?>(null)
-    val transactions: StateFlow<List<TransactionDto>?> = _transactions
+    val transactions = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = { TransactionPagingSource(balanceService) }
+    ).flow.cachedIn(viewModelScope)
 
     init {
         fetchBalance()
-        fetchTransactions()
     }
 
     private fun fetchBalance() {
@@ -50,35 +54,6 @@ class BalanceViewModel() : ViewModel() {
                 // Handle error
                 _balance.value = null
                 Log.i("BalanceViewModel", "Error fetching balance: $e")
-            }
-        }
-    }
-
-    private fun fetchTransactions() {
-        viewModelScope.launch {
-            try {
-                val response = balanceService.getUserTransactions()
-
-                if(response.isSuccessful) {
-                    if (response.body()?.isSuccessful == true) {
-                        _transactions.value = response.body()?.data
-                    }
-                    else {
-                        // Handle error
-                        _transactions.value = null
-                        Log.i("BalanceViewModel", "Error fetching transactions")
-                    }
-                }
-                else {
-                    // Handle error
-                    _transactions.value = null
-                    Log.i("BalanceViewModel", "Error fetching transactions: ${response.errorBody()}")
-                }
-
-            } catch (e: Exception) {
-                // Handle error
-                _transactions.value = null
-                Log.i("BalanceViewModel", "Error fetching transactions: $e")
             }
         }
     }
