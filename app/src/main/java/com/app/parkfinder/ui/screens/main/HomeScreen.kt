@@ -77,7 +77,6 @@ fun HomeScreen(
     var isSidebarVisible by remember { mutableStateOf(false) }
     var steps = mutableListOf<NavigationStep>()
     var showModal by remember { mutableStateOf(false) }
-    var showCancelButton by remember { mutableStateOf(false) }
 
     mapViewModel.getAllInstructions.observe(lifecycleOwner) { instructions ->
         steps = instructions.toMutableList()
@@ -94,13 +93,13 @@ fun HomeScreen(
     }
 
     val currentStep by mapViewModel.currentNavigationStep.observeAsState()
+    val navigationActive by mapViewModel.navigationActive.observeAsState()
 
     val show by mapViewModel.showConfirmReservationModal.observeAsState()
     LaunchedEffect(show) {
         if (show != null) {
             showModal = true
             mapViewModel.resetShowModalSignal()
-            showCancelButton = false
         }
     }
 
@@ -109,7 +108,6 @@ fun HomeScreen(
     LaunchedEffect(reservationId) {
         if(reservationId != null && spot != null){
             mapViewModel.startNavigation(spot!!)
-            showCancelButton = true
         }
     }
 
@@ -202,7 +200,7 @@ fun HomeScreen(
             )
         }
 
-        if(showCancelButton) {
+        if(navigationActive == true) {
             // Toggle Sidebar Button
             FloatingActionButton(
                 onClick = { isSidebarVisible = !isSidebarVisible },
@@ -218,12 +216,11 @@ fun HomeScreen(
         }
     }
 
-    if(showCancelButton) {
+    if(navigationActive == true) {
         Button(
             onClick = {
                 reservationId?.let { cancelReservation(it) }
                 mapViewModel.stopNavigation()
-                showCancelButton = false
             },
             modifier = Modifier
                 .padding(160.dp, 16.dp, 0.dp, 0.dp),

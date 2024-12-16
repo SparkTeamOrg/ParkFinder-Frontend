@@ -849,6 +849,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
             clickedGeoPoints = getParkingSpotPoints(spot)
             selectedPoint = calculateCentroid(clickedGeoPoints)
             navigatingToParkingSpotId = spot.id
+            _navigationActive.postValue(true)
 
             setCenterToMyLocation()
 

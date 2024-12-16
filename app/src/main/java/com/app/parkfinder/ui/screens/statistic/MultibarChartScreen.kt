@@ -39,7 +39,7 @@ fun UserStatisticsPage(
 
     if(statistic!=null) {
         // Mock Data
-        val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} din"
+        val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} RSD"
         val avgTimeFinding =
             "${String.format("%.2f", statistic.averageReservationTime / 60).toDouble()} min"
         val totalReservations = "${statistic.reservationCount}"
