@@ -1,7 +1,6 @@
 package com.app.parkfinder.ui.screens.statistic
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -39,7 +38,7 @@ fun UserStatisticsPage(
 
     if(statistic!=null) {
         // Mock Data
-        val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} din"
+        val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} RSD"
         val avgTimeFinding =
             "${String.format("%.2f", statistic.averageReservationTime / 60).toDouble()} min"
         val totalReservations = "${statistic.reservationCount}"
