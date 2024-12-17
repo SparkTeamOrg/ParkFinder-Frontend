@@ -1,7 +1,6 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -26,7 +25,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Star
@@ -58,11 +60,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -110,17 +114,27 @@ fun ReservationHistoryScreen(
 ) {
     val isHistoryLoading = reservationHistories.loadState.refresh is LoadState.Loading ||reservationHistories.loadState.append is LoadState.Loading
 
+    val lazyListState = rememberLazyListState()
+    var scrollToTop by remember { mutableStateOf(false) }
+    val startDateInfo = selectedStartDate ?: ""
+    val endDateInfo = selectedEndDate ?: ""
     val selectedVehicle = vehicles.find { x -> x.id == selectedVehicleId }
-
     var vehicleInfo by remember { mutableStateOf("") }
+
     vehicleInfo = if(selectedVehicle != null){
         selectedVehicle.vehicleModelVehicleBrandName + " " +
         selectedVehicle.vehicleModelName + " " +
         selectedVehicle.licencePlate
     } else ""
 
-    val startDateInfo = selectedStartDate ?: ""
-    val endDateInfo = selectedEndDate ?: ""
+    LaunchedEffect(scrollToTop) {
+        if(scrollToTop){
+            if (reservationHistories.itemCount > 0) {
+                lazyListState.animateScrollToItem(0)
+            }
+            scrollToTop = false
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -165,7 +179,7 @@ fun ReservationHistoryScreen(
 
         Box(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Center
         ){
             Text(
                 text = "Reservation History",
@@ -177,7 +191,6 @@ fun ReservationHistoryScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Log.d("Debug", vehicleInfo)
         FilterBar(
             vehicles = vehicles,
             onSelectedStartDateChanged = onSelectedStartDateChanged,
@@ -192,13 +205,15 @@ fun ReservationHistoryScreen(
             endDateInfo = endDateInfo,
             vehicleInfo = vehicleInfo,
             resetFilters = resetFilters,
-            onSelectedTextChanged = { text -> vehicleInfo = text }
+            onSelectedTextChanged = { text -> vehicleInfo = text },
+            setScrollToTop = { flag -> scrollToTop = flag }
         )
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize()
         ) {
+
             items(count = reservationHistories.itemCount) { index ->
                 val item = reservationHistories[index]
 
@@ -216,15 +231,47 @@ fun ReservationHistoryScreen(
             }
 
             item {
-                if(isHistoryLoading){
+                if (isHistoryLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                             .height(200.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Center
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.size(64.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(top = 100.dp)
+                        )
+                    }
+                }
+                else if(reservationHistories.itemCount == 0) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 100.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .align(Center)
+                                .wrapContentSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "No reservations found",
+                                fontSize = 18.sp,
+                                color = Gray
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Icon(
+                                imageVector = Icons.Default.AutoStories,
+                                contentDescription = "No Reservations",
+                                modifier = Modifier.size(200.dp),
+                                tint = Gray
+                            )
+                        }
                     }
                 }
             }
@@ -248,7 +295,8 @@ fun FilterBar(
     selectedAscDscOption: String,
     applyFilters: () -> Unit,
     resetFilters: () -> Unit,
-    onSelectedTextChanged: (String) -> Unit
+    onSelectedTextChanged: (String) -> Unit,
+    setScrollToTop: (Boolean) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -355,6 +403,7 @@ fun FilterBar(
                     Button(
                         onClick = {
                             applyFilters()
+                            setScrollToTop(true)
                             isExpanded = false
                         },
                         shape = RoundedCornerShape(16.dp),

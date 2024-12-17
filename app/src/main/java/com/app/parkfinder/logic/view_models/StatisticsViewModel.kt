@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
-import com.app.parkfinder.logic.models.dtos.ConfirmedReservationDto
 import com.app.parkfinder.logic.models.dtos.StatisticDto
 import com.app.parkfinder.logic.services.StatisticsService
 import kotlinx.coroutines.launch
@@ -23,7 +22,6 @@ class StatisticsViewModel: ViewModel()  {
         viewModelScope.launch {
             try {
                 val response = statisticsService.getUserStatistics()
-
                 if(response.isSuccessful) {
                     response.body()?.let {
                         _getStatistic.postValue(it)
