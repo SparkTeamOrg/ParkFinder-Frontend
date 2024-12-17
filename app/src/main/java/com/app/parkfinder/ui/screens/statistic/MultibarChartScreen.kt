@@ -28,7 +28,8 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 @SuppressLint("DefaultLocale")
 @Composable
 fun UserStatisticsPage(
-    statistic: StatisticDto?
+    statistic: StatisticDto?,
+    navigateToReservationHistory: () -> Unit
 ) {
     val darkBackground = Color(0xFF1C1C1E)
     val cardBackground = Color(0xFF2C2C2E)
@@ -117,7 +118,7 @@ fun UserStatisticsPage(
 
             // Bottom Button
             Button(
-                onClick = { /* Navigate to Reservation History */ },
+                onClick = { navigateToReservationHistory() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
