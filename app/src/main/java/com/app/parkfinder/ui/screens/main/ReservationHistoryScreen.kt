@@ -8,7 +8,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,21 +23,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonColors
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -54,7 +46,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -63,11 +58,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentCompositionErrors
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -78,6 +69,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
@@ -85,6 +77,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.ReservationHistoryItemDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
@@ -106,19 +100,34 @@ fun ReservationHistoryScreen(
     onSelectedAscDscOptionChanged: (String) -> Unit,
     selectedSortOption: String,
     selectedAscDscOption: String,
-    getPaginatedReservationHistory: (Int) -> Unit,
-    reservationHistory: List<ReservationHistoryItemDto>,
-    isHistoryLoading: Boolean,
-    onBackClick: () -> Unit
+    selectedVehicleId: Int?,
+    selectedStartDate: String?,
+    selectedEndDate: String?,
+    reservationHistories: LazyPagingItems<ReservationHistoryItemDto>,
+    applyFilters: () -> Unit,
+    onBackClick: () -> Unit,
+    resetFilters: () -> Unit
 ) {
-    var currentPage by remember { mutableIntStateOf(1) }
+    val isHistoryLoading = reservationHistories.loadState.refresh is LoadState.Loading ||reservationHistories.loadState.append is LoadState.Loading
+
+    val selectedVehicle = vehicles.find { x -> x.id == selectedVehicleId }
+
+    var vehicleInfo by remember { mutableStateOf("") }
+    vehicleInfo = if(selectedVehicle != null){
+        selectedVehicle.vehicleModelVehicleBrandName + " " +
+        selectedVehicle.vehicleModelName + " " +
+        selectedVehicle.licencePlate
+    } else ""
+
+    val startDateInfo = selectedStartDate ?: ""
+    val endDateInfo = selectedEndDate ?: ""
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF151A24))
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
+            .zIndex(1f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -168,6 +177,7 @@ fun ReservationHistoryScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        Log.d("Debug", vehicleInfo)
         FilterBar(
             vehicles = vehicles,
             onSelectedStartDateChanged = onSelectedStartDateChanged,
@@ -177,45 +187,46 @@ fun ReservationHistoryScreen(
             onSelectedAscDscOptionChanged = onSelectedAscDscOptionChanged,
             selectedSortOption = selectedSortOption,
             selectedAscDscOption = selectedAscDscOption,
-            getPaginatedReservationHistory = getPaginatedReservationHistory,
-            currentPage = currentPage
+            applyFilters = applyFilters,
+            startDateInfo = startDateInfo,
+            endDateInfo = endDateInfo,
+            vehicleInfo = vehicleInfo,
+            resetFilters = resetFilters,
+            onSelectedTextChanged = { text -> vehicleInfo = text }
         )
 
-    }
-    val listState = rememberLazyListState()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            items(count = reservationHistories.itemCount) { index ->
+                val item = reservationHistories[index]
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .padding(top = 230.dp, bottom = 16.dp)
-            .padding(horizontal = 16.dp)
-    ) {
-
-        items(reservationHistory) { item ->
-            ReservationHistoryItem(
-                road = item.parkingSpotParkingLotRoad,
-                city = item.parkingSpotParkingLotCity,
-                rating = item.rating,
-                price = item.price,
-                startDate = item.startTime,
-                endDate = item.endTime,
-                vehicleInfo = "${item.vehicleVehicleModelVehicleBrandName} ${item.vehicleVehicleModelName} ${item.vehicleLicencePlate}"
-            )
-        }
-
-        item {
-            if (isHistoryLoading) {
-                CircularProgressIndicator(modifier = Modifier.fillMaxWidth().padding(16.dp))
+                if (item != null) {
+                    ReservationHistoryItem(
+                        road = item.parkingSpotParkingLotRoad,
+                        city = item.parkingSpotParkingLotCity,
+                        rating = item.rating,
+                        price = item.price,
+                        startDate = item.startTime,
+                        endDate = item.endTime,
+                        vehicleInfo = "${item.vehicleVehicleModelVehicleBrandName} ${item.vehicleVehicleModelName} ${item.vehicleLicencePlate}"
+                    )
+                }
             }
-        }
-    }
-    LaunchedEffect(listState.firstVisibleItemIndex) {
-        if (listState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.last()
-            if (lastVisibleItem.index == reservationHistory.size.minus(1)) {
-                Log.d("Debug",reservationHistory.size.toString())
-                currentPage += 1
-                getPaginatedReservationHistory(currentPage)
+
+            item {
+                if(isHistoryLoading){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(64.dp))
+                    }
+                }
             }
         }
     }
@@ -230,10 +241,14 @@ fun FilterBar(
     onSelectedVehicleIdChanged: (Int?) -> Unit,
     onSelectedSortOptionChanged: (String) -> Unit,
     onSelectedAscDscOptionChanged: (String) -> Unit,
+    startDateInfo: String,
+    endDateInfo: String,
+    vehicleInfo: String,
     selectedSortOption: String,
     selectedAscDscOption: String,
-    getPaginatedReservationHistory: (Int) -> Unit,
-    currentPage: Int
+    applyFilters: () -> Unit,
+    resetFilters: () -> Unit,
+    onSelectedTextChanged: (String) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -274,24 +289,28 @@ fun FilterBar(
             visible = isExpanded,
             enter = fadeIn() + expandVertically(),
             exit = fadeOut() + shrinkVertically(),
+            modifier = Modifier.padding(top = 8.dp)
         ) {
             Column {
-                OutlinedDropdownMenu(
+                VehicleDropdownMenu(
                     label = "Select a vehicle",
-                    selectedText = "",
+                    selectedText = vehicleInfo,
                     options = vehicles,
                     icon = Icons.Default.DirectionsCar,
-                    onOptionSelected = onSelectedVehicleIdChanged
+                    onOptionSelected = onSelectedVehicleIdChanged,
+                    onSelectedTextChanged = onSelectedTextChanged
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     DatePicker(
+                        selectedDate = startDateInfo,
                         showText = "Newer than",
                         onDateSelected = onSelectedStartDateChanged
                     )
                     DatePicker(
+                        selectedDate = endDateInfo,
                         showText = "Earlier than",
                         onDateSelected = onSelectedEndDateChanged
                     )
@@ -307,28 +326,48 @@ fun FilterBar(
                         selectedOption = selectedSortOption,
                         onSelectedOptionChanged = onSelectedSortOptionChanged
                     )
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    AscDscGroup(
+                        selectedOption = selectedAscDscOption,
+                        onSelectedOptionChanged = onSelectedAscDscOptionChanged
+                    )
+                }
+
+                Spacer(Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Button(
+                        onClick = { resetFilters() },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonColors(
+                            containerColor = Color(0xFF00AEEF),
+                            contentColor = White,
+                            disabledContentColor = White,
+                            disabledContainerColor = White
+                        ),
+                        modifier = Modifier.padding(top = 10.dp)
+                            .width(170.dp)
                     ) {
-                        AscDscGroup(
-                            selectedOption = selectedAscDscOption,
-                            onSelectedOptionChanged = onSelectedAscDscOptionChanged
-                        )
-                        Button(
-                            onClick = { getPaginatedReservationHistory(currentPage) },
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonColors(
-                                containerColor = Color(0xFF00AEEF),
-                                contentColor = White,
-                                disabledContentColor = White,
-                                disabledContainerColor = White
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = 10.dp)
-                        ) {
-                            Text(text = "Apply")
-                        }
+                        Text(text = "Reset filters")
+                    }
+                    Button(
+                        onClick = {
+                            applyFilters()
+                            isExpanded = false
+                        },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonColors(
+                            containerColor = Color(0xFF00AEEF),
+                            contentColor = White,
+                            disabledContentColor = White,
+                            disabledContainerColor = White
+                        ),
+                        modifier = Modifier.padding(top = 10.dp)
+                            .width(170.dp)
+                    ) {
+                        Text(text = "Apply")
                     }
                 }
             }
@@ -406,7 +445,7 @@ fun ReservationHistoryItem(
                             Icon(
                                 imageVector = Icons.Default.Star,
                                 contentDescription = "Star",
-                                tint = if (rating > index) Color.Yellow else Color.Gray,
+                                tint = if (rating > index) Color.Yellow else Gray,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -460,10 +499,20 @@ fun AscDscGroup(
     Box(
         modifier = Modifier
             .border(1.dp, White.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-            .width(170.dp),
+            .width(170.dp)
+            .height(145.dp),
     ) {
+        Text(
+            text = "Order",
+            modifier = Modifier
+                .padding(start = 16.dp, top = 5.dp)
+                .align(Alignment.TopStart),
+            color = White
+        )
         Column(
             modifier = Modifier.padding(8.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center
         ) {
             RadioButtonWithTitle(
                 text = "Ascending",
@@ -548,14 +597,14 @@ fun RadioButtonWithTitle(
 
 @Composable
 fun DatePicker(
+    selectedDate: String,
     showText: String,
     onDateSelected: (String?) -> Unit
 ) {
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
+        value = selectedDate,
         onValueChange = { },
         label = { Text(
             text = showText,
@@ -591,7 +640,6 @@ fun DatePicker(
     if (showModal) {
         DatePickerModal(
             onDateSelected = {
-                selectedDate = it
                 onDateSelected(it?.let { it1 -> convertMillisToDate(it1) })
             },
             onDismiss = { showModal = false }
@@ -667,12 +715,69 @@ fun convertMillisToDate(millis: Long): String {
     return formatter.format(Date(millis))
 }
 
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true)
-//@Composable
-//fun ReservationHistoryPreview() {
-//    ReservationHistoryScreen(
-//        vehicles = emptyList(),
-//        onBackClick = {}
-//    )
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VehicleDropdownMenu(
+    label: String,
+    selectedText: String,
+    options: List<VehicleDto>,
+    icon: ImageVector,
+    onOptionSelected: (Int) -> Unit,
+    onSelectedTextChanged: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedText,
+            onValueChange = {},
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = Color(0xFF151A24),
+                unfocusedBorderColor = White.copy(alpha = 0.3f),
+                unfocusedTextColor = White,
+                focusedTextColor = White,
+                errorTextColor = Color.Red
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Car Icon",
+                    tint = White
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown Icon",
+                    tint = White
+                )
+            },
+            label = { Text(label, color = White) },
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color(36, 45, 64))
+        ) {
+            options.forEach { opt ->
+                val vehicleInfo = opt.vehicleModelVehicleBrandName + " " + opt.vehicleModelName + " " + opt.licencePlate
+                DropdownMenuItem(
+                    text = { Text(vehicleInfo, color = White) },
+                    onClick = {
+                        expanded = false
+                        onOptionSelected(opt.id)
+                        onSelectedTextChanged(selectedText)
+                    },
+                    modifier = Modifier.background(Color(36, 45, 64))
+                )
+            }
+        }
+    }
+}
