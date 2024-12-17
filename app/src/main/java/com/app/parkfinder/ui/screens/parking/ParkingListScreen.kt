@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,23 +24,72 @@ import com.app.parkfinder.ui.composables.ParkFinderLogo
 @Composable
 fun ParkingListScreen(
     parkingSpaces: List<ParkingLotDto>,
-    navigateToParkingSpots: (lot:ParkingLotDto,name:String)->Unit = { _: ParkingLotDto, _: String -> }
+    navigateToParkingSpots: (lot:ParkingLotDto,name:String)->Unit = { _: ParkingLotDto, _: String -> },
+    isLoading: Boolean
 ) {
     Scaffold(
         topBar = {
             ParkFinderLogo()
         },
-        content = { PaddingValues ->
+        content = { paddingValues ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xFF151A24))
-                    .padding(PaddingValues)
+                    .padding(paddingValues)
             ) {
                 items(parkingSpaces.size) { index ->
                     val roundedValue = String.format("%.2f", parkingSpaces[index].distance).toDouble()
                     parkingSpaces[index].distance = roundedValue
                     ParkingItem(parkingSpace = parkingSpaces[index], navigateToSpots = navigateToParkingSpots)
+                }
+
+                item{
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 300.dp),
+                            contentAlignment = Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(
+                                    100.dp
+                                )
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    if (parkingSpaces.isEmpty() && !isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 250.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .align(Center)
+                                    .wrapContentSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "No parking lot found",
+                                    fontSize = 24.sp,
+                                    color = Gray
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Place,
+                                    contentDescription = "No parking lot found",
+                                    modifier = Modifier.size(300.dp),
+                                    tint = Gray
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -73,7 +126,7 @@ fun ParkingItem(
                     text = "P",
                     color = Color.White,
                     fontSize = 24.sp,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Center)
                 )
             }
 
@@ -89,7 +142,7 @@ fun ParkingItem(
                 Text(
                     text = "${parkingSpace.distance} km away",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = Gray
                 )
             }
 

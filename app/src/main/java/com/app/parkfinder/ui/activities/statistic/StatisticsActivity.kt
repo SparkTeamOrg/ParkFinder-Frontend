@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
+import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.StatisticDto
 import com.app.parkfinder.logic.view_models.StatisticsViewModel
 import com.app.parkfinder.ui.activities.parking.ReservationHistoryActivity
@@ -17,23 +19,28 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 class StatisticsActivity: ComponentActivity() {
     private val statisticViewModel: StatisticsViewModel by viewModels()
-    private var statistic = mutableStateOf<StatisticDto?>(null)
+    private var isLoading = mutableStateOf(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        isLoading.value = true
         statisticViewModel.getUserStatistics()
 
-        statisticViewModel.getStatistic.observe(this){res->
-            if(res.isSuccessful)
-                statistic.value = res.data
-            else
-                statistic.value = null
-        }
-
         setContent {
+            val statistic = statisticViewModel.getStatistic.observeAsState(
+                BackResponse(isSuccessful = false, messages = emptyList(), data = StatisticDto(emptyList(), emptyList(), 0.0, 0,0.0))
+            )
+
+            if(statistic.value.isSuccessful)
+                isLoading.value = false
+
             ParkFinderTheme {
                 UserStatisticsPage(
-                    statistic.value,
-                    navigateToReservationHistory = { navigateToReservationHistory() }
+                    statistic.value.data,
+                    navigateToReservationHistory = { navigateToReservationHistory() },
+                    isLoading = isLoading.value,
+                    onBackClick = { finish() }
                 )
             }
         }
