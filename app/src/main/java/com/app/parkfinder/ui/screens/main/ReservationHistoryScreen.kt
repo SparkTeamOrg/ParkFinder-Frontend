@@ -239,14 +239,18 @@ fun ReservationHistoryScreen(
                             .height(200.dp),
                         contentAlignment = Center
                     ) {
-                        CircularProgressIndicator(modifier = Modifier.size(64.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(top = 100.dp)
+                        )
                     }
                 }
-                else {
+                else if(reservationHistories.itemCount == 0) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(top = 100.dp)
                     ) {
                         Column(
                             modifier = Modifier
