@@ -3,7 +3,6 @@ package com.app.parkfinder.ui.activities.parking
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,10 +11,11 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.view_models.MapViewModel
+import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.parking.ParkingListScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-class FreeParkingSearchListActivity : ComponentActivity() {
+class FreeParkingSearchListActivity : BaseActivity() {
 
     private val mapViewModel: MapViewModel by viewModels()
     private val isLoading = mutableStateOf(false)

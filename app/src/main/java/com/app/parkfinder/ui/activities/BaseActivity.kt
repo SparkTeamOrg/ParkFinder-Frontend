@@ -3,6 +3,7 @@ package com.app.parkfinder.ui.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.AuthStatus
@@ -13,8 +14,9 @@ abstract class BaseActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AuthStatus.isRefreshTokenExpired.observe(this) { isExpired ->
             if (isExpired) {
-                navigateToWelcomeScreen()
+                Toast.makeText(this,"Your session has expired." , Toast.LENGTH_LONG).show()
                 AuthStatus.resetRefreshTokenExpiredState()
+                navigateToWelcomeScreen()
             }
         }
     }
