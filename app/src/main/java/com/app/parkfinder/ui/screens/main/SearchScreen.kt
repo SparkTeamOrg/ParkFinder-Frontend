@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,7 @@ fun SearchScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Search for parking",
+            text = stringResource(id = R.string.search_title),
             color = Color.White,
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
@@ -67,7 +68,10 @@ fun SearchScreen(
         OutlinedTextField(
             value = searchedLocation,
             onValueChange = {searchedLocation = it},
-            placeholder = { Text("Search locations...", color = Color.White) },
+            placeholder = { Text(
+                text = stringResource(id = R.string.search_location_hint),
+                color = Color.White
+            ) },
             leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = null, tint = Color.White) },
             modifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -81,7 +85,10 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Choose Radius ${radius.toInt()} km", color = Color.White)
+        Text(
+            text = stringResource(id = R.string.search_choose_radius) + " ${radius.toInt()} km",
+            color = Color.White
+        )
         Slider(
             value = radius,
             onValueChange = { radius = it },
@@ -106,34 +113,10 @@ fun SearchScreen(
                 .fillMaxWidth(0.6f)
                 .padding(horizontal = 16.dp)
         ) {
-            Text("Search", color = Color.White)
+            Text(
+                text = stringResource(id = R.string.common_search),
+                color = Color.White
+            )
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun SearchScreenPreview() {
-//    ParkFinderTheme {
-//        val navController = rememberNavController()
-//        Scaffold(
-//            topBar = { ParkFinderLogo() },
-//            bottomBar = { BottomNavigationBar(navController = navController) }
-//        ) { innerPadding ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = BottomNavItem.Search.route,
-//                Modifier.padding(innerPadding)
-//            ) {
-//                //UI for Home
-//                composable(BottomNavItem.Home.route) { HomeScreen(UserDto(), navigateToReservation = {}) }
-//                //UI for Search
-//                composable(BottomNavItem.Search.route) { SearchScreen() }
-//                //UI for Profile
-//                composable(BottomNavItem.Profile.route) { ProfileScreen({},UserDto(), null, {}, {}, {}) }
-//                //UI for Reserved
-//                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
-//            }
-//        }
-//    }
-//}

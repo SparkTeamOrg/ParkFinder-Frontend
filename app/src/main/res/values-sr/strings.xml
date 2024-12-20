@@ -12,6 +12,9 @@
     <string name="common_update">Ažuriraj</string>
     <string name="common_cancel">Otkaži</string>
     <string name="common_remove">Ukloni</string>
+    <string name="common_search">Pretraži</string>
+    <string name="common_away">Daleko</string>
+    <string name="common_reserve">Rezerviši</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -26,5 +29,23 @@
     <string name="profile_name_requirements">Ime i prezime moraju početi velikim slovom i sadržati samo mala slova abecede.</string>
     <string name="profile_confirm_removal">Potvrdi uklanjanje</string>
     <string name="profile_confirm_removal_text">Da li ste sigurni da želite da uklonite sliku profila?</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Pretraga parkinga</string>
+    <string name="search_location_hint">Pretraži lokacije…</string>
+    <string name="search_choose_radius">Izaberi poluprečnik</string>
+
+    <!-- Parking spot status -->
+    <string name="parking_spot_status_free">Slobodno</string>
+    <string name="parking_spot_status_reserved">Rezervisano</string>
+    <string name="parking_spot_status_occupied">Zauzeto</string>
+    <string name="parking_spot_status_temporarily_unavailable">Privremeno nedostupno</string>
+
+    <!-- Parking list screen -->
+    <string name="parking_list_no_parking_lots_found">Nema pronađenih parkinga</string>
+    <string name="parking_list_see_details">Pogledaj detalje</string>
+
+    <!-- Parking spots list screen -->
+    <string name="parking_spots_list_spot_number">Broj mesta</string>
 
 </resources>

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ParkFinder</string>
 
+    <!-- Menu items -->
     <string name="menu_home">Inicio</string>
     <string name="menu_search">Buscar</string>
     <string name="menu_profile">Perfil</string>
@@ -11,6 +12,9 @@
     <string name="common_update">Actualizar</string>
     <string name="common_cancel">Cancelar</string>
     <string name="common_remove">Eliminar</string>
+    <string name="common_search">Buscar</string>
+    <string name="common_away">Lejos</string>
+    <string name="common_reserve">Reservar</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Saldo</string>
@@ -25,5 +29,23 @@
     <string name="profile_name_requirements">Tanto el nombre como el apellido deben comenzar con una letra mayúscula y contener solo caracteres alfabéticos en minúscula.</string>
     <string name="profile_confirm_removal">Confirmar eliminación</string>
     <string name="profile_confirm_removal_text">¿Estás seguro de que deseas eliminar tu imagen de perfil?</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Buscar estacionamiento</string>
+    <string name="search_location_hint">Buscar ubicaciones…</string>
+    <string name="search_choose_radius">Elegir radio</string>
+
+    <!-- Parking spot status -->
+    <string name="parking_spot_status_free">Libre</string>
+    <string name="parking_spot_status_reserved">Reservado</string>
+    <string name="parking_spot_status_occupied">Ocupado</string>
+    <string name="parking_spot_status_temporarily_unavailable">Temporalmente no disponible</string>
+
+    <!-- Parking list screen -->
+    <string name="parking_list_no_parking_lots_found">No se encontraron estacionamientos</string>
+    <string name="parking_list_see_details">Ver detalles</string>
+
+    <!-- Parking spots list screen -->
+    <string name="parking_spots_list_spot_number">Número de plaza</string>
 
 </resources>

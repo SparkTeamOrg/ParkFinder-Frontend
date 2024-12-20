@@ -14,12 +14,14 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.ui.composables.ParkFinderLogo
 import kotlin.math.round
+import com.app.parkfinder.R
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -77,7 +79,7 @@ fun ParkingListScreen(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "No parking lot found",
+                                    text = stringResource(id = R.string.parking_list_no_parking_lots_found),
                                     fontSize = 24.sp,
                                     color = Gray
                                 )
@@ -141,7 +143,7 @@ fun ParkingItem(
                     color = Color.White
                 )
                 Text(
-                    text = "${parkingSpace.distance} km away",
+                    text = "${parkingSpace.distance} km " + stringResource(id = R.string.common_away).lowercase(),
                     fontSize = 14.sp,
                     color = Gray
                 )
@@ -159,10 +161,12 @@ fun ParkingItem(
                     onClick = { navigateToSpots(parkingSpace,if(parkingSpace.town==null) parkingSpace.city +", " + parkingSpace.road else parkingSpace.town +", " + parkingSpace.road)},
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF0077FF))
                 ) {
-                    Text(text = "See details", color = Color.White)
+                    Text(
+                        text = stringResource(id = R.string.parking_list_see_details),
+                        color = Color.White
+                    )
                 }
             }
         }
     }
 }
-

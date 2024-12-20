@@ -12,6 +12,9 @@
     <string name="common_update">Update</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_remove">Remove</string>
+    <string name="common_search">Search</string>
+    <string name="common_away">Away</string>
+    <string name="common_reserve">Reserve</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -26,5 +29,23 @@
     <string name="profile_name_requirements">Both first and last name must start with an uppercase letter and contain only lowercase alphabetic characters.</string>
     <string name="profile_confirm_removal">Confirm removal</string>
     <string name="profile_confirm_removal_text">Are you sure you want to remove your profile image?</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Search for parking</string>
+    <string name="search_location_hint">Search locations…</string>
+    <string name="search_choose_radius">Choose radius</string>
+
+    <!-- Parking spot status -->
+    <string name="parking_spot_status_free">Free</string>
+    <string name="parking_spot_status_reserved">Reserved</string>
+    <string name="parking_spot_status_occupied">Occupied</string>
+    <string name="parking_spot_status_temporarily_unavailable">Temporarily unavailable</string>
+
+    <!-- Parking list screen -->
+    <string name="parking_list_no_parking_lots_found">No parking lots found</string>
+    <string name="parking_list_see_details">See details</string>
+
+    <!-- Parking spots list screen -->
+    <string name="parking_spots_list_spot_number">Spot number</string>
 
 </resources>
