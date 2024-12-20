@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">ParkFinder</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Početna</string>
+    <string name="menu_search">Pretraga</string>
+    <string name="menu_profile">Profil</string>
+    <string name="menu_reserved">Rezervisano</string>
+
+    <!-- Common -->
+    <string name="common_edit">Izmeni</string>
+    <string name="common_update">Ažuriraj</string>
+    <string name="common_cancel">Otkaži</string>
+    <string name="common_remove">Ukloni</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_balance">Stanje</string>
+    <string name="profile_vehicle_info">Informacije o vozilu</string>
+    <string name="profile_statistics">Statistika</string>
+    <string name="profile_favourites">Omiljeno</string>
+    <string name="profile_settings">Podešavanja</string>
+    <string name="profile_help_center">Centar za pomoć</string>
+    <string name="profile_logout">Odjava</string>
+    <string name="profile_find_parking_mode">Režim traženja parkinga</string>
+    <string name="profile_set_new_name">Postavi novo ime</string>
+    <string name="profile_name_requirements">Ime i prezime moraju početi velikim slovom i sadržati samo mala slova abecede.</string>
+    <string name="profile_confirm_removal">Potvrdi uklanjanje</string>
+    <string name="profile_confirm_removal_text">Da li ste sigurni da želite da uklonite sliku profila?</string>
+
+</resources>

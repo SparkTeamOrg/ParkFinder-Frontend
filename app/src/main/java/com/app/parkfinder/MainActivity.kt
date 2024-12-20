@@ -1,9 +1,9 @@
 package com.app.parkfinder
 
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import com.app.parkfinder.logic.AppPreferences
 import com.app.parkfinder.logic.RetrofitConfig
@@ -11,12 +11,15 @@ import com.app.parkfinder.logic.models.dtos.TokenDto
 import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
+import com.app.parkfinder.utilis.LocaleHelper
 import com.auth0.android.jwt.JWT
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val language = getPreferredLanguage()
+        LocaleHelper.setLocale(this, language)
         AppPreferences.setup(applicationContext)
         val accessToken = AppPreferences.accessToken
         val refreshToken = AppPreferences.refreshToken
@@ -75,5 +78,10 @@ class MainActivity : ComponentActivity() {
     private fun logOutUser(){
         navigateToLogin()
         AppPreferences.removeTokens()
+    }
+
+    private fun getPreferredLanguage(): String {
+        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("language", "en") ?: "en"
     }
 }

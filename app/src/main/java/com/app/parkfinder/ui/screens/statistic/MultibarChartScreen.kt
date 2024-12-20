@@ -31,7 +31,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -48,9 +48,8 @@ fun UserStatisticsPage(
     val scrollState = rememberScrollState()
 
     // Mock Data
-    val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} RSD"
-    val avgTimeFinding =
-        "${String.format("%.2f", statistic.averageReservationTime / 60).toDouble()} min"
+    val totalMoneySpent = "${round(statistic.totalMoneySpent * 100) / 100} RSD"
+    val avgTimeFinding = "${round(statistic.averageReservationTime / 60 * 100) / 100} min"
     val totalReservations = "${statistic.reservationCount}"
 
     Column(
@@ -175,7 +174,7 @@ fun UserStatisticsPage(
 
                 val moneySpentStatistic = statistic.vehicles.map { vehicle ->
                     vehicle.moneySpentPerMonth.map { spent ->
-                        String.format("%.2f", spent).toFloat()
+                        (round(spent * 100) / 100).toFloat()
                     }
                 }
                 val reservationCountStatistic = statistic.vehicles.map { vehicle ->

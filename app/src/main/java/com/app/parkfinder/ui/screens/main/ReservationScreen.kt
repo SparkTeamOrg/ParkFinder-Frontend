@@ -65,6 +65,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.utilis.formatDate
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -171,7 +172,7 @@ fun ReservationScreen(
                                 )
                             }
                             Text(
-                                text =  String.format("%.2f", lot.distance) + " km away",
+                                text = "${round(lot.distance * 100) / 100} km away",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF00AEEF),

@@ -143,6 +143,7 @@ class NavigationActivity : BaseActivity() {
                     updateUserName = { fullName -> updateUserName(fullName) },
                     navigateToStatistics = { navigateToStatistics() },
                     navigateToBalanceScreen = { navigateToBalanceScreen() },
+                    navigateToSettings = { navigateToSettings() }
                 )
             }
         }
@@ -331,6 +332,12 @@ class NavigationActivity : BaseActivity() {
     private fun navigateToStatistics()
     {
         val intent = Intent(this, StatisticsActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.app.parkfinder.logic.models.NavigationStep
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -58,7 +59,7 @@ fun DirectionStepItem(step: NavigationStep, stepIndex: Int) {
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Distance: ${step.distance.toInt()} m · Duration: ${String.format("%.2f",(step.duration / 60))} min",
+                text = "Distance: ${step.distance.toInt()} m · Duration: ${round(step.duration / 60 * 100) / 100} min",
                 style = MaterialTheme.typography.caption,
                 color = Color.White
             )

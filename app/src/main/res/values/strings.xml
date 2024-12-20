@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">ParkFinder</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Home</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_reserved">Reserved</string>
+
+    <!-- Common -->
+    <string name="common_edit">Edit</string>
+    <string name="common_update">Update</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_remove">Remove</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_balance">Balance</string>
+    <string name="profile_vehicle_info">Vehicle Info</string>
+    <string name="profile_statistics">Statistics</string>
+    <string name="profile_favourites">Favourites</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_help_center">Help Center</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_find_parking_mode">Find Parking Mode</string>
+    <string name="profile_set_new_name">Set a new name</string>
+    <string name="profile_name_requirements">Both first and last name must start with an uppercase letter and contain only lowercase alphabetic characters.</string>
+    <string name="profile_confirm_removal">Confirm removal</string>
+    <string name="profile_confirm_removal_text">Are you sure you want to remove your profile image?</string>
+
 </resources>

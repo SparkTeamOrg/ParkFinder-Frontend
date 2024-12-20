@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.ui.composables.ParkFinderLogo
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -39,7 +40,7 @@ fun ParkingListScreen(
                     .padding(paddingValues)
             ) {
                 items(parkingSpaces.size) { index ->
-                    val roundedValue = String.format("%.2f", parkingSpaces[index].distance).toDouble()
+                    val roundedValue = round(parkingSpaces[index].distance * 100) / 100
                     parkingSpaces[index].distance = roundedValue
                     ParkingItem(parkingSpace = parkingSpaces[index], navigateToSpots = navigateToParkingSpots)
                 }
