@@ -16,6 +16,9 @@
     <string name="common_away">Away</string>
     <string name="common_reserve">Reserve</string>
     <string name="common_back">Back</string>
+    <string name="common_color">Color</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_finish">Finish</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -60,5 +63,36 @@
     <string name="add_balance_title">Add Balance To Your Account</string>
     <string name="add_balance_amount">Amount</string>
     <string name="add_balance_add_balance">Add Balance</string>
+
+    <!-- Vehicle Info screen -->
+    <string name="vehicle_info_my_vehicles">My Vehicles</string>
+    <string name="vehicle_info_vehicle_company">Vehicle Company</string>
+    <string name="vehicle_info_vehicle_model">Vehicle Model</string>
+    <string name="vehicle_info_registration_plate">Registration Plate</string>
+    <string name="vehicle_info_delete_vehicle">Delete Vehicle</string>
+    <string name="vehicle_info_confirm_removal">Are you sure you want to delete this vehicle?</string>
+
+    <!-- Register Vehicle Info screen -->
+    <string name="register_vehicle_info_update_vehicle_information">Update Vehicle Information</string>
+    <string name="register_vehicle_info_setup_vehicle_information">Setup Vehicle Information</string>
+    <string name="register_vehicle_info_vehicle_information">Vehicle Information</string>
+    <string name="register_vehicle_info_brand">Brand</string>
+    <string name="register_vehicle_info_model">Model</string>
+    <string name="register_vehicle_info_color">Color</string>
+    <string name="register_vehicle_info_registration_plate">Registration Plate</string>
+    <string name="register_vehicle_info_select_a_brand">Select a brand</string>
+    <string name="register_vehicle_info_select_a_model">Select a model</string>
+    <string name="register_vehicle_info_select_a_color">Select a color</string>
+    <string name="register_vehicle_info_invalid_registration_plate">Invalid registration plate</string>
+
+    <!-- Colors -->
+    <string name="color_red">Red</string>
+    <string name="color_green">Green</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Gray</string>
+    <string name="color_black">Black</string>
 
 </resources>

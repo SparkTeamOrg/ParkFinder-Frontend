@@ -16,6 +16,9 @@
     <string name="common_away">Daleko</string>
     <string name="common_reserve">Rezerviši</string>
     <string name="common_back">Nazad</string>
+    <string name="common_color">Boja</string>
+    <string name="common_delete">Obriši</string>
+    <string name="common_finish">Završi</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -60,5 +63,36 @@
     <string name="add_balance_title">Dodajte iznos na vaš račun</string>
     <string name="add_balance_amount">Iznos</string>
     <string name="add_balance_add_balance">Dodaj iznos</string>
+
+    <!-- Vehicle Info screen -->
+    <string name="vehicle_info_my_vehicles">Moja vozila</string>
+    <string name="vehicle_info_vehicle_company">Proizvođač vozila</string>
+    <string name="vehicle_info_vehicle_model">Model vozila</string>
+    <string name="vehicle_info_registration_plate">Registraciona tablica</string>
+    <string name="vehicle_info_delete_vehicle">Obriši vozilo</string>
+    <string name="vehicle_info_confirm_removal">Da li ste sigurni da želite da obrišete ovo vozilo?</string>
+
+    <!-- Register Vehicle Info screen -->
+    <string name="register_vehicle_info_update_vehicle_information">Ažuriraj informacije o vozilu</string>
+    <string name="register_vehicle_info_setup_vehicle_information">Podesi informacije o vozilu</string>
+    <string name="register_vehicle_info_vehicle_information">Informacije o vozilu</string>
+    <string name="register_vehicle_info_brand">Marka</string>
+    <string name="register_vehicle_info_model">Model</string>
+    <string name="register_vehicle_info_color">Boja</string>
+    <string name="register_vehicle_info_registration_plate">Registraciona tablica</string>
+    <string name="register_vehicle_info_select_a_brand">Izaberite marku</string>
+    <string name="register_vehicle_info_select_a_model">Izaberite model</string>
+    <string name="register_vehicle_info_select_a_color">Izaberite boju</string>
+    <string name="register_vehicle_info_invalid_registration_plate">Nevažeća registraciona tablica</string>
+
+    <!-- Colors -->
+    <string name="color_red">Crvena</string>
+    <string name="color_green">Zelena</string>
+    <string name="color_blue">Plava</string>
+    <string name="color_yellow">Žuta</string>
+    <string name="color_cyan">Cijan</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Siva</string>
+    <string name="color_black">Crna</string>
 
 </resources>

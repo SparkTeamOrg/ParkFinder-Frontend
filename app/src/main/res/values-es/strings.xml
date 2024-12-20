@@ -16,6 +16,9 @@
     <string name="common_away">Lejos</string>
     <string name="common_reserve">Reservar</string>
     <string name="common_back">Atrás</string>
+    <string name="common_color">Color</string>
+    <string name="common_delete">Eliminar</string>
+    <string name="common_finish">Finalizar</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Saldo</string>
@@ -60,5 +63,36 @@
     <string name="add_balance_title">Agregar saldo a tu cuenta</string>
     <string name="add_balance_amount">Cantidad</string>
     <string name="add_balance_add_balance">Agregar saldo</string>
+
+    <!-- Vehicle Info screen -->
+    <string name="vehicle_info_my_vehicles">Mis vehículos</string>
+    <string name="vehicle_info_vehicle_company">Compañía de vehículos</string>
+    <string name="vehicle_info_vehicle_model">Modelo de vehículo</string>
+    <string name="vehicle_info_registration_plate">Placa de matrícula</string>
+    <string name="vehicle_info_delete_vehicle">Eliminar vehículo</string>
+    <string name="vehicle_info_confirm_removal">¿Estás seguro de que deseas eliminar este vehículo?</string>
+
+    <!-- Register Vehicle Info screen -->
+    <string name="register_vehicle_info_update_vehicle_information">Actualizar información del vehículo</string>
+    <string name="register_vehicle_info_setup_vehicle_information">Configurar información del vehículo</string>
+    <string name="register_vehicle_info_vehicle_information">Información del vehículo</string>
+    <string name="register_vehicle_info_brand">Marca</string>
+    <string name="register_vehicle_info_model">Modelo</string>
+    <string name="register_vehicle_info_color">Color</string>
+    <string name="register_vehicle_info_registration_plate">Placa de matrícula</string>
+    <string name="register_vehicle_info_select_a_brand">Seleccionar una marca</string>
+    <string name="register_vehicle_info_select_a_model">Seleccionar un modelo</string>
+    <string name="register_vehicle_info_select_a_color">Seleccionar un color</string>
+    <string name="register_vehicle_info_invalid_registration_plate">Placa de matrícula no válida</string>
+
+    <!-- Colors -->
+    <string name="color_red">Rojo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_cyan">Cian</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Gris</string>
+    <string name="color_black">Negro</string>
 
 </resources>
