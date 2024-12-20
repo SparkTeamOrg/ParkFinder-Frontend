@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +77,7 @@ fun BalanceScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Current Balance",
+                text = stringResource(id = R.string.balance_current_balance),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -96,11 +97,13 @@ fun BalanceScreen(
                     contentColor = Color.White
                 )
             ) {
-                Text("Preview Payment Check")
+                Text(
+                    text = stringResource(id = R.string.balance_make_payment),
+                )
             }
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "Transaction History",
+                text = stringResource(id = R.string.balance_transaction_history),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -147,7 +150,7 @@ fun TransactionItem(transaction: TransactionDto) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = if (transaction.amount < 0) "Parking Fee" else "Payment to Account",
+                text = if (transaction.amount < 0) stringResource(id = R.string.balance_parking_fee) else stringResource(id = R.string.balance_payment_to_account),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

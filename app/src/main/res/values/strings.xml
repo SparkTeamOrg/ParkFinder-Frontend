@@ -15,6 +15,7 @@
     <string name="common_search">Search</string>
     <string name="common_away">Away</string>
     <string name="common_reserve">Reserve</string>
+    <string name="common_back">Back</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -47,5 +48,17 @@
 
     <!-- Parking spots list screen -->
     <string name="parking_spots_list_spot_number">Spot number</string>
+
+    <!-- Balance screen -->
+    <string name="balance_current_balance">Current Balance</string>
+    <string name="balance_make_payment">Make Payment</string>
+    <string name="balance_transaction_history">Transaction History</string>
+    <string name="balance_parking_fee">Parking Fee</string>
+    <string name="balance_payment_to_account">Payment to Account</string>
+
+    <!-- Add Balance screen -->
+    <string name="add_balance_title">Add Balance To Your Account</string>
+    <string name="add_balance_amount">Amount</string>
+    <string name="add_balance_add_balance">Add Balance</string>
 
 </resources>

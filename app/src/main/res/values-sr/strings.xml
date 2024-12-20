@@ -15,6 +15,7 @@
     <string name="common_search">Pretraži</string>
     <string name="common_away">Daleko</string>
     <string name="common_reserve">Rezerviši</string>
+    <string name="common_back">Nazad</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -47,5 +48,17 @@
 
     <!-- Parking spots list screen -->
     <string name="parking_spots_list_spot_number">Broj mesta</string>
+
+    <!-- Balance screen -->
+    <string name="balance_current_balance">Trenutno stanje</string>
+    <string name="balance_make_payment">Izvrši uplatu</string>
+    <string name="balance_transaction_history">Istorija transakcija</string>
+    <string name="balance_parking_fee">Cena parkinga</string>
+    <string name="balance_payment_to_account">Uplata na račun</string>
+
+    <!-- Add Balance screen -->
+    <string name="add_balance_title">Dodajte iznos na vaš račun</string>
+    <string name="add_balance_amount">Iznos</string>
+    <string name="add_balance_add_balance">Dodaj iznos</string>
 
 </resources>
