@@ -5,18 +5,17 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.view_models.MapViewModel
+import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.parking.ParkingSpotListScreen
 
-class ParkingSpotListActivity: ComponentActivity() {
+class ParkingSpotListActivity: BaseActivity() {
     private val mapViewModel: MapViewModel by viewModels()
     private val parkingSpots = mutableStateOf<List<ParkingSpotDto>>(emptyList())
     private lateinit var parkingLot: ParkingLotDto

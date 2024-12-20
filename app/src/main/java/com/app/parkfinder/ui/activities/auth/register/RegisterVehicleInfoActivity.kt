@@ -6,13 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -20,7 +20,7 @@ import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validateLicencePlate
 
 
-class RegisterVehicleInfoActivity: BaseActivity() {
+class RegisterVehicleInfoActivity: ComponentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
 
