@@ -3,6 +3,7 @@ package com.app.parkfinder.ui.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import com.app.parkfinder.ui.theme.ParkFinderTheme
@@ -11,7 +12,7 @@ import com.app.parkfinder.ui.activities.auth.login.LoginActivity
 import com.app.parkfinder.ui.activities.auth.register.RegisterActivity
 import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 
-class WelcomeActivity: BaseActivity() {
+class WelcomeActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
