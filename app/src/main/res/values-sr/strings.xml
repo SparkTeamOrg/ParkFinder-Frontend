@@ -21,6 +21,12 @@
     <string name="common_finish">Završi</string>
     <string name="common_ok">U redu</string>
     <string name="common_confirm">Potvrdi</string>
+    <string name="common_password">Lozinka</string>
+    <string name="common_email">Email</string>
+    <string name="common_login">Prijavi se</string>
+    <string name="common_register">Registruj se</string>
+    <string name="common_resend">Pošalji ponovo</string>
+    <string name="common_next">Dalje</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -163,5 +169,32 @@
     <string name="home_screen_confirm_reservation">Potvrdi rezervaciju</string>
     <string name="home_screen_confirm_reservation_text">Stigli ste na odredište. Molimo potvrdite vašu rezervaciju da biste nastavili.</string>
     <string name="home_screen_confirm_reservation_text_2">Klikom na potvrdu, naknada za parkiranje će početi da se naplaćuje po satu od sada.</string>
+
+    <!-- EnterNewPassword Screen -->
+    <string name="enter_new_password_forgot_password">Zaboravljena lozinka</string>
+    <string name="enter_new_password_hint">Unesite novu lozinku i potvrdite je</string>
+    <string name="enter_new_password_change_password">Promeni lozinku</string>
+    <string name="enter_new_password_invalid_password_format">Nevažeći format lozinke</string>
+    <string name="enter_new_password_confirm_password">Potvrdi lozinku</string>
+
+    <!-- ForgotPassword Screen -->
+    <string name="forgot_password_forgot_password">Zaboravljena lozinka</string>
+    <string name="forgot_password_hint">Unesite email adresu koju ste koristili prilikom registracije na koju ćemo vam poslati kod za resetovanje lozinke</string>
+    <string name="forgot_password_enter_email">Unesite email adresu</string>
+    <string name="forgot_password_send_verification_code">Pošalji kod za verifikaciju</string>
+
+    <!-- Login Screen -->
+    <string name="login_enter_credentials_message">Unesite vaše \npodatke za prijavu</string>
+    <string name="login_forgot_password">Zaboravili ste lozinku?</string>
+    <string name="login_no_account">Nemate nalog?</string>
+
+    <!-- ResetPasswordVerificationCode Screen -->
+    <string name="reset_password_verification_code_verification_code">Kod za verifikaciju</string>
+    <string name="reset_password_verification_code_hint">Kod za verifikaciju je poslat na adresu koju ste prosledili:</string>
+
+    <!-- Errors -->
+    <string name="error_passwords_do_not_match">Lozinke se ne poklapaju</string>
+    <string name="error_invalid_email_format">Nevažeći format email adrese</string>
+    <string name="error_invalid_password_format">Nevažeći format lozinke</string>
 
 </resources>

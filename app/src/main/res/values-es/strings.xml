@@ -21,6 +21,12 @@
     <string name="common_finish">Finalizar</string>
     <string name="common_ok">Aceptar</string>
     <string name="common_confirm">Confirmar</string>
+    <string name="common_password">Contraseña</string>
+    <string name="common_email">Correo electrónico</string>
+    <string name="common_login">Iniciar sesión</string>
+    <string name="common_register">Registrarse</string>
+    <string name="common_resend">Reenviar</string>
+    <string name="common_next">Siguiente</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Saldo</string>
@@ -163,5 +169,32 @@
     <string name="home_screen_confirm_reservation">Confirmar Reserva</string>
     <string name="home_screen_confirm_reservation_text">Has llegado a tu destino. Por favor, confirma tu reserva para continuar.</string>
     <string name="home_screen_confirm_reservation_text_2">Al hacer clic en confirmar, la tarifa de estacionamiento comenzará a cobrarse por hora a partir de ahora.</string>
+
+    <!-- EnterNewPassword Screen -->
+    <string name="enter_new_password_forgot_password">Olvidé mi contraseña</string>
+    <string name="enter_new_password_hint">Introduce tu nueva contraseña</string>
+    <string name="enter_new_password_change_password">Cambiar contraseña</string>
+    <string name="enter_new_password_invalid_password_format">Formato de contraseña no válido</string>
+    <string name="enter_new_password_confirm_password">Confirmar contraseña</string>
+
+    <!-- ForgotPassword Screen -->
+    <string name="forgot_password_forgot_password">Olvidé mi contraseña</string>
+    <string name="forgot_password_hint">Introduce tu dirección de correo electrónico y te enviaremos un código de verificación para que puedas volver a acceder a tu cuenta.</string>
+    <string name="forgot_password_enter_email">Introduce tu correo electrónico</string>
+    <string name="forgot_password_send_verification_code">Enviar código de verificación</string>
+
+    <!-- Login Screen -->
+    <string name="login_enter_credentials_message">Introduce tus \ncredenciales para iniciar sesión</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_no_account">¿No tienes una cuenta?</string>
+
+    <!-- ResetPasswordVerificationCode Screen -->
+    <string name="reset_password_verification_code_verification_code">Código de verificación</string>
+    <string name="reset_password_verification_code_hint">Introduce el código de verificación que te hemos enviado a tu dirección de correo electrónico:</string>
+
+    <!-- Errors -->
+    <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
+    <string name="error_invalid_email_format">Formato de correo electrónico no válido</string>
+    <string name="error_invalid_password_format">Formato de contraseña no válido</string>
 
 </resources>

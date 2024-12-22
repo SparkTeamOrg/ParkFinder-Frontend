@@ -21,6 +21,12 @@
     <string name="common_finish">Finish</string>
     <string name="common_ok">OK</string>
     <string name="common_confirm">Confirm</string>
+    <string name="common_password">Password</string>
+    <string name="common_email">Email</string>
+    <string name="common_login">Login</string>
+    <string name="common_register">Register</string>
+    <string name="common_resend">Resend</string>
+    <string name="common_next">Next</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -163,5 +169,32 @@
     <string name="home_screen_confirm_reservation">Confirm Reservation</string>
     <string name="home_screen_confirm_reservation_text">You have arrived at your destination. Please confirm your reservation to proceed.</string>
     <string name="home_screen_confirm_reservation_text_2">By clicking confirm parking fee will start being charged on an hourly basis from now on.</string>
+
+    <!-- EnterNewPassword Screen -->
+    <string name="enter_new_password_forgot_password">Forgot password</string>
+    <string name="enter_new_password_hint">Enter your new password and confirm it</string>
+    <string name="enter_new_password_change_password">Change password</string>
+    <string name="enter_new_password_invalid_password_format">Invalid password format</string>
+    <string name="enter_new_password_confirm_password">Confirm password</string>
+
+    <!-- ForgotPassword Screen -->
+    <string name="forgot_password_forgot_password">Forgot password</string>
+    <string name="forgot_password_hint">Enter your email address and we will send you a verification code to get back into your account.</string>
+    <string name="forgot_password_enter_email">Enter your email</string>
+    <string name="forgot_password_send_verification_code">Send verification code</string>
+
+    <!-- Login Screen -->
+    <string name="login_enter_credentials_message">Enter your \ncredentials to login</string>
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+
+    <!-- ResetPasswordVerificationCode Screen -->
+    <string name="reset_password_verification_code_verification_code">Verification code</string>
+    <string name="reset_password_verification_code_hint">We\'ve sent the code to your mail address that you provided:</string>
+
+    <!-- Errors -->
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="error_invalid_email_format">Invalid email format</string>
+    <string name="error_invalid_password_format">Invalid password format</string>
 
 </resources>
