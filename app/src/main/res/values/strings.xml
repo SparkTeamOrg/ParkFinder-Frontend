@@ -145,4 +145,17 @@
     <string name="reservation_screen_no_reviews">No reviews yet</string>
     <string name="reservation_screen_not_rated_yet">Not rated yet</string>
 
+    <!-- Reserved Screen -->
+    <string name="reserved_screen_my_reservations">My Reservations</string>
+    <string name="reserved_screen_parking_zone">Parking zone</string>
+    <string name="reserved_screen_start_time">Start time</string>
+    <string name="reserved_screen_vehicle">Vehicle</string>
+    <string name="reserved_screen_finish_reservation">Finish Reservation</string>
+    <string name="reserved_screen_rate_parking_spot">Rate Parking Spot</string>
+    <string name="reserved_screen_leave_comment">Leave a comment</string>
+    <string name="reserved_screen_leave_comment_template">Write your comment here…</string>
+    <string name="reserved_screen_leave_comment_hint">Please leave a comment for a rating below 3 stars.</string>
+    <string name="reserved_screen_rate_and_leave">Rate and Leave</string>
+    <string name="reserved_screen_no_active_reservations">No active reservations</string>
+
 </resources>

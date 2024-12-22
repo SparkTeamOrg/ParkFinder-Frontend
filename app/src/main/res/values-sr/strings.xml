@@ -145,4 +145,17 @@
     <string name="reservation_screen_no_reviews">Nema recenzija</string>
     <string name="reservation_screen_not_rated_yet">Još uvek nije ocenjeno</string>
 
+    <!-- Reserved Screen -->
+    <string name="reserved_screen_my_reservations">Moje rezervacije</string>
+    <string name="reserved_screen_parking_zone">Zona parkiranja</string>
+    <string name="reserved_screen_start_time">Vreme početka</string>
+    <string name="reserved_screen_vehicle">Vozilo</string>
+    <string name="reserved_screen_finish_reservation">Završi rezervaciju</string>
+    <string name="reserved_screen_rate_parking_spot">Oceni parking mesto</string>
+    <string name="reserved_screen_leave_comment">Ostavi komentar</string>
+    <string name="reserved_screen_leave_comment_template">Napišite svoj komentar ovde…</string>
+    <string name="reserved_screen_leave_comment_hint">Molimo ostavite komentar za ocenu ispod 3 zvezdice.</string>
+    <string name="reserved_screen_rate_and_leave">Oceni i napusti mesto</string>
+    <string name="reserved_screen_no_active_reservations">Nema aktivnih rezervacija</string>
+
 </resources>

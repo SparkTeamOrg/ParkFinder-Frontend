@@ -145,4 +145,17 @@
     <string name="reservation_screen_no_reviews">No hay reseñas</string>
     <string name="reservation_screen_not_rated_yet">Sin calificación aún</string>
 
+    <!-- Reserved Screen -->
+    <string name="reserved_screen_my_reservations">Mis Reservas</string>
+    <string name="reserved_screen_parking_zone">Zona de estacionamiento</string>
+    <string name="reserved_screen_start_time">Hora de inicio</string>
+    <string name="reserved_screen_vehicle">Vehículo</string>
+    <string name="reserved_screen_finish_reservation">Finalizar Reserva</string>
+    <string name="reserved_screen_rate_parking_spot">Calificar Plaza de Estacionamiento</string>
+    <string name="reserved_screen_leave_comment">Dejar un comentario</string>
+    <string name="reserved_screen_leave_comment_template">Escribe tu comentario aquí…</string>
+    <string name="reserved_screen_leave_comment_hint">Por favor, deja un comentario para una calificación inferior a 3 estrellas.</string>
+    <string name="reserved_screen_rate_and_leave">Calificar y dejar un comentario</string>
+    <string name="reserved_screen_no_active_reservations">No hay reservas activas</string>
+
 </resources>

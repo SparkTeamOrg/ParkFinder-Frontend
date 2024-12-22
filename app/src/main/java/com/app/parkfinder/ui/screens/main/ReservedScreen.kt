@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -88,7 +89,7 @@ fun ReservedScreen(
                     .height(310.dp)
             )
             Text(
-                text = "My Reservations",
+                text = stringResource(id = R.string.reserved_screen_my_reservations),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = White,
@@ -209,7 +210,7 @@ fun ReservedScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = "Zone",
+                                text = stringResource(id = R.string.reserved_screen_parking_zone),
                                 fontSize = 16.sp,
                                 color = White
                             )
@@ -227,7 +228,7 @@ fun ReservedScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = "Start time",
+                                text = stringResource(id = R.string.reserved_screen_start_time),
                                 fontSize = 16.sp,
                                 color = White
                             )
@@ -245,7 +246,7 @@ fun ReservedScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = "Vehicle",
+                                text = stringResource(id = R.string.reserved_screen_vehicle),
                                 fontSize = 16.sp,
                                 color = White
                             )
@@ -255,7 +256,7 @@ fun ReservedScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Text(
-                                text = "$vehicleBrand $vehicleModel $licencePlate",
+                                text = "$vehicleBrand $vehicleModel ($licencePlate)",
                                 fontSize = 18.sp,
                                 color = Color(0xFF00AEEF)
                             )
@@ -263,7 +264,7 @@ fun ReservedScreen(
                             Spacer(modifier = Modifier.height(30.dp))
 
                             Text(
-                                text = "Finish your reservation",
+                                text = stringResource(id = R.string.reserved_screen_finish_reservation),
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = White,
@@ -280,7 +281,7 @@ fun ReservedScreen(
 
                             // Rate parking spot
                             Text(
-                                text = "Rate parking spot",
+                                text = stringResource(id = R.string.reserved_screen_rate_parking_spot),
                                 fontSize = 16.sp,
                                 color = White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -312,7 +313,7 @@ fun ReservedScreen(
 
                             // Comment section
                             Text(
-                                text = "Leave comment (optional)",
+                                text = stringResource(id = R.string.reserved_screen_leave_comment),
                                 fontSize = 16.sp,
                                 color = White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -326,7 +327,7 @@ fun ReservedScreen(
                                 onValueChange = { comment = it },
                                 placeholder = {
                                     Text(
-                                        text = "Write comment here...",
+                                        text = stringResource(id = R.string.reserved_screen_leave_comment_template),
                                         color = Color.Gray
                                     )
                                 },
@@ -346,7 +347,7 @@ fun ReservedScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
-                                text = "Please leave a comment for a rating below 3 stars.",
+                                text = stringResource(id = R.string.reserved_screen_leave_comment_hint),
                                 fontSize = 14.sp,
                                 color = White.copy(alpha = 0.3f),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -374,7 +375,7 @@ fun ReservedScreen(
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text(
-                                        text = "Rate and Leave",
+                                        text = stringResource(id = R.string.reserved_screen_rate_and_leave),
                                         color = White,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Bold
@@ -423,7 +424,7 @@ fun ReservedScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "No active reservations",
+                    text = stringResource(id = R.string.reserved_screen_no_active_reservations),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1D2535),
@@ -435,30 +436,3 @@ fun ReservedScreen(
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ReservedScreenPreview() {
-//    ParkFinderTheme {
-//        val navController = rememberNavController()
-//        Scaffold(
-//            topBar = { ParkFinderLogo() },
-//            bottomBar = { BottomNavigationBar(navController = navController) }
-//        ) { innerPadding ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = BottomNavItem.Reserved.route,
-//                Modifier.padding(innerPadding)
-//            ) {
-//                //UI for Home
-//                composable(BottomNavItem.Home.route) { HomeScreen(UserDto(), {}) }
-//                //UI for Search
-//                composable(BottomNavItem.Search.route) { SearchScreen() }
-//                //UI for Profile
-//                composable(BottomNavItem.Profile.route) { ProfileScreen({}, UserDto(), null, {}, {}, {}) }
-//                //UI for Reserved
-//                composable(BottomNavItem.Reserved.route){ ReservedScreen() }
-//            }
-//        }
-//    }
-//}
