@@ -19,6 +19,7 @@
     <string name="common_color">Boja</string>
     <string name="common_delete">Obriši</string>
     <string name="common_finish">Završi</string>
+    <string name="common_ok">U redu</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -94,5 +95,42 @@
     <string name="color_magenta">Magenta</string>
     <string name="color_gray">Siva</string>
     <string name="color_black">Crna</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">Statistika</string>
+    <string name="statistics_total_reservations">Ukupno rezervacija</string>
+    <string name="statistics_total_money_spent">Ukupno potrošen novac</string>
+    <string name="statistics_average_reserved_time">Prosečno trajanje rezervacije</string>
+    <string name="statistics_see_reservation_history">Pogledaj istoriju rezervacija</string>
+    <string name="statistics_last_6_months_money_spent">Novac potrošen u poslednjih 6 meseci</string>
+    <string name="statistics_last_6_months_reservation_per_vehicle">Rezervacije po vozilu u poslednjih 6 meseci</string>
+
+    <!-- Reservation History Screen -->
+    <string name="reservation_history_title">Istorija rezervacija</string>
+    <string name="reservation_history_no_reservations">Nema rezervacija</string>
+    <string name="reservation_history_expand_filters">Proširi filtere</string>
+    <string name="reservation_history_collapse_filters">Skupi filtere</string>
+    <string name="reservation_history_select_a_vehicle">Izaberite vozilo</string>
+    <string name="reservation_history_newer_than">Novije od</string>
+    <string name="reservation_history_earlier_than">Starije od</string>
+    <string name="reservation_history_reset_filters">Resetuj filtere</string>
+    <string name="reservation_history_apply">Primeni</string>
+    <string name="reservation_history_your_review">Vaša recenzija: </string>
+    <string name="reservation_history_vehicle">Vozilo: </string>
+    <string name="reservation_history_time_span">Period: </string>
+    <string name="reservation_history_order">Redosled</string>
+    <string name="reservation_history_order_ascending">Rastući</string>
+    <string name="reservation_history_order_descending">Opadajući</string>
+    <string name="reservation_history_sort_by">Sortiraj po</string>
+    <string name="reservation_history_sort_by_date">Datum</string>
+    <string name="reservation_history_sort_by_rating">Ocena</string>
+    <string name="reservation_history_sort_by_price">Cena</string>
+
+    <!-- Help Center Screen -->
+    <string name="help_center_title">Centar za pomoć</string>
+    <string name="help_center_need_assistance">Potrebna Vam je pomoć?</string>
+    <string name="help_center_we_are_here_to_help">Tu smo da pomognemo!</string>
+    <string name="help_center_contact_email">Kontakt email</string>
+    <string name="help_center_contact_phone">Kontakt telefon</string>
 
 </resources>

@@ -19,6 +19,7 @@
     <string name="common_color">Color</string>
     <string name="common_delete">Delete</string>
     <string name="common_finish">Finish</string>
+    <string name="common_ok">OK</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -94,5 +95,42 @@
     <string name="color_magenta">Magenta</string>
     <string name="color_gray">Gray</string>
     <string name="color_black">Black</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_total_reservations">Total Reservations</string>
+    <string name="statistics_total_money_spent">Total Money Spent</string>
+    <string name="statistics_average_reserved_time">Avg. Reserved Time</string>
+    <string name="statistics_see_reservation_history">See Reservation History</string>
+    <string name="statistics_last_6_months_money_spent">Money Spent in Last 6 Months</string>
+    <string name="statistics_last_6_months_reservation_per_vehicle">Reservations per Vehicle in Last 6 Months</string>
+
+    <!-- Reservation History Screen -->
+    <string name="reservation_history_title">Reservation History</string>
+    <string name="reservation_history_no_reservations">No reservations</string>
+    <string name="reservation_history_expand_filters">Expand Filters</string>
+    <string name="reservation_history_collapse_filters">Collapse Filters</string>
+    <string name="reservation_history_select_a_vehicle">Select a vehicle</string>
+    <string name="reservation_history_newer_than">Newer than</string>
+    <string name="reservation_history_earlier_than">Earlier than</string>
+    <string name="reservation_history_reset_filters">Reset Filters</string>
+    <string name="reservation_history_apply">Apply</string>
+    <string name="reservation_history_your_review">Your review: </string>
+    <string name="reservation_history_vehicle">Vehicle: </string>
+    <string name="reservation_history_time_span">Time span: </string>
+    <string name="reservation_history_order">Order</string>
+    <string name="reservation_history_order_ascending">Ascending</string>
+    <string name="reservation_history_order_descending">Descending</string>
+    <string name="reservation_history_sort_by">Sort by</string>
+    <string name="reservation_history_sort_by_date">Date</string>
+    <string name="reservation_history_sort_by_rating">Rating</string>
+    <string name="reservation_history_sort_by_price">Price</string>
+
+    <!-- Help Center Screen -->
+    <string name="help_center_title">Help Center</string>
+    <string name="help_center_need_assistance">Need Assistance?</string>
+    <string name="help_center_we_are_here_to_help">We are here to help!</string>
+    <string name="help_center_contact_email">Contact email</string>
+    <string name="help_center_contact_phone">Contact phone</string>
 
 </resources>
