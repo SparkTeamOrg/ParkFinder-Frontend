@@ -20,6 +20,7 @@
     <string name="common_delete">Obriši</string>
     <string name="common_finish">Završi</string>
     <string name="common_ok">U redu</string>
+    <string name="common_confirm">Potvrdi</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Stanje</string>
@@ -157,5 +158,10 @@
     <string name="reserved_screen_leave_comment_hint">Molimo ostavite komentar za ocenu ispod 3 zvezdice.</string>
     <string name="reserved_screen_rate_and_leave">Oceni i napusti mesto</string>
     <string name="reserved_screen_no_active_reservations">Nema aktivnih rezervacija</string>
+
+    <!-- Home Screen -->
+    <string name="home_screen_confirm_reservation">Potvrdi rezervaciju</string>
+    <string name="home_screen_confirm_reservation_text">Stigli ste na odredište. Molimo potvrdite vašu rezervaciju da biste nastavili.</string>
+    <string name="home_screen_confirm_reservation_text_2">Klikom na potvrdu, naknada za parkiranje će početi da se naplaćuje po satu od sada.</string>
 
 </resources>

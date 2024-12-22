@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +52,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
@@ -62,6 +64,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
+import kotlin.math.round
 
 @SuppressLint("OpaqueUnitKey")
 @Composable
@@ -175,7 +178,7 @@ fun HomeScreen(
                     .align(Alignment.BottomCenter)
             ) {
                 Text(
-                    text = step.instruction + " in " + step.distance + " meters" + " (" + step.duration + " seconds)",
+                    text = step.instruction + " in " + round(step.distance * 100) / 100 + " meters" + " (" + round(step.duration * 100) / 100 + " seconds)",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -230,7 +233,7 @@ fun HomeScreen(
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(
-                text = "Cancel",
+                text = stringResource(id = R.string.common_cancel),
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -327,7 +330,7 @@ fun ConfirmModal(
             onDismissRequest = {},
             title = {
                 Text(
-                    text = "Confirm Reservation",
+                    text = stringResource(id = R.string.home_screen_confirm_reservation),
                     color = White,
                     fontWeight = FontWeight.Bold
                 )
@@ -335,13 +338,13 @@ fun ConfirmModal(
             text = {
                 Column {
                     Text(
-                        text = "You have arrived at your destination. Please confirm your reservation to proceed.",
+                        text = stringResource(id = R.string.home_screen_confirm_reservation_text),
                         color = White,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
                     Text(
-                        text = "By clicking confirm parking fee will start being charged on an hourly basis from now on.",
+                        text = stringResource(id = R.string.home_screen_confirm_reservation_text_2),
                         color = White.copy(alpha = 0.6f),
                         fontSize = 12.sp
                     )
@@ -361,7 +364,9 @@ fun ConfirmModal(
                         containerColor = Color(0xFF0FCFFF)
                     )
                 ) {
-                    Text("Confirm")
+                    Text(
+                        text = stringResource(id = R.string.common_confirm)
+                    )
                 }
             },
             dismissButton = {
@@ -377,7 +382,9 @@ fun ConfirmModal(
                         containerColor = Color.Red
                     )
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text = stringResource(id = R.string.common_cancel)
+                    )
                 }
             }
         )

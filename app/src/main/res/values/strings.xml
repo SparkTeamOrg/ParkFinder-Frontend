@@ -20,6 +20,7 @@
     <string name="common_delete">Delete</string>
     <string name="common_finish">Finish</string>
     <string name="common_ok">OK</string>
+    <string name="common_confirm">Confirm</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Balance</string>
@@ -157,5 +158,10 @@
     <string name="reserved_screen_leave_comment_hint">Please leave a comment for a rating below 3 stars.</string>
     <string name="reserved_screen_rate_and_leave">Rate and Leave</string>
     <string name="reserved_screen_no_active_reservations">No active reservations</string>
+
+    <!-- Home Screen -->
+    <string name="home_screen_confirm_reservation">Confirm Reservation</string>
+    <string name="home_screen_confirm_reservation_text">You have arrived at your destination. Please confirm your reservation to proceed.</string>
+    <string name="home_screen_confirm_reservation_text_2">By clicking confirm parking fee will start being charged on an hourly basis from now on.</string>
 
 </resources>

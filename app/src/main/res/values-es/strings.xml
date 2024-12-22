@@ -20,6 +20,7 @@
     <string name="common_delete">Eliminar</string>
     <string name="common_finish">Finalizar</string>
     <string name="common_ok">Aceptar</string>
+    <string name="common_confirm">Confirmar</string>
 
     <!-- Profile Screen -->
     <string name="profile_balance">Saldo</string>
@@ -157,5 +158,10 @@
     <string name="reserved_screen_leave_comment_hint">Por favor, deja un comentario para una calificación inferior a 3 estrellas.</string>
     <string name="reserved_screen_rate_and_leave">Calificar y dejar un comentario</string>
     <string name="reserved_screen_no_active_reservations">No hay reservas activas</string>
+
+    <!-- Home Screen -->
+    <string name="home_screen_confirm_reservation">Confirmar Reserva</string>
+    <string name="home_screen_confirm_reservation_text">Has llegado a tu destino. Por favor, confirma tu reserva para continuar.</string>
+    <string name="home_screen_confirm_reservation_text_2">Al hacer clic en confirmar, la tarifa de estacionamiento comenzará a cobrarse por hora a partir de ahora.</string>
 
 </resources>
