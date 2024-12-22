@@ -1,29 +1,21 @@
 package com.app.parkfinder.ui.screens.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +25,16 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
 @Composable
-fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
+fun WelcomeScreen(
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onLanguageChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val languages = listOf("English", "Spanish", "Serbian")
+    var selectedLanguage by remember { mutableStateOf(languages[0]) }
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,9 +59,8 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
                 contentDescription = "Logo",
                 modifier = Modifier.size(170.dp)    // Set the size of the logo
             )
-            // Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Your digital assistant \n for finding parking lots fast",
+                text = stringResource(id = R.string.welcome_about),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight(700),
                 fontSize = 20.sp,
@@ -86,7 +86,7 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
                     )
                 ) {
                     Text(
-                        text = "Login",
+                        text = stringResource(id = R.string.common_login),
                         fontSize = 20.sp
                     )
                 }
@@ -100,9 +100,40 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
                     )
                 ) {
                     Text(
-                        text = "Register",
+                        text = stringResource(id = R.string.common_register),
                         fontSize = 20.sp
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row {
+                Text(
+                    text = selectedLanguage,
+                    modifier = Modifier
+                        .clickable { expanded = true }
+                        .padding(16.dp)
+                        .shadow(1.dp, RoundedCornerShape(4.dp))
+                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    languages.forEach { language ->
+                        DropdownMenuItem(
+                            text = { Text(language) },
+                            onClick = {
+                                selectedLanguage = language
+                                expanded = false
+                                val locale = when (language) {
+                                    "Serbian" -> "sr"
+                                    "Spanish" -> "es"
+                                    else -> "en"
+                                }
+                                onLanguageChange(locale)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -113,6 +144,10 @@ fun WelcomeScreen(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
 @Composable
 fun WelcomeScreenPreview() {
     ParkFinderTheme {
-        WelcomeScreen(onLoginClick = {}, onRegisterClick = {})
+        WelcomeScreen(
+            onLoginClick = {},
+            onRegisterClick = {},
+            onLanguageChange = {}
+        )
     }
 }

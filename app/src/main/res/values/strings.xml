@@ -192,6 +192,9 @@
     <string name="reset_password_verification_code_verification_code">Verification code</string>
     <string name="reset_password_verification_code_hint">We\'ve sent the code to your mail address that you provided:</string>
 
+    <!-- Welcome Screen -->
+    <string name="welcome_about">Your digital assistant \n for finding parking lots fast</string>
+
     <!-- Errors -->
     <string name="error_passwords_do_not_match">Passwords do not match</string>
     <string name="error_invalid_email_format">Invalid email format</string>

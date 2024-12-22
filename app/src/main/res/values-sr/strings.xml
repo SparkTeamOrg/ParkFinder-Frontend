@@ -192,6 +192,9 @@
     <string name="reset_password_verification_code_verification_code">Kod za verifikaciju</string>
     <string name="reset_password_verification_code_hint">Kod za verifikaciju je poslat na adresu koju ste prosledili:</string>
 
+    <!-- Welcome Screen -->
+    <string name="welcome_about">Vaš digitalni asistent \n za brzo pronalaženje parking mesta</string>
+
     <!-- Errors -->
     <string name="error_passwords_do_not_match">Lozinke se ne poklapaju</string>
     <string name="error_invalid_email_format">Nevažeći format email adrese</string>

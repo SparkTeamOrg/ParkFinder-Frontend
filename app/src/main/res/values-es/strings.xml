@@ -192,6 +192,9 @@
     <string name="reset_password_verification_code_verification_code">Código de verificación</string>
     <string name="reset_password_verification_code_hint">Introduce el código de verificación que te hemos enviado a tu dirección de correo electrónico:</string>
 
+    <!-- Welcome Screen -->
+    <string name="welcome_about">Tu asistente digital \n para encontrar estacionamientos rápidamente</string>
+
     <!-- Errors -->
     <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
     <string name="error_invalid_email_format">Formato de correo electrónico no válido</string>
