@@ -133,4 +133,16 @@
     <string name="help_center_contact_email">Contact email</string>
     <string name="help_center_contact_phone">Contact phone</string>
 
+    <!-- Reservation Screen -->
+    <string name="reservation_screen_space_details">Space Details</string>
+    <string name="reservation_screen_unknown_road">Unknown road</string>
+    <string name="reservation_screen_spot_number">Spot number</string>
+    <string name="reservation_screen_spot_status">Spot status</string>
+    <string name="reservation_screen_choose_vehicle">Choose your vehicle</string>
+    <string name="reservation_screen_select_vehicle">Select a Vehicle</string>
+    <string name="reservation_screen_reserve_and_navigate">Reserve and Navigate</string>
+    <string name="reservation_screen_reviews">Reviews</string>
+    <string name="reservation_screen_no_reviews">No reviews yet</string>
+    <string name="reservation_screen_not_rated_yet">Not rated yet</string>
+
 </resources>

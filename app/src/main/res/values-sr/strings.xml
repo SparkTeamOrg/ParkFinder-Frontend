@@ -133,4 +133,16 @@
     <string name="help_center_contact_email">Kontakt email</string>
     <string name="help_center_contact_phone">Kontakt telefon</string>
 
+    <!-- Reservation Screen -->
+    <string name="reservation_screen_space_details">Detalji o parking mestu</string>
+    <string name="reservation_screen_unknown_road">Nepoznata ulica</string>
+    <string name="reservation_screen_spot_number">Broj mesta</string>
+    <string name="reservation_screen_spot_status">Status mesta</string>
+    <string name="reservation_screen_choose_vehicle">Izaberite vozilo</string>
+    <string name="reservation_screen_select_vehicle">Izaberite vozilo</string>
+    <string name="reservation_screen_reserve_and_navigate">Rezerviši i navigiraj</string>
+    <string name="reservation_screen_reviews">Recenzije</string>
+    <string name="reservation_screen_no_reviews">Nema recenzija</string>
+    <string name="reservation_screen_not_rated_yet">Još uvek nije ocenjeno</string>
+
 </resources>

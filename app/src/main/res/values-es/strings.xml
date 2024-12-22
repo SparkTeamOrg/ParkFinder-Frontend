@@ -133,4 +133,16 @@
     <string name="help_center_contact_email">Correo electrónico de contacto</string>
     <string name="help_center_contact_phone">Teléfono de contacto</string>
 
+    <!-- Reservation Screen -->
+    <string name="reservation_screen_space_details">Detalles del espacio</string>
+    <string name="reservation_screen_unknown_road">Calle desconocida</string>
+    <string name="reservation_screen_spot_number">Número de plaza</string>
+    <string name="reservation_screen_spot_status">Estado de la plaza</string>
+    <string name="reservation_screen_choose_vehicle">Elige tu vehículo</string>
+    <string name="reservation_screen_select_vehicle">Seleccionar un vehículo</string>
+    <string name="reservation_screen_reserve_and_navigate">Reservar y Navegar</string>
+    <string name="reservation_screen_reviews">Reseñas</string>
+    <string name="reservation_screen_no_reviews">No hay reseñas</string>
+    <string name="reservation_screen_not_rated_yet">Sin calificación aún</string>
+
 </resources>
