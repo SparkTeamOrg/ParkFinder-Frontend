@@ -190,7 +190,19 @@ fun VehicleInfoScreen(
                 )
                 VehicleLabel(
                     label = stringResource(id = R.string.common_color),
-                    value = vehicle.color
+                    value = when (vehicle.color) {
+                        "Red" -> stringResource(id = R.string.color_red)
+                        "Green" -> stringResource(id = R.string.color_green)
+                        "Blue" -> stringResource(id = R.string.color_blue)
+                        "Yellow" -> stringResource(id = R.string.color_yellow)
+                        "Cyan" -> stringResource(id = R.string.color_cyan)
+                        "Magenta" -> stringResource(id = R.string.color_magenta)
+                        "Gray" -> stringResource(id = R.string.color_gray)
+                        "Black" -> stringResource(id = R.string.color_black)
+                        else -> {
+                            "Unknown"
+                        }
+                    }
                 )
             }
         }

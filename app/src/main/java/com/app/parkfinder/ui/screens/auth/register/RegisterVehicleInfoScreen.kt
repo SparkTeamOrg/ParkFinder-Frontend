@@ -84,6 +84,38 @@ fun RegisterVehicleInfoScreen(
     register: () -> List<Boolean>
 ) {
 
+    // Change color names based on the selected language
+    val translatedColorNames: MutableMap<Int, String> = mutableMapOf()
+    colorNames.forEach { (key, value) ->
+        if (value.compareTo("Red") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_red)
+        }
+        else if (value.compareTo("Green") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_green)
+        }
+        else if (value.compareTo("Blue") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_blue)
+        }
+        else if (value.compareTo("Yellow") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_yellow)
+        }
+        else if (value.compareTo("Cyan") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_cyan)
+        }
+        else if (value.compareTo("Magenta") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_magenta)
+        }
+        else if (value.compareTo("Gray") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_gray)
+        }
+        else if (value.compareTo("Black") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_black)
+        }
+        else {
+            translatedColorNames[key] = value
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewVehicleBrandModel.getAllVehicleBrands()
         if (selectedBrand != null) {
@@ -208,8 +240,8 @@ fun RegisterVehicleInfoScreen(
 
                 OutlinedDropdownMenu(
                     label = stringResource(id = R.string.register_vehicle_info_color),
-                    selectedText = colorNames[selectedColor] ?: stringResource(id = R.string.register_vehicle_info_select_a_color),
-                    options = colorNames,
+                    selectedText = translatedColorNames[selectedColor] ?: stringResource(id = R.string.register_vehicle_info_select_a_color),
+                    options = translatedColorNames,
                     icon = Icons.Default.ColorLens,
                     isError = colorError,
                     onOptionSelected = { option -> onSelectedColorChange(option) }

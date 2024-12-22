@@ -16,6 +16,7 @@ import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.ColorUtilis
 import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.validateLicencePlate
 
@@ -37,17 +38,6 @@ class RegisterVehicleInfoActivity: BaseActivity() {
     private var selectedColor: Int = 0
     private var licencePlate = mutableStateOf("")
 
-    private val colorNames = mapOf(
-        1 to "Red",
-        2 to "Green",
-        3 to "Blue",
-        4 to "Yellow",
-        5 to "Cyan",
-        6 to "Magenta",
-        7 to "Gray",
-        8 to "Black"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         email = intent.getStringExtra("email") ?: ""
@@ -67,7 +57,7 @@ class RegisterVehicleInfoActivity: BaseActivity() {
                     onSelectedColorChange = { selectedColor = it },
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
-                    colorNames = colorNames,
+                    colorNames = ColorUtilis.getColorNames(),
                     onBackClick = { finish() },
                     register = { registerUser() }
                 )
@@ -105,7 +95,7 @@ class RegisterVehicleInfoActivity: BaseActivity() {
             mobilePhone = phoneNumber,
             profileImage = ImageUtils.createMultipartFromUri(this.contentResolver,profileImage),
             modelId = selectedModel,
-            color = colorNames[selectedColor] ?: "",
+            color = ColorUtilis.getColorName(selectedColor),
             licencePlate = licencePlate.value
         )
 
