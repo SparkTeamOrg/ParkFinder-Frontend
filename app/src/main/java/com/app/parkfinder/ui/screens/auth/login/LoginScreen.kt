@@ -243,7 +243,7 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(id = R.string.login_no_account),
+                text = stringResource(id = R.string.login_no_account) + " ",
                 color = Color.White
             )
             Text(

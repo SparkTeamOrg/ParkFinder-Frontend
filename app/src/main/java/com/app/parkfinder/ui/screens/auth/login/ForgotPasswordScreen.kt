@@ -197,7 +197,8 @@ fun ForgotPasswordScreen (
                 ) {
                     Text(
                         text = stringResource(id = R.string.forgot_password_send_verification_code),
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
                 Spacer(Modifier.padding(20.dp))
