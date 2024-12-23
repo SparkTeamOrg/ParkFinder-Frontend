@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -69,6 +70,8 @@ fun RegisterScreen(
     validateEmail: (String) -> Boolean,
     validatePassword: (String) -> Boolean
 ) {
+    val invalidPasswordFormat = stringResource(id = R.string.error_invalid_password_format)
+    val passwordsDoNotMatch = stringResource(id = R.string.error_passwords_do_not_match)
     var passwordVisible by remember { mutableStateOf(false) }
 
     var emailError by remember { mutableStateOf(false) }
@@ -76,10 +79,10 @@ fun RegisterScreen(
     var passwordErrorMessage by remember { mutableStateOf("") }
 
     val annotatedText = buildAnnotatedString {
-        append("Already have an account? ")
+        append(stringResource(id = R.string.register_already_have_account) + " ")
         pushStringAnnotation(tag = "URL", annotation = "login")
         withStyle(style = SpanStyle(color = Color(0xFF0FCFFF), textDecoration = TextDecoration.Underline, fontSize = 16.sp)) {
-            append("Login")
+            append(stringResource(id = R.string.common_login))
         }
         pop()
     }
@@ -125,7 +128,7 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(60.dp))
         Text(
-            text = "Enter your email and \npassword",
+            text = stringResource(id = R.string.register_enter_email_and_password),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -151,7 +154,7 @@ fun RegisterScreen(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
-                        text = "Credentials",
+                        text = stringResource(id = R.string.register_credentials),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -173,7 +176,7 @@ fun RegisterScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = "Invalid email address format",
+                                text = stringResource(id = R.string.error_invalid_email_format),
                                 color = Color.Red,
                             )
                         } else {
@@ -186,7 +189,11 @@ fun RegisterScreen(
                         emailError = false
                     },
                     isError = emailError,
-                    label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.common_email),
+                            color = if (emailError) Color.Red else Color.White )
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -216,7 +223,11 @@ fun RegisterScreen(
                         passwordError = false
                     },
                     isError = passwordError,
-                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.common_password),
+                            color = if (passwordError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -260,7 +271,11 @@ fun RegisterScreen(
                         passwordError = false
                     },
                     isError = passwordError,
-                    label = { Text("Confirm password", color = if (passwordError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.enter_new_password_confirm_password),
+                            color = if (passwordError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -287,8 +302,8 @@ fun RegisterScreen(
 
                         passwordError = passwordFormatError || passwordMatchError
                         passwordErrorMessage = when{
-                            passwordFormatError -> "Invalid password format"
-                            passwordMatchError -> "Passwords do not match"
+                            passwordFormatError -> invalidPasswordFormat
+                            passwordMatchError -> passwordsDoNotMatch
                             else -> {""}
                         }
 
@@ -311,7 +326,9 @@ fun RegisterScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Next")
+                    Text(
+                        text = stringResource(id = R.string.common_next)
+                    )
                 }
             }
         }

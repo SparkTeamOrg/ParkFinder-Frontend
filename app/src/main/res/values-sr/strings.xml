@@ -195,9 +195,30 @@
     <!-- Welcome Screen -->
     <string name="welcome_about">Vaš digitalni asistent \n za brzo pronalaženje parking mesta</string>
 
+    <!-- Register Screen -->
+    <string name="register_already_have_account">Već imate nalog?</string>
+    <string name="register_enter_email_and_password">Unesite email i \nlozinku</string>
+    <string name="register_credentials">Podaci za registraciju</string>
+
+    <!-- Password Help -->
+    <string name="password_help_password_requirements">Zahtevi za lozinku</string>
+    <string name="password_help_requirement_1">◄ Dužina lozinke mora biti između 8 i 20 karaktera</string>
+    <string name="password_help_requirement_2">◄ Lozinka mora sadržati bar jedno veliko slovo</string>
+    <string name="password_help_requirement_3">◄ Lozinka mora sadržati bar jedno malo slovo</string>
+    <string name="password_help_requirement_4">◄ Lozinka mora sadržati bar jedan broj</string>
+    <string name="password_help_requirement_5">◄ Lozinka mora sadržati bar jedan specijalni karakter od @, $, !, %, *, ?, &amp;, #, _</string>
+
+    <!-- RegisterUserData Screen -->
+    <string name="register_user_data_setup_your_account">Podesite vaš nalog</string>
+    <string name="register_user_data_personal_information">Lični podaci</string>
+    <string name="register_user_data_full_name">Ime i prezime</string>
+    <string name="register_user_data_phone_number">Broj telefona</string>
+
     <!-- Errors -->
     <string name="error_passwords_do_not_match">Lozinke se ne poklapaju</string>
     <string name="error_invalid_email_format">Nevažeći format email adrese</string>
     <string name="error_invalid_password_format">Nevažeći format lozinke</string>
+    <string name="error_invalid_full_name_format">Nevažeći format imena i prezimena</string>
+    <string name="error_invalid_phone_number_format">Nevažeći format broja telefona</string>
 
 </resources>

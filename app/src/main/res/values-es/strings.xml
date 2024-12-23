@@ -195,9 +195,30 @@
     <!-- Welcome Screen -->
     <string name="welcome_about">Tu asistente digital \n para encontrar estacionamientos rápidamente</string>
 
+    <!-- Register Screen -->
+    <string name="register_already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="register_enter_email_and_password">Introduce tu correo electrónico y contraseña \npara registrarte</string>
+    <string name="register_credentials">Credenciales</string>
+
+    <!-- Password Help -->
+    <string name="password_help_password_requirements">Requisitos de la contraseña</string>
+    <string name="password_help_requirement_1">◄ Al menos 8 caracteres</string>
+    <string name="password_help_requirement_2">◄ Al menos una letra mayúscula</string>
+    <string name="password_help_requirement_3">◄ Al menos una letra minúscula</string>
+    <string name="password_help_requirement_4">◄ Al menos un número</string>
+    <string name="password_help_requirement_5">◄ Al menos un carácter especial (por ejemplo, @, $, !, %, *, ?, &amp;, #, _)</string>
+
+    <!-- RegisterUserData Screen -->
+    <string name="register_user_data_setup_your_account">Configura tu cuenta</string>
+    <string name="register_user_data_personal_information">Información personal</string>
+    <string name="register_user_data_full_name">Nombre completo</string>
+    <string name="register_user_data_phone_number">Número de teléfono</string>
+
     <!-- Errors -->
     <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
     <string name="error_invalid_email_format">Formato de correo electrónico no válido</string>
     <string name="error_invalid_password_format">Formato de contraseña no válido</string>
+    <string name="error_invalid_full_name_format">Formato de nombre completo no válido</string>
+    <string name="error_invalid_phone_number_format">Formato de número de teléfono no válido</string>
 
 </resources>
