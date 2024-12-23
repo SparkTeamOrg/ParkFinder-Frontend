@@ -1,6 +1,7 @@
 package com.app.parkfinder.ui.screens.auth
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,12 +29,27 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 fun WelcomeScreen(
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
-    onLanguageChange: (String) -> Unit
+    onLanguageChange: (String) -> Unit,
+    getPreferredLanguage: () -> String
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val languages = listOf("English", "Spanish", "Serbian")
+    val languages = listOf("English", "Española", "Srpski")
+    val flags = listOf(R.drawable.en, R.drawable.es, R.drawable.rs)
     var selectedLanguage by remember { mutableStateOf(languages[0]) }
+    var selectedFlag by remember { mutableStateOf(flags[0]) }
     val context = LocalContext.current
+
+    selectedLanguage = when (getPreferredLanguage()) {
+        "sr" -> languages[2]
+        "es" -> languages[1]
+        else -> languages[0]
+    }
+
+    selectedFlag = when (getPreferredLanguage()) {
+        "sr" -> flags[2]
+        "es" -> flags[1]
+        else -> flags[0]
+    }
 
     Box(
         modifier = Modifier
@@ -63,7 +79,7 @@ fun WelcomeScreen(
                 text = stringResource(id = R.string.welcome_about),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight(700),
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 color = Color(0xFFFFFFFF),
                 modifier = Modifier.shadow(
                     elevation = 10.dp,
@@ -87,7 +103,8 @@ fun WelcomeScreen(
                 ) {
                     Text(
                         text = stringResource(id = R.string.common_login),
-                        fontSize = 20.sp
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
                 Button(
@@ -101,33 +118,57 @@ fun WelcomeScreen(
                 ) {
                     Text(
                         text = stringResource(id = R.string.common_register),
-                        fontSize = 20.sp
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Row {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .background(Color(0xFF7ab3bf))
+                    .padding(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = selectedFlag),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(end = 4.dp)
+                )
                 Text(
                     text = selectedLanguage,
                     modifier = Modifier
                         .clickable { expanded = true }
-                        .padding(16.dp)
-                        .shadow(1.dp, RoundedCornerShape(4.dp))
+                        .padding(8.dp)
                 )
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    languages.forEach { language ->
+                    languages.forEachIndexed { index, language ->
                         DropdownMenuItem(
-                            text = { Text(language) },
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = painterResource(id = flags[index]),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .padding(end = 8.dp)
+                                    )
+                                    Text(language)
+                                }
+                            },
                             onClick = {
                                 selectedLanguage = language
                                 expanded = false
                                 val locale = when (language) {
-                                    "Serbian" -> "sr"
-                                    "Spanish" -> "es"
+                                    "Srpski" -> "sr"
+                                    "Española" -> "es"
                                     else -> "en"
                                 }
                                 onLanguageChange(locale)
@@ -147,7 +188,8 @@ fun WelcomeScreenPreview() {
         WelcomeScreen(
             onLoginClick = {},
             onRegisterClick = {},
-            onLanguageChange = {}
+            onLanguageChange = {},
+            getPreferredLanguage = { "en" }
         )
     }
 }

@@ -4,6 +4,9 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import com.app.parkfinder.MainActivity
@@ -13,6 +16,7 @@ import com.app.parkfinder.ui.activities.auth.login.LoginActivity
 import com.app.parkfinder.ui.activities.auth.register.RegisterActivity
 import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 import com.app.parkfinder.utilis.LocaleHelper
+import com.bumptech.glide.Glide
 
 class WelcomeActivity: BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +33,8 @@ class WelcomeActivity: BaseActivity() {
                 WelcomeScreen(
                     onLoginClick = { navigateToLogin() },
                     onRegisterClick = { navigateToRegister() },
-                    onLanguageChange = { language -> setPreferredLanguage(language) }
+                    onLanguageChange = { language -> setPreferredLanguage(language) },
+                    getPreferredLanguage = { getPreferredLanguage() }
                 )
             }
         }
@@ -56,9 +61,23 @@ class WelcomeActivity: BaseActivity() {
 
         LocaleHelper.setLocale(this, language)
 
-        // Restart the activity to apply the new language
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        // Display the GIF animation
+        val imageView = ImageView(this)
+
+        setContentView(imageView)
+        Glide.with(this).load(R.drawable.loader).into(imageView)
+
+        // Start MainActivity after the animation
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }, 2000) // Adjust the delay to match the duration of your GIF
     }
+
+    private fun getPreferredLanguage(): String {
+        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("language", "en") ?: "en"
+    }
+
 }
