@@ -20,6 +20,7 @@ import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ColorUtilis
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validateLicencePlate
 
 class UpdateVehicleActivity : BaseActivity() {
@@ -71,11 +72,13 @@ class UpdateVehicleActivity : BaseActivity() {
 
             vehicleViewModel.updateVehicleResult.observe(this) { result ->
                 if (result.isSuccessful) {
-                    Toast.makeText(this, "Vehicle updated successfully", Toast.LENGTH_LONG).show()
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Vehicle updated successfully")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                     navigateToVehicleInfo()
                 }
                 else {
-                    Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                 }
             }
         }

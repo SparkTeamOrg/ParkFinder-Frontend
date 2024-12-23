@@ -35,6 +35,7 @@ import com.app.parkfinder.logic.services.OsrmService
 import com.app.parkfinder.utilis.ParkingSpotStatusEnumDeserializer
 import com.app.parkfinder.utilis.TaggedPolygon
 import com.app.parkfinder.utilis.TextOverlay
+import com.app.parkfinder.utilis.TranslationHelper
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.microsoft.signalr.HubConnection
@@ -264,11 +265,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                                                 else -> Color.argb(100, 128, 128, 128) // Gray
                                             }
                                         polygon.setOnClickListener { _, _, _ ->
-                                            Toast.makeText(
-                                                getApplication(),
-                                                "Parking spot is not available for reservation",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                            val translatedMessage = mapView?.context?.let {
+                                                TranslationHelper.getTranslatedMessage(
+                                                    context = it,
+                                                    backendMessage = "Parking spot is not available for reservation"
+                                                )
+                                            }
+                                            Toast.makeText(getApplication(), translatedMessage, Toast.LENGTH_SHORT).show()
                                             true
                                         }
                                     }
@@ -375,12 +378,6 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                 hubConnection?.start()?.blockingAwait()
             } catch (e: Exception) {
                 Log.e("MapViewModel", "Error starting hub connection", e)
-//                if (e.message?.contains("Unauthorized") == true) {
-//                    Toast.makeText(getApplication(), "Unauthorized access. Please log in again.", Toast.LENGTH_SHORT).show()
-//                    // Handle unauthorized access, e.g., redirect to login screen
-//                } else {
-//                    Toast.makeText(getApplication(), "Error starting hub connection: ${e.message}", Toast.LENGTH_SHORT).show()
-//                }
             }
         }
     }
@@ -737,27 +734,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application), Lo
                     }
 
                     ParkingSpotStatusEnum.OCCUPIED.ordinal -> {
-                        Toast.makeText(
-                            getApplication(),
-                            "Parking spot is not available for reservation",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val translatedMessage = TranslationHelper.getTranslatedMessage(
+                            context = mapView.context,
+                            backendMessage = "Parking spot is not available for reservation"
+                        )
+                        Toast.makeText(getApplication(), translatedMessage, Toast.LENGTH_SHORT).show()
                     }
 
                     ParkingSpotStatusEnum.RESERVED.ordinal -> {
-                        Toast.makeText(
-                            getApplication(),
-                            "Parking spot is not available for reservation",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val translatedMessage = TranslationHelper.getTranslatedMessage(
+                            context = mapView.context,
+                            backendMessage = "Parking spot is not available for reservation"
+                        )
+                        Toast.makeText(getApplication(), translatedMessage, Toast.LENGTH_SHORT).show()
                     }
 
                     else -> {
-                        Toast.makeText(
-                            getApplication(),
-                            "Parking spot is not available for reservation",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val translatedMessage = TranslationHelper.getTranslatedMessage(
+                            context = mapView.context,
+                            backendMessage = "Parking spot is not available for reservation"
+                        )
+                        Toast.makeText(getApplication(), translatedMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
 

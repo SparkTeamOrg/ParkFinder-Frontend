@@ -12,6 +12,7 @@ import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.VerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 
 class VerificationCodeActivity : BaseActivity() {
 
@@ -46,15 +47,18 @@ class VerificationCodeActivity : BaseActivity() {
             if (result.isSuccessful) {
                 navigateToNextScreen()
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
 
         authViewModel.sendingVerificationCodeForRegistrationResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Verification code sent", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Verification code sent")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

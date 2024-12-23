@@ -45,6 +45,7 @@ import com.app.parkfinder.ui.activities.vehicle.VehicleInfoActivity
 import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
+import com.app.parkfinder.utilis.TranslationHelper
 import com.auth0.android.jwt.JWT
 import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
@@ -150,39 +151,47 @@ class NavigationActivity : BaseActivity() {
 
         reservationViewModel.confirmReservationResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Reservation confirmed", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation confirmed successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
             else {
-                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
 
         reservationViewModel.deleteReservationResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Reservation cancelled", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation cancelled")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
             else {
-                Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
 
         reservationHistoryViewModel.createReservationHistoryResult.observe(this) { result ->
             if (result.item1.isSuccessful) {
                 reservationViewModel.getConfirmedReservation()
-                Toast.makeText(this, "Reservation completed", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation completed")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
             else {
-                Toast.makeText(this, result.item1.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.item1.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
 
         authViewModel.updateUserNameResult.observe(this) { result ->
             if (result.isSuccessful) {
                 user = user.copy(Fullname = result.data)
-                Toast.makeText(this, "Name changed successfully", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Name changed successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
             else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }
