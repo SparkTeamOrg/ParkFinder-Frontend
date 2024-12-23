@@ -2,6 +2,7 @@ package com.app.parkfinder.ui.screens.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -13,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
@@ -21,9 +21,26 @@ import com.app.parkfinder.R
 @Composable
 fun SettingsScreen(
     onLanguageChange: (String) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    getPreferredLanguage: () -> String
 ) {
-    var selectedLanguage by remember { mutableStateOf("en") }
+    var expanded by remember { mutableStateOf(false) }
+    val languages = listOf("English", "Española", "Srpski")
+    val flags = listOf(R.drawable.en, R.drawable.es, R.drawable.rs)
+    var selectedLanguage by remember { mutableStateOf(languages[0]) }
+    var selectedFlag by remember { mutableStateOf(flags[0]) }
+
+    selectedLanguage = when (getPreferredLanguage()) {
+        "sr" -> languages[2]
+        "es" -> languages[1]
+        else -> languages[0]
+    }
+
+    selectedFlag = when (getPreferredLanguage()) {
+        "sr" -> flags[2]
+        "es" -> flags[1]
+        else -> flags[0]
+    }
 
     Column(
         modifier = Modifier
@@ -66,48 +83,68 @@ fun SettingsScreen(
         Text(
             text = "Settings",
             fontSize = 24.sp,
+            color = White,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         Text(
-            text = "Select Language",
+            text = "Selected Language",
             fontSize = 18.sp,
+            color = White,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(Color(0xFF7ab3bf))
+                .padding(8.dp)
         ) {
-            Button(onClick = {
-                selectedLanguage = "en"
-                onLanguageChange("en")
-            }) {
-                Text("English")
-            }
-
-            Button(onClick = {
-                selectedLanguage = "es"
-                onLanguageChange("es")
-            }) {
-                Text("Spanish")
-            }
-
-            Button(onClick = {
-                selectedLanguage = "sr"
-                onLanguageChange("sr")
-            }) {
-                Text("Serbian")
+            Image(
+                painter = painterResource(id = selectedFlag),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(end = 4.dp)
+            )
+            Text(
+                text = selectedLanguage,
+                modifier = Modifier
+                    .clickable { expanded = true }
+                    .padding(8.dp)
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                languages.forEachIndexed { index, language ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = flags[index]),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .padding(end = 8.dp)
+                                )
+                                Text(language)
+                            }
+                        },
+                        onClick = {
+                            selectedLanguage = language
+                            selectedFlag = flags[index]
+                            expanded = false
+                            val locale = when (language) {
+                                "Srpski" -> "sr"
+                                "Española" -> "es"
+                                else -> "en"
+                            }
+                            onLanguageChange(locale)
+                        }
+                    )
+                }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSettingsScreen() {
-    SettingsScreen(
-        onLanguageChange = {},
-        onBackClick = {}
-    )
 }

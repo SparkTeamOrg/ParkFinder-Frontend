@@ -24,7 +24,8 @@ class SettingsActivity : BaseActivity() {
                     onLanguageChange = { language ->
                         setPreferredLanguage(language)
                     },
-                    onBackClick = { finish() }
+                    onBackClick = { finish() },
+                    getPreferredLanguage = { getPreferredLanguage() }
                 )
             }
         }
@@ -51,5 +52,10 @@ class SettingsActivity : BaseActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }, 2000) // Adjust the delay to match the duration of your GIF
+    }
+
+    private fun getPreferredLanguage(): String {
+        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("language", "en") ?: "en"
     }
 }
