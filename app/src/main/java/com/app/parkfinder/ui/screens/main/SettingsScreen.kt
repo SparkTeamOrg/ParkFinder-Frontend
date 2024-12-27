@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.parkfinder.R
@@ -28,7 +29,7 @@ fun SettingsScreen(
     val languages = listOf("English", "Española", "Srpski")
     val flags = listOf(R.drawable.en, R.drawable.es, R.drawable.rs)
     var selectedLanguage by remember { mutableStateOf(languages[0]) }
-    var selectedFlag by remember { mutableStateOf(flags[0]) }
+    var selectedFlag by remember { mutableIntStateOf(flags[0]) }
 
     selectedLanguage = when (getPreferredLanguage()) {
         "sr" -> languages[2]
@@ -81,14 +82,14 @@ fun SettingsScreen(
         }
 
         Text(
-            text = "Settings",
+            text = stringResource(id = R.string.settings_title),
             fontSize = 24.sp,
             color = White,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         Text(
-            text = "Selected Language",
+            text = stringResource(id = R.string.settings_select_language),
             fontSize = 18.sp,
             color = White,
             modifier = Modifier.padding(bottom = 8.dp)

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,8 +35,7 @@ fun WelcomeScreen(
     val languages = listOf("English", "Española", "Srpski")
     val flags = listOf(R.drawable.en, R.drawable.es, R.drawable.rs)
     var selectedLanguage by remember { mutableStateOf(languages[0]) }
-    var selectedFlag by remember { mutableStateOf(flags[0]) }
-    val context = LocalContext.current
+    var selectedFlag by remember { mutableIntStateOf(flags[0]) }
 
     selectedLanguage = when (getPreferredLanguage()) {
         "sr" -> languages[2]

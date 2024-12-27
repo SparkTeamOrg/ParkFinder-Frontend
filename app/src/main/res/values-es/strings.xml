@@ -221,6 +221,10 @@
     <string name="error_invalid_full_name_format">Formato de nombre completo no válido</string>
     <string name="error_invalid_phone_number_format">Formato de número de teléfono no válido</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_select_language">Seleccionar idioma</string>
+
     <!-- Backend Messages -->
     <string name="backend_user_with_email_not_found">El usuario con la dirección de correo electrónico proporcionada no existe.</string>
     <string name="backend_user_with_credentials_not_found">No se encontró ningún usuario con las credenciales proporcionadas</string>

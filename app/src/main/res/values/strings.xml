@@ -221,6 +221,10 @@
     <string name="error_invalid_full_name_format">Invalid full name format</string>
     <string name="error_invalid_phone_number_format">Invalid phone number format</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_select_language">Select Language</string>
+
     <!-- Backend Messages -->
     <string name="backend_user_with_email_not_found">User with the provided E-mail address does not exist.</string>
     <string name="backend_user_with_credentials_not_found">No user found with the provided credentials</string>

@@ -221,6 +221,10 @@
     <string name="error_invalid_full_name_format">Nevažeći format imena i prezimena</string>
     <string name="error_invalid_phone_number_format">Nevažeći format broja telefona</string>
 
+    <!-- Settings Screen -->
+    <string name="settings_title">Podešavanja</string>
+    <string name="settings_select_language">Izaberite jezik</string>
+
     <!-- Backend Messages -->
     <string name="backend_user_with_email_not_found">Korisnik sa unetom email adresom ne postoji.</string>
     <string name="backend_user_with_credentials_not_found">Nije pronađen korisnik sa unetim podacima.</string>
