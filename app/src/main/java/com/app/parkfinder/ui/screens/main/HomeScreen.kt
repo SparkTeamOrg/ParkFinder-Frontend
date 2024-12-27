@@ -168,21 +168,26 @@ fun HomeScreen(
 
             })
 
-        // Display the current navigation step at the top of the screen
-        currentStep?.let { step ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.7f))
-                    .padding(16.dp)
-                    .align(Alignment.BottomCenter)
-            ) {
-                Text(
-                    text = step.instruction + " in " + round(step.distance * 100) / 100 + " meters" + " (" + round(step.duration * 100) / 100 + " seconds)",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+        // Display the current navigation step at the bottom of the screen
+        // if navigation is active and there is a current step
+        navigationActive?.let {
+            currentStep?.let { step ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Black.copy(alpha = 0.7f))
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Text(
+                        text = step.instruction + " in " + round(step.distance * 100) / 100 + " meters" + " (" + round(
+                            step.duration * 100
+                        ) / 100 + " seconds)",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
