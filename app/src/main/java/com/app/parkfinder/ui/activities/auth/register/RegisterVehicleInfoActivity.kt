@@ -16,7 +16,9 @@ import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.ColorUtilis
 import com.app.parkfinder.utilis.ImageUtils
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validateLicencePlate
 
 
@@ -37,17 +39,6 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
     private var selectedColor: Int = 0
     private var licencePlate = mutableStateOf("")
 
-    private val colorNames = mapOf(
-        1 to "Red",
-        2 to "Green",
-        3 to "Blue",
-        4 to "Yellow",
-        5 to "Cyan",
-        6 to "Magenta",
-        7 to "Gray",
-        8 to "Black"
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         email = intent.getStringExtra("email") ?: ""
@@ -67,7 +58,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
                     onSelectedColorChange = { selectedColor = it },
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
-                    colorNames = colorNames,
+                    colorNames = ColorUtilis.getColorNames(),
                     onBackClick = { finish() },
                     register = { registerUser() }
                 )
@@ -76,11 +67,13 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
 
         authViewModel.registrationResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Registration successful")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                 navigateToLogin()
             }
             else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -105,7 +98,7 @@ class RegisterVehicleInfoActivity: ComponentActivity() {
             mobilePhone = phoneNumber,
             profileImage = ImageUtils.createMultipartFromUri(this.contentResolver,profileImage),
             modelId = selectedModel,
-            color = colorNames[selectedColor] ?: "",
+            color = ColorUtilis.getColorName(selectedColor),
             licencePlate = licencePlate.value
         )
 

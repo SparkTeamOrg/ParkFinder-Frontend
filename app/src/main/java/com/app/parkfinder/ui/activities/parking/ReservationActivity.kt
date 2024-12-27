@@ -26,6 +26,7 @@ import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.screens.main.ReservationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 
 class ReservationActivity : BaseActivity() {
     private val vehicleViewModel: VehicleViewModel by viewModels()
@@ -76,7 +77,8 @@ class ReservationActivity : BaseActivity() {
 
         reservationViewModel.createReservationResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Reservation added successfully", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation added successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                 val reservationId = result.data
                 NavigationStatus.signalParkingSpotReserved(reservationId,spot)
                 val newIntent = Intent(this, NavigationActivity::class.java)
@@ -84,7 +86,8 @@ class ReservationActivity : BaseActivity() {
                 startActivity(newIntent, options.toBundle())
             }
             else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

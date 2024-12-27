@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.StackedBarChart
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.MaterialTheme
@@ -54,13 +55,13 @@ import coil3.compose.rememberAsyncImagePainter
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.ProfileViewModel
-import java.util.logging.Logger
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.app.parkfinder.utilis.validateUserName
 
@@ -78,7 +79,8 @@ fun ProfileScreen(
     navigateToHelpCenter: () -> Unit = {},
     profileViewModel: ProfileViewModel = viewModel(),
     updateUserName: (String) -> Unit,
-    navigateToBalanceScreen: () -> Unit = {}
+    navigateToBalanceScreen: () -> Unit = {},
+    navigateToSettings: () -> Unit = {}
     ) {
     var showUpdateModal by remember { mutableStateOf(false) }
     var showDeletionModal by remember { mutableStateOf(false) }
@@ -96,10 +98,8 @@ fun ProfileScreen(
             modifier = Modifier.size(180.dp)
         ){
             currentImageUrl?.let { uri ->
-                Logger.getLogger("ProfileScreen").info("Image with uri: $uri")
                 ProfileImage(uri)
             } ?: run {
-                Logger.getLogger("ProfileScreen").info("No image")
                 ProfileImage(null)
             }
             Box(
@@ -170,7 +170,7 @@ fun ProfileScreen(
         )
 
         Text(
-            text = "Edit",
+            text = stringResource(id = R.string.common_edit),
             fontSize = 14.sp,
             color = Color(0xFF00AEEF),
             modifier = Modifier.clickable{ showUpdateModal = true  }
@@ -196,11 +196,12 @@ fun ProfileScreen(
             )
 
             // Menu Items
-            MenuItem(icon = Icons.Default.Wallet, title = "Balance", handleClick = navigateToBalanceScreen)
-            MenuItem(icon = Icons.Default.DirectionsCar, title = "Vehicle info", handleClick = navigateToVehicleInfo)
-            MenuItem(icon = Icons.Default.StackedBarChart, title = "Statistics", handleClick = navigateToStatistics)
-            MenuItem(icon = Icons.Default.Favorite, title = "Favourites")
-            MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = "Help Center", handleClick = navigateToHelpCenter)
+            MenuItem(icon = Icons.Default.Wallet, title = stringResource(id = R.string.profile_balance), handleClick = navigateToBalanceScreen)
+            MenuItem(icon = Icons.Default.DirectionsCar, title = stringResource(id = R.string.profile_vehicle_info), handleClick = navigateToVehicleInfo)
+            MenuItem(icon = Icons.Default.StackedBarChart, title = stringResource(id = R.string.profile_statistics), handleClick = navigateToStatistics)
+            MenuItem(icon = Icons.Default.Favorite, title = stringResource(id = R.string.profile_favourites))
+            MenuItem(icon = Icons.Default.Settings, title = stringResource(id = R.string.profile_settings), handleClick = navigateToSettings)
+            MenuItem(icon = Icons.AutoMirrored.Filled.HelpOutline, title = stringResource(id = R.string.profile_help_center), handleClick = navigateToHelpCenter)
         }
         Spacer(modifier = Modifier.weight(1f))
 
@@ -219,7 +220,7 @@ fun ProfileScreen(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Log Out",
+                text = stringResource(id = R.string.profile_logout),
                 color = Color.Red,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
@@ -306,7 +307,7 @@ fun ToggleSwitch(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
-        Text(text = if (isChecked) "FPM On" else "FPM Off", color = White,fontWeight = FontWeight.W700)
+        Text(text = stringResource(id = R.string.profile_find_parking_mode), color = White,fontWeight = FontWeight.W700)
         Spacer(modifier = Modifier.fillMaxWidth())
         Switch(
             checked = isChecked,
@@ -332,7 +333,7 @@ fun EditNameDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Edit",
+                        text = stringResource(id = R.string.common_edit),
                         style = MaterialTheme.typography.titleLarge,
                         color = White,
                         modifier = Modifier.padding(end = 5.dp)
@@ -347,7 +348,7 @@ fun EditNameDialog(
             text = {
                 Column {
                     Text(
-                        text = "Set a new name",
+                        text = stringResource(id = R.string.profile_set_new_name),
                         color = White,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 6.dp)
@@ -365,7 +366,7 @@ fun EditNameDialog(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "Both first and last name must start with an uppercase letter and contain only lowercase alphabetic characters.",
+                        text = stringResource(id = R.string.profile_name_requirements),
                         color = Color.Gray,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 15.dp),
@@ -388,7 +389,9 @@ fun EditNameDialog(
                     ),
                     enabled = (fullName != currentName && validateUserName(fullName))
                 ) {
-                    Text("Update")
+                    Text(
+                        text = stringResource(id = R.string.common_update)
+                    )
                 }
             },
             dismissButton = {
@@ -402,7 +405,9 @@ fun EditNameDialog(
                         containerColor = Color.Red
                     )
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text = stringResource(id = R.string.common_cancel)
+                    )
                 }
             }
         )
@@ -420,13 +425,13 @@ fun ConfirmImageDeletionDialog(
             onDismissRequest = onDismiss,
             title = {
                 Text(
-                    text = "Confirm removal",
+                    text = stringResource(id = R.string.profile_confirm_removal),
                     color = White
                 )
             },
             text = {
                 Text(
-                    text = "Are you sure you want to remove your profile image?",
+                    text = stringResource(id = R.string.profile_confirm_removal_text),
                     color = White,
                     fontSize = 16.sp
                 )
@@ -442,7 +447,9 @@ fun ConfirmImageDeletionDialog(
                         containerColor = Color.Red
                     )
                 ) {
-                    Text("Yes, Remove")
+                    Text(
+                        text = stringResource(id = R.string.common_remove)
+                    )
                 }
             },
             dismissButton = {
@@ -452,7 +459,9 @@ fun ConfirmImageDeletionDialog(
                         containerColor = Color(0xFF0FCFFF)
                     )
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text = stringResource(id = R.string.common_cancel)
+                    )
                 }
             }
         )

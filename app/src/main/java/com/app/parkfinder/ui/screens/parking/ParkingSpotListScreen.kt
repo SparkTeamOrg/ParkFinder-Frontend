@@ -21,8 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.app.parkfinder.R
 import com.app.parkfinder.logic.enums.ParkingSpotStatusEnum
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.ui.composables.ParkFinderLogo
@@ -75,11 +77,11 @@ fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int,navigateToReservati
     }
 
     val textShow = when (ParkingSpotStatusEnum.fromValue(parkingSpace.parkingSpotStatus)) {
-        ParkingSpotStatusEnum.FREE -> ParkingSpotStatusEnum.FREE.name
-        ParkingSpotStatusEnum.RESERVED -> ParkingSpotStatusEnum.RESERVED.name
-        ParkingSpotStatusEnum.OCCUPIED -> ParkingSpotStatusEnum.OCCUPIED.name
-        ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE -> ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE.name
-        else -> ParkingSpotStatusEnum.OCCUPIED.name
+        ParkingSpotStatusEnum.FREE -> stringResource(id = R.string.parking_spot_status_free)
+        ParkingSpotStatusEnum.RESERVED -> stringResource(id = R.string.parking_spot_status_reserved)
+        ParkingSpotStatusEnum.OCCUPIED -> stringResource(id = R.string.parking_spot_status_occupied)
+        ParkingSpotStatusEnum.TEMPORARILY_UNAVAILABLE -> stringResource(id = R.string.parking_spot_status_temporarily_unavailable)
+        else -> stringResource(id = R.string.parking_spot_status_occupied)
     }
 
     Card(
@@ -118,7 +120,7 @@ fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int,navigateToReservati
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Spot number: P${index+1} ${parkingSpace.id}",
+                    text = stringResource(id = R.string.parking_spots_list_spot_number) + ": P${index+1}",
                     fontSize = 18.sp,
                     color = Color.White
                 )
@@ -140,11 +142,10 @@ fun ParkingSpotItem(parkingSpace: ParkingSpotDto, index: Int,navigateToReservati
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = "Reserve",
+                    text = stringResource(id = R.string.common_reserve),
                     color = Color.White
                 )
             }
         }
     }
 }
-

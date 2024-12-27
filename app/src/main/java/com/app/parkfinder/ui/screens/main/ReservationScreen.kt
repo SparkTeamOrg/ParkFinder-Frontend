@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,6 +66,7 @@ import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ReservationCommentDto
 import com.app.parkfinder.logic.models.dtos.VehicleDto
 import com.app.parkfinder.utilis.formatDate
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -109,7 +111,7 @@ fun ReservationScreen(
                 )
             }
             Text(
-                text = "Space details",
+                text = stringResource(id = R.string.reservation_screen_space_details),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = White,
@@ -151,7 +153,7 @@ fun ReservationScreen(
                             text = (
                                 if (lot.road != null)
                                     lot.road.toString()
-                                else "Unknown road "
+                                else stringResource(id = R.string.reservation_screen_unknown_road)
                             ),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
@@ -171,7 +173,7 @@ fun ReservationScreen(
                                 )
                             }
                             Text(
-                                text =  String.format("%.2f", lot.distance) + " km away",
+                                text = "${round(lot.distance * 100) / 100} km " + stringResource(id = R.string.common_away).lowercase(),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF00AEEF),
@@ -210,7 +212,7 @@ fun ReservationScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "Spot number ",
+                        text = stringResource(id = R.string.reservation_screen_spot_number),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
@@ -229,7 +231,7 @@ fun ReservationScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Status ",
+                        text = stringResource(id = R.string.reservation_screen_spot_status),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = White,
@@ -240,14 +242,14 @@ fun ReservationScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "Free",
+                        text = stringResource(id = R.string.parking_spot_status_free),
                         fontSize = 18.sp,
                         color = Color(0xFF00AEEF)
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Choose your vehicle",
+                        text = stringResource(id = R.string.reservation_screen_choose_vehicle),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = White,
@@ -261,7 +263,7 @@ fun ReservationScreen(
                     )
                     OutlinedDropdownMenu(
                         label = "",
-                        selectedText = "Select a vehicle",
+                        selectedText = stringResource(id = R.string.reservation_screen_select_vehicle),
                         options = vehicles,
                         icon = Icons.Default.DirectionsCar,
                         onOptionSelected = { option -> onSelectedVehicleChange(option) }
@@ -287,7 +289,7 @@ fun ReservationScreen(
                             enabled = selectedVehicle != 0,
                         ) {
                             Text(
-                                text = "Reserve and navigate",
+                                text = stringResource(id = R.string.reservation_screen_reserve_and_navigate),
                                 color = if (selectedVehicle != 0) White else White.copy(alpha = 0.3f),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
@@ -301,7 +303,7 @@ fun ReservationScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Reviews",
+                            text = stringResource(id = R.string.reservation_screen_reviews),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = White,
@@ -343,7 +345,7 @@ fun ReservationScreen(
                                 tint = Color.Gray
                             )
                             Text(
-                                text = "No reviews yet",
+                                text = stringResource(id = R.string.reservation_screen_no_reviews),
                                 fontSize = 18.sp,
                                 color = Color.Gray,
                                 modifier = Modifier
@@ -453,7 +455,7 @@ fun RatingStars(rating: Double){
                     modifier = Modifier.size(25.dp)
                 )
                 Text(
-                    text = "Not rated yet",
+                    text = stringResource(id = R.string.reservation_screen_not_rated_yet),
                     fontSize = 18.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(start = 5.dp)

@@ -13,6 +13,7 @@ import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.activities.auth.login.LoginActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword
 
@@ -47,7 +48,8 @@ class RegisterActivity: ComponentActivity() {
             if (result.isSuccessful) {
                 navigateToVerificationPage(email.value)
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -109,7 +110,7 @@ fun EnterNewPasswordScreen(
         Spacer(modifier = Modifier.height(100.dp))
 
         Text(
-            text = "Forgot password",
+            text = stringResource(id = R.string.enter_new_password_forgot_password),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -118,7 +119,7 @@ fun EnterNewPasswordScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Enter your new password and confirm it",
+            text = stringResource(id = R.string.enter_new_password_hint),
             fontSize = 20.sp,
             color = Color.White,
             textAlign = TextAlign.Center,
@@ -144,7 +145,7 @@ fun EnterNewPasswordScreen(
                 )
                 {
                     Text(
-                        text = "Change password",
+                        text = stringResource(id = R.string.enter_new_password_change_password),
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         fontSize = 20.sp,
@@ -162,7 +163,7 @@ fun EnterNewPasswordScreen(
                     placeholder = {
                         if(passwordError) {
                             Text(
-                                text = "Invalid password format",
+                                text = stringResource(id = R.string.enter_new_password_invalid_password_format),
                                 color = Color.Red,
                                 fontWeight = FontWeight.Light,
                                 fontStyle =FontStyle.Italic
@@ -170,7 +171,7 @@ fun EnterNewPasswordScreen(
                         }
                         else {
                             Text(
-                                text = "Password",
+                                text = stringResource(id = R.string.common_password),
                                 color = Color.White,
                                 fontWeight = FontWeight.Light,
                                 fontStyle =FontStyle.Italic
@@ -205,7 +206,11 @@ fun EnterNewPasswordScreen(
                         cursorColor = Color.White
                     ),
                     isError = passwordError,
-                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.common_password),
+                            color = if (passwordError) Color.Red else Color.White)
+                        },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -220,7 +225,7 @@ fun EnterNewPasswordScreen(
                     placeholder = {
                         if(passwordError) {
                             Text(
-                                text = "Passwords don't match",
+                                text = stringResource(id = R.string.error_passwords_do_not_match),
                                 color = Color.Red,
                                 fontWeight = FontWeight.Light,
                                 fontStyle =FontStyle.Italic
@@ -228,7 +233,7 @@ fun EnterNewPasswordScreen(
                         }
                         else {
                             Text(
-                                text = "Confirm Password",
+                                text = stringResource(id = R.string.enter_new_password_confirm_password),
                                 color = Color.White,
                                 fontWeight = FontWeight.Light,
                                 fontStyle =FontStyle.Italic
@@ -263,7 +268,11 @@ fun EnterNewPasswordScreen(
                         cursorColor = Color.White
                     ),
                     isError = passwordError,
-                    label = { Text("Confirm Password", color = if (passwordError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.enter_new_password_confirm_password),
+                            color = if (passwordError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -290,7 +299,7 @@ fun EnterNewPasswordScreen(
                     )
                 ) {
                     Text(
-                        text = "Finish",
+                        text = stringResource(id = R.string.common_finish),
                         fontSize = 24.sp,
                     )
                 }

@@ -13,6 +13,7 @@ import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
 import com.app.parkfinder.logic.view_models.AuthViewModel
 import com.app.parkfinder.ui.screens.auth.login.EnterNewPasswordScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validatePassword
 
 class EnterNewPasswordActivity : ComponentActivity() {
@@ -47,11 +48,13 @@ class EnterNewPasswordActivity : ComponentActivity() {
 
         authViewModel.passwordResetResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Password reset successfully", Toast.LENGTH_SHORT).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "password reset successful")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             }
             else {
-                Toast.makeText(this, "Password reset failed", Toast.LENGTH_SHORT).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Password reset failed")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -67,7 +70,8 @@ class EnterNewPasswordActivity : ComponentActivity() {
             )
         }
         else {
-            Toast.makeText(this, "Passwords are not valid format or don't match", Toast.LENGTH_SHORT).show()
+            val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Passwords are not valid format or don't match")
+            Toast.makeText(this, translatedMessage, Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.enums.MonthEnum
@@ -31,7 +33,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-
+import kotlin.math.round
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -48,9 +50,8 @@ fun UserStatisticsPage(
     val scrollState = rememberScrollState()
 
     // Mock Data
-    val totalMoneySpent = "${String.format("%.2f", statistic.totalMoneySpent).toDouble()} RSD"
-    val avgTimeFinding =
-        "${String.format("%.2f", statistic.averageReservationTime / 60).toDouble()} min"
+    val totalMoneySpent = "${round(statistic.totalMoneySpent * 100) / 100} RSD"
+    val avgTimeFinding = "${round(statistic.averageReservationTime / 60 * 100) / 100} min"
     val totalReservations = "${statistic.reservationCount}"
 
     Column(
@@ -103,7 +104,7 @@ fun UserStatisticsPage(
                     contentAlignment = Center
                 ){
                     Text(
-                        text = "Statistics",
+                        text = stringResource(id = R.string.statistics_title),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         color = White
@@ -118,7 +119,7 @@ fun UserStatisticsPage(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     CircleCard(
-                        "Total Reservations",
+                        title = stringResource(id = R.string.statistics_total_reservations),
                         totalReservations,
                         darkBackground,
                         highlightColor
@@ -131,13 +132,13 @@ fun UserStatisticsPage(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     StatisticCard(
-                        "Total Money Spent",
+                        title = stringResource(id = R.string.statistics_total_money_spent),
                         totalMoneySpent,
                         cardBackground,
                         highlightColor
                     )
                     StatisticCard(
-                        "Avg. Finding Time",
+                        title = stringResource(id = R.string.statistics_average_reserved_time),
                         avgTimeFinding,
                         cardBackground,
                         highlightColor
@@ -154,7 +155,7 @@ fun UserStatisticsPage(
                         .padding(horizontal = 8.dp),
                 ) {
                     Text(
-                        "See Reservation History",
+                        text = stringResource(id = R.string.statistics_see_reservation_history),
                         color = White,
                         fontSize = 16.sp,
                     )
@@ -164,7 +165,7 @@ fun UserStatisticsPage(
 
                 // Chart 1: Total Money Spent in Last 6 Months (Multi-Bar)
                 Text(
-                    "Money Spent in Last 6 Months",
+                    text = stringResource(id = R.string.statistics_last_6_months_money_spent),
                     color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -172,10 +173,9 @@ fun UserStatisticsPage(
 
                 val months = statistic.months.map { month -> MonthEnum.fromValue(month)!!.name }
 
-
                 val moneySpentStatistic = statistic.vehicles.map { vehicle ->
                     vehicle.moneySpentPerMonth.map { spent ->
-                        String.format("%.2f", spent).toFloat()
+                        (round(spent * 100) / 100).toFloat()
                     }
                 }
                 val reservationCountStatistic = statistic.vehicles.map { vehicle ->
@@ -192,14 +192,13 @@ fun UserStatisticsPage(
                     xLabels = months,
                     vehiclesData = moneySpentStatistic,
                     labels
-
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
                 // Chart 2: Reservations Per Vehicle in Last 6 Months
                 Text(
-                    "Reservations Per Vehicle in Last 6 Months",
+                    text = stringResource(id = R.string.statistics_last_6_months_reservation_per_vehicle),
                     color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -226,7 +225,6 @@ fun UserStatisticsPage(
             }
         }
     }
-
 }
 
 @Composable
@@ -266,9 +264,9 @@ fun StatisticCard(title: String, value: String, backgroundColor: Color, highligh
                 .width(150.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title, color = Color.LightGray, fontSize = 14.sp)
+            Text(title, color = Color.LightGray, fontSize = 14.sp, textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(value, color = highlightColor, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = highlightColor, fontSize = 18.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
         }
     }
 }
