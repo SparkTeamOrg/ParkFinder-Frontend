@@ -19,6 +19,8 @@ import com.app.parkfinder.logic.view_models.VehicleViewModel
 import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterVehicleInfoScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.ColorUtilis
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validateLicencePlate
 
 class UpdateVehicleActivity : BaseActivity() {
@@ -32,17 +34,6 @@ class UpdateVehicleActivity : BaseActivity() {
     private var selectedModelName = mutableStateOf<String?>(null)
     private var selectedColor by mutableIntStateOf(0)
     private var licencePlate = mutableStateOf("")
-
-    private val colorNames = mapOf(
-        1 to "Red",
-        2 to "Green",
-        3 to "Blue",
-        4 to "Yellow",
-        5 to "Cyan",
-        6 to "Magenta",
-        7 to "Gray",
-        8 to "Black"
-    )
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +62,7 @@ class UpdateVehicleActivity : BaseActivity() {
                     onSelectedColorChange = { selectedColor = it },
                     licencePlate = licencePlate.value,
                     onLicencePlateChange = { licencePlate.value = it },
-                    colorNames = colorNames,
+                    colorNames = ColorUtilis.getColorNames(),
                     onBackClick = { navigateToVehicleInfo() },
                     checkIfModified = { checkIfModified() },
                     image = image,
@@ -81,11 +72,13 @@ class UpdateVehicleActivity : BaseActivity() {
 
             vehicleViewModel.updateVehicleResult.observe(this) { result ->
                 if (result.isSuccessful) {
-                    Toast.makeText(this, "Vehicle updated successfully", Toast.LENGTH_LONG).show()
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Vehicle updated successfully")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                     navigateToVehicleInfo()
                 }
                 else {
-                    Toast.makeText(this, result.messages[0], Toast.LENGTH_LONG).show()
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -104,7 +97,7 @@ class UpdateVehicleActivity : BaseActivity() {
         val updateDto = UpdateVehicleDto(
                 id = vehicleId,
                 modelId = selectedModel,
-                color = colorNames[selectedColor] ?: "",
+                color = ColorUtilis.getColorName(selectedColor),
                 licencePlate = licencePlate.value,
         )
 
@@ -121,7 +114,7 @@ class UpdateVehicleActivity : BaseActivity() {
     }
 
     private fun getColorId(colorName: String): Int {
-        return colorNames.entries.find { it.value.equals(colorName, ignoreCase = true) }?.key ?: -1
+        return ColorUtilis.getColorId(colorName)
     }
 
     private fun navigateToVehicleInfo() {

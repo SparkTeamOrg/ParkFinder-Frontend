@@ -8,6 +8,7 @@ import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.ResetPasswordDto
 import com.app.parkfinder.logic.models.dtos.TokenDto
+import com.app.parkfinder.logic.models.dtos.UpdateUserNameDto
 import com.app.parkfinder.logic.models.dtos.UserLoginDto
 import com.app.parkfinder.logic.models.dtos.UserRegisterDto
 import com.app.parkfinder.logic.services.AuthService
@@ -22,6 +23,7 @@ class AuthViewModel: ViewModel() {
     private val _verifyingCodeResult = MutableLiveData<BackResponse<String>>()
     private val _registrationResult = MutableLiveData<BackResponse<String>>()
     private val _passwordResetResult = MutableLiveData<BackResponse<String>>()
+    private val _updateUserNameResult = MutableLiveData<BackResponse<String>>()
 
     val loginResult: LiveData<BackResponse<TokenDto>> = _loginResult
     val sendingVerificationCodeForRegistrationResult: LiveData<BackResponse<String>> = _sendingVerificationCodeForRegistrationResult
@@ -29,6 +31,7 @@ class AuthViewModel: ViewModel() {
     val verifyingCodeResult: LiveData<BackResponse<String>> = _verifyingCodeResult
     val registrationResult: LiveData<BackResponse<String>> = _registrationResult
     val passwordResetResult: LiveData<BackResponse<String>> = _passwordResetResult
+    val updateUserNameResult: LiveData<BackResponse<String>> = _updateUserNameResult
 
     fun login(loginDto: UserLoginDto) {
         viewModelScope.launch {
@@ -407,6 +410,35 @@ class AuthViewModel: ViewModel() {
                         it
                     )
                 }
+            }
+        }
+    }
+
+    fun updateUserName(updateUserNameDto: UpdateUserNameDto) {
+        viewModelScope.launch {
+            try {
+                val response = authService.updateUser(updateUserNameDto)
+
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        _updateUserNameResult.postValue(it)
+                    }
+                }
+                else {
+                    val errorResponse = BackResponse(
+                        isSuccessful = false,
+                        messages = listOf("An error occurred"),
+                        data = ""
+                    )
+                    _updateUserNameResult.postValue(errorResponse)
+                }
+            } catch (e: Exception) {
+                val errorResponse = BackResponse(
+                    isSuccessful = false,
+                    messages = listOf(e.message ?: "An error occurred"),
+                    data = ""
+                )
+                _updateUserNameResult.postValue(errorResponse)
             }
         }
     }

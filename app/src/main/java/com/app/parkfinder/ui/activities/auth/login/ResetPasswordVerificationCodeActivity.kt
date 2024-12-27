@@ -4,16 +4,17 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
 import com.app.parkfinder.logic.view_models.AuthViewModel
-import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.login.ResetPasswordVerificationCodeScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 
-class ResetPasswordVerificationCodeActivity : BaseActivity() {
+class ResetPasswordVerificationCodeActivity : ComponentActivity() {
 
     private lateinit var email: String
 
@@ -42,9 +43,13 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
 
         authViewModel.sendingVerificationCodeForPasswordResetResult.observe(this) { result ->
             if (result.isSuccessful) {
-                Toast.makeText(this, "Verification code sent", Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Verification code sent")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this,
+                    result.messages.firstOrNull() ?: "Unknown error"
+                )
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
 
@@ -52,7 +57,10 @@ class ResetPasswordVerificationCodeActivity : BaseActivity() {
             if (result.isSuccessful) {
                 navigateToNextScreen()
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this,
+                    result.messages.firstOrNull() ?: "Unknown error"
+                )
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

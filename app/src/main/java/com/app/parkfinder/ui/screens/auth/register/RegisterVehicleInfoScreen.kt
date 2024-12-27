@@ -57,6 +57,7 @@ import com.app.parkfinder.R
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.parkfinder.logic.view_models.VehicleBrandViewModel
 import com.app.parkfinder.logic.view_models.VehicleModelViewModel
@@ -82,6 +83,38 @@ fun RegisterVehicleInfoScreen(
     viewVehicleModel: VehicleModelViewModel = viewModel(),
     register: () -> List<Boolean>
 ) {
+
+    // Change color names based on the selected language
+    val translatedColorNames: MutableMap<Int, String> = mutableMapOf()
+    colorNames.forEach { (key, value) ->
+        if (value.compareTo("Red") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_red)
+        }
+        else if (value.compareTo("Green") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_green)
+        }
+        else if (value.compareTo("Blue") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_blue)
+        }
+        else if (value.compareTo("Yellow") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_yellow)
+        }
+        else if (value.compareTo("Cyan") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_cyan)
+        }
+        else if (value.compareTo("Magenta") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_magenta)
+        }
+        else if (value.compareTo("Gray") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_gray)
+        }
+        else if (value.compareTo("Black") == 0) {
+            translatedColorNames[key] = stringResource(id = R.string.color_black)
+        }
+        else {
+            translatedColorNames[key] = value
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewVehicleBrandModel.getAllVehicleBrands()
@@ -138,7 +171,7 @@ fun RegisterVehicleInfoScreen(
         }
         Spacer(modifier = Modifier.height(70.dp))
         Text(
-            text = if(selectedBrand!=null) "Update Vehicle Information" else "Please set up your vehicle",
+            text = if(selectedBrand!=null) stringResource(id = R.string.register_vehicle_info_update_vehicle_information) else stringResource(id = R.string.register_vehicle_info_setup_vehicle_information),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = White,
@@ -174,7 +207,7 @@ fun RegisterVehicleInfoScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Vehicle Information",
+                    text = stringResource(id = R.string.register_vehicle_info_vehicle_information),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = White,
@@ -182,8 +215,8 @@ fun RegisterVehicleInfoScreen(
                 )
 
                 OutlinedDropdownMenu(
-                    label = "Brand",
-                    selectedText = selectedBrandName ?: "Select a brand",
+                    label = stringResource(id = R.string.register_vehicle_info_brand),
+                    selectedText = selectedBrandName ?: stringResource(id = R.string.register_vehicle_info_select_a_brand),
                     options = viewVehicleBrandModel.brands.value,
                     icon = Icons.Default.DirectionsCar,
                     isError =  brandError,
@@ -197,8 +230,8 @@ fun RegisterVehicleInfoScreen(
                 )
 
                 OutlinedDropdownMenu(
-                    label = "Model",
-                    selectedText = selectedModelName ?: "Select a model",
+                    label = stringResource(id = R.string.register_vehicle_info_model),
+                    selectedText = selectedModelName ?: stringResource(id = R.string.register_vehicle_info_select_a_model),
                     options = viewVehicleModel.vehicle_models.value,
                     icon = Icons.Default.DirectionsCar,
                     isError = modelError,
@@ -206,9 +239,9 @@ fun RegisterVehicleInfoScreen(
                 )
 
                 OutlinedDropdownMenu(
-                    label = "Color",
-                    selectedText = colorNames[selectedColor] ?: "Select a color",
-                    options = colorNames,
+                    label = stringResource(id = R.string.register_vehicle_info_color),
+                    selectedText = translatedColorNames[selectedColor] ?: stringResource(id = R.string.register_vehicle_info_select_a_color),
+                    options = translatedColorNames,
                     icon = Icons.Default.ColorLens,
                     isError = colorError,
                     onOptionSelected = { option -> onSelectedColorChange(option) }
@@ -230,7 +263,7 @@ fun RegisterVehicleInfoScreen(
                     placeholder = {
                         if (regNumError) {
                             Text(
-                                text = "Invalid registration number",
+                                text = stringResource(id = R.string.register_vehicle_info_invalid_registration_plate),
                                 color = Color.Red,
                             )
                         } else {
@@ -243,7 +276,12 @@ fun RegisterVehicleInfoScreen(
                         onLicencePlateChange(it)
                         regNumError = false
                     },
-                    label = { Text("Registration Number", color = if (regNumError) Color.Red else White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.register_vehicle_info_registration_plate),
+                            color = if (regNumError) Color.Red else White
+                        )
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -270,7 +308,7 @@ fun RegisterVehicleInfoScreen(
             )
         ) {
             Text(
-                text = "Finish",
+                text = stringResource(id = R.string.common_finish),
                 color = if (buttonEnabled) White else White.copy(alpha = 0.3f)
             )
         }

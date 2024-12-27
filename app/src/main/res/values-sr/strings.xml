@@ -1,0 +1,355 @@
+<resources>
+    <string name="app_name">ParkFinder</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Početna</string>
+    <string name="menu_search">Pretraga</string>
+    <string name="menu_profile">Profil</string>
+    <string name="menu_reserved">Rezervisano</string>
+
+    <!-- Common -->
+    <string name="common_edit">Izmeni</string>
+    <string name="common_update">Ažuriraj</string>
+    <string name="common_cancel">Otkaži</string>
+    <string name="common_remove">Ukloni</string>
+    <string name="common_search">Pretraži</string>
+    <string name="common_away">Daleko</string>
+    <string name="common_reserve">Rezerviši</string>
+    <string name="common_back">Nazad</string>
+    <string name="common_color">Boja</string>
+    <string name="common_delete">Obriši</string>
+    <string name="common_finish">Završi</string>
+    <string name="common_ok">U redu</string>
+    <string name="common_confirm">Potvrdi</string>
+    <string name="common_password">Lozinka</string>
+    <string name="common_email">Email</string>
+    <string name="common_login">Prijavi se</string>
+    <string name="common_register">Registruj se</string>
+    <string name="common_resend">Pošalji ponovo</string>
+    <string name="common_next">Dalje</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_balance">Stanje</string>
+    <string name="profile_vehicle_info">Informacije o vozilu</string>
+    <string name="profile_statistics">Statistika</string>
+    <string name="profile_favourites">Omiljeno</string>
+    <string name="profile_settings">Podešavanja</string>
+    <string name="profile_help_center">Centar za pomoć</string>
+    <string name="profile_logout">Odjava</string>
+    <string name="profile_find_parking_mode">Režim traženja parkinga</string>
+    <string name="profile_set_new_name">Postavi novo ime</string>
+    <string name="profile_name_requirements">Ime i prezime moraju početi velikim slovom i sadržati samo mala slova abecede.</string>
+    <string name="profile_confirm_removal">Potvrdi uklanjanje</string>
+    <string name="profile_confirm_removal_text">Da li ste sigurni da želite da uklonite sliku profila?</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Pretraga parkinga</string>
+    <string name="search_location_hint">Pretraži lokacije…</string>
+    <string name="search_choose_radius">Izaberi poluprečnik</string>
+
+    <!-- Parking spot status -->
+    <string name="parking_spot_status_free">Slobodno</string>
+    <string name="parking_spot_status_reserved">Rezervisano</string>
+    <string name="parking_spot_status_occupied">Zauzeto</string>
+    <string name="parking_spot_status_temporarily_unavailable">Privremeno nedostupno</string>
+
+    <!-- Parking list screen -->
+    <string name="parking_list_no_parking_lots_found">Nema pronađenih parkinga</string>
+    <string name="parking_list_see_details">Pogledaj detalje</string>
+
+    <!-- Parking spots list screen -->
+    <string name="parking_spots_list_spot_number">Broj mesta</string>
+
+    <!-- Balance screen -->
+    <string name="balance_current_balance">Trenutno stanje</string>
+    <string name="balance_make_payment">Izvrši uplatu</string>
+    <string name="balance_transaction_history">Istorija transakcija</string>
+    <string name="balance_parking_fee">Cena parkinga</string>
+    <string name="balance_payment_to_account">Uplata na račun</string>
+
+    <!-- Add Balance screen -->
+    <string name="add_balance_title">Dodajte iznos na vaš račun</string>
+    <string name="add_balance_amount">Iznos</string>
+    <string name="add_balance_add_balance">Dodaj iznos</string>
+
+    <!-- Vehicle Info screen -->
+    <string name="vehicle_info_my_vehicles">Moja vozila</string>
+    <string name="vehicle_info_vehicle_company">Proizvođač vozila</string>
+    <string name="vehicle_info_vehicle_model">Model vozila</string>
+    <string name="vehicle_info_registration_plate">Registraciona tablica</string>
+    <string name="vehicle_info_delete_vehicle">Obriši vozilo</string>
+    <string name="vehicle_info_confirm_removal">Da li ste sigurni da želite da obrišete ovo vozilo?</string>
+
+    <!-- Register Vehicle Info screen -->
+    <string name="register_vehicle_info_update_vehicle_information">Ažuriraj informacije o vozilu</string>
+    <string name="register_vehicle_info_setup_vehicle_information">Podesi informacije o vozilu</string>
+    <string name="register_vehicle_info_vehicle_information">Informacije o vozilu</string>
+    <string name="register_vehicle_info_brand">Marka</string>
+    <string name="register_vehicle_info_model">Model</string>
+    <string name="register_vehicle_info_color">Boja</string>
+    <string name="register_vehicle_info_registration_plate">Registraciona tablica</string>
+    <string name="register_vehicle_info_select_a_brand">Izaberite marku</string>
+    <string name="register_vehicle_info_select_a_model">Izaberite model</string>
+    <string name="register_vehicle_info_select_a_color">Izaberite boju</string>
+    <string name="register_vehicle_info_invalid_registration_plate">Nevažeća registraciona tablica</string>
+
+    <!-- Colors -->
+    <string name="color_red">Crvena</string>
+    <string name="color_green">Zelena</string>
+    <string name="color_blue">Plava</string>
+    <string name="color_yellow">Žuta</string>
+    <string name="color_cyan">Cijan</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Siva</string>
+    <string name="color_black">Crna</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">Statistika</string>
+    <string name="statistics_total_reservations">Ukupno rezervacija</string>
+    <string name="statistics_total_money_spent">Ukupno potrošen novac</string>
+    <string name="statistics_average_reserved_time">Prosečno trajanje rezervacije</string>
+    <string name="statistics_see_reservation_history">Pogledaj istoriju rezervacija</string>
+    <string name="statistics_last_6_months_money_spent">Novac potrošen u poslednjih 6 meseci</string>
+    <string name="statistics_last_6_months_reservation_per_vehicle">Rezervacije po vozilu u poslednjih 6 meseci</string>
+
+    <!-- Reservation History Screen -->
+    <string name="reservation_history_title">Istorija rezervacija</string>
+    <string name="reservation_history_no_reservations">Nema rezervacija</string>
+    <string name="reservation_history_expand_filters">Proširi filtere</string>
+    <string name="reservation_history_collapse_filters">Skupi filtere</string>
+    <string name="reservation_history_select_a_vehicle">Izaberite vozilo</string>
+    <string name="reservation_history_newer_than">Novije od</string>
+    <string name="reservation_history_earlier_than">Starije od</string>
+    <string name="reservation_history_reset_filters">Resetuj filtere</string>
+    <string name="reservation_history_apply">Primeni</string>
+    <string name="reservation_history_your_review">Vaša recenzija: </string>
+    <string name="reservation_history_vehicle">Vozilo: </string>
+    <string name="reservation_history_time_span">Period: </string>
+    <string name="reservation_history_order">Redosled</string>
+    <string name="reservation_history_order_ascending">Rastući</string>
+    <string name="reservation_history_order_descending">Opadajući</string>
+    <string name="reservation_history_sort_by">Sortiraj po</string>
+    <string name="reservation_history_sort_by_date">Datum</string>
+    <string name="reservation_history_sort_by_rating">Ocena</string>
+    <string name="reservation_history_sort_by_price">Cena</string>
+
+    <!-- Help Center Screen -->
+    <string name="help_center_title">Centar za pomoć</string>
+    <string name="help_center_need_assistance">Potrebna Vam je pomoć?</string>
+    <string name="help_center_we_are_here_to_help">Tu smo da pomognemo!</string>
+    <string name="help_center_contact_email">Kontakt email</string>
+    <string name="help_center_contact_phone">Kontakt telefon</string>
+
+    <!-- Reservation Screen -->
+    <string name="reservation_screen_space_details">Detalji o parking mestu</string>
+    <string name="reservation_screen_unknown_road">Nepoznata ulica</string>
+    <string name="reservation_screen_spot_number">Broj mesta</string>
+    <string name="reservation_screen_spot_status">Status mesta</string>
+    <string name="reservation_screen_choose_vehicle">Izaberite vozilo</string>
+    <string name="reservation_screen_select_vehicle">Izaberite vozilo</string>
+    <string name="reservation_screen_reserve_and_navigate">Rezerviši i navigiraj</string>
+    <string name="reservation_screen_reviews">Recenzije</string>
+    <string name="reservation_screen_no_reviews">Nema recenzija</string>
+    <string name="reservation_screen_not_rated_yet">Još uvek nije ocenjeno</string>
+
+    <!-- Reserved Screen -->
+    <string name="reserved_screen_my_reservations">Moje rezervacije</string>
+    <string name="reserved_screen_parking_zone">Zona parkiranja</string>
+    <string name="reserved_screen_start_time">Vreme početka</string>
+    <string name="reserved_screen_vehicle">Vozilo</string>
+    <string name="reserved_screen_finish_reservation">Završi rezervaciju</string>
+    <string name="reserved_screen_rate_parking_spot">Oceni parking mesto</string>
+    <string name="reserved_screen_leave_comment">Ostavi komentar</string>
+    <string name="reserved_screen_leave_comment_template">Napišite svoj komentar ovde…</string>
+    <string name="reserved_screen_leave_comment_hint">Molimo ostavite komentar za ocenu ispod 3 zvezdice.</string>
+    <string name="reserved_screen_rate_and_leave">Oceni i napusti mesto</string>
+    <string name="reserved_screen_no_active_reservations">Nema aktivnih rezervacija</string>
+
+    <!-- Home Screen -->
+    <string name="home_screen_confirm_reservation">Potvrdi rezervaciju</string>
+    <string name="home_screen_confirm_reservation_text">Stigli ste na odredište. Molimo potvrdite vašu rezervaciju da biste nastavili.</string>
+    <string name="home_screen_confirm_reservation_text_2">Klikom na potvrdu, naknada za parkiranje će početi da se naplaćuje po satu od sada.</string>
+
+    <!-- EnterNewPassword Screen -->
+    <string name="enter_new_password_forgot_password">Zaboravljena lozinka</string>
+    <string name="enter_new_password_hint">Unesite novu lozinku i potvrdite je</string>
+    <string name="enter_new_password_change_password">Promeni lozinku</string>
+    <string name="enter_new_password_invalid_password_format">Nevažeći format lozinke</string>
+    <string name="enter_new_password_confirm_password">Potvrdi lozinku</string>
+
+    <!-- ForgotPassword Screen -->
+    <string name="forgot_password_forgot_password">Zaboravljena lozinka</string>
+    <string name="forgot_password_hint">Unesite email adresu koju ste koristili prilikom registracije na koju ćemo vam poslati kod za resetovanje lozinke</string>
+    <string name="forgot_password_enter_email">Unesite email adresu</string>
+    <string name="forgot_password_send_verification_code">Pošalji kod za verifikaciju</string>
+
+    <!-- Login Screen -->
+    <string name="login_enter_credentials_message">Unesite vaše \npodatke za prijavu</string>
+    <string name="login_forgot_password">Zaboravili ste lozinku?</string>
+    <string name="login_no_account">Nemate nalog?</string>
+
+    <!-- ResetPasswordVerificationCode Screen -->
+    <string name="reset_password_verification_code_verification_code">Kod za verifikaciju</string>
+    <string name="reset_password_verification_code_hint">Kod za verifikaciju je poslat na adresu koju ste prosledili:</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_about">Vaš digitalni asistent \n za brzo pronalaženje parking mesta</string>
+
+    <!-- Register Screen -->
+    <string name="register_already_have_account">Već imate nalog?</string>
+    <string name="register_enter_email_and_password">Unesite email i \nlozinku</string>
+    <string name="register_credentials">Podaci za registraciju</string>
+
+    <!-- Password Help -->
+    <string name="password_help_password_requirements">Zahtevi za lozinku</string>
+    <string name="password_help_requirement_1">◄ Dužina lozinke mora biti između 8 i 20 karaktera</string>
+    <string name="password_help_requirement_2">◄ Lozinka mora sadržati bar jedno veliko slovo</string>
+    <string name="password_help_requirement_3">◄ Lozinka mora sadržati bar jedno malo slovo</string>
+    <string name="password_help_requirement_4">◄ Lozinka mora sadržati bar jedan broj</string>
+    <string name="password_help_requirement_5">◄ Lozinka mora sadržati bar jedan specijalni karakter od @, $, !, %, *, ?, &amp;, #, _</string>
+
+    <!-- RegisterUserData Screen -->
+    <string name="register_user_data_setup_your_account">Podesite vaš nalog</string>
+    <string name="register_user_data_personal_information">Lični podaci</string>
+    <string name="register_user_data_full_name">Ime i prezime</string>
+    <string name="register_user_data_phone_number">Broj telefona</string>
+
+    <!-- Errors -->
+    <string name="error_passwords_do_not_match">Lozinke se ne poklapaju</string>
+    <string name="error_invalid_email_format">Nevažeći format email adrese</string>
+    <string name="error_invalid_password_format">Nevažeći format lozinke</string>
+    <string name="error_invalid_full_name_format">Nevažeći format imena i prezimena</string>
+    <string name="error_invalid_phone_number_format">Nevažeći format broja telefona</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Podešavanja</string>
+    <string name="settings_select_language">Izaberite jezik</string>
+
+    <!-- Backend Messages -->
+    <string name="backend_user_with_email_not_found">Korisnik sa unetom email adresom ne postoji.</string>
+    <string name="backend_user_with_credentials_not_found">Nije pronađen korisnik sa unetim podacima.</string>
+    <string name="backend_admin_with_credentials_not_found">Nije pronađen administrator sa unetim podacima.</string>
+    <string name="backend_user_logged_in">Korisnik je uspešno prijavljen.</string>
+    <string name="backend_invalid_password">Nevažeća lozinka. Molimo pokušajte ponovo.</string>
+    <string name="backend_user_with_email_exists">Korisnik sa unetom email adresom već postoji.</string>
+    <string name="backend_user_with_email_not_found_2">Korisnik sa unetom email adresom ne postoji.</string>
+    <string name="backend_user_with_email_exists_3">Registracija neuspešna: Korisnik sa unetom email adresom već postoji.</string>
+    <string name="backend_license_plate_exists">Registraciona tablica već postoji.</string>
+    <string name="backend_invalid_verification_code">Registracija neuspešna: Nevažeći verifikacioni kod.</string>
+    <string name="backend_code_verified">Kod je uspešno verifikovan.</string>
+    <string name="backend_code_verification_failed">Verifikacija koda neuspešna.</string>
+    <string name="backend_password_reset_successful">Resetovanje lozinke uspešno.</string>
+    <string name="backend_user_does_not_exist">Korisnik ne postoji.</string>
+    <string name="backend_user_name_updated">Ime korisnika je uspešno ažurirano.</string>
+    <string name="backend_not_valid_coordinates_format">Nevažeći format koordinata</string>
+    <string name="backend_error_creating_parking_lot">Greška pri kreiranju parkinga</string>
+    <string name="backend_parking_created_successfully">Parking uspešno kreiran</string>
+    <string name="backend_parking_lot_with_some_of_provided_ids_does_not_exist">Parking sa nekim od unetih ID-ova ne postoji</string>
+    <string name="backend_operation_finished_with_success">Operacija uspešno završena</string>
+    <string name="backend_error_deleting_parking_lots">Došlo je do greške prilikom brisanja parkinga</string>
+    <string name="backend_parking_spot_not_found">Parking mesto nije pronađeno</string>
+    <string name="backend_parking_spot_found">Parking mesto pronađeno</string>
+    <string name="backend_invalid_parking_spot_status">Nevažeći status parking mesta</string>
+    <string name="backend_parking_spot_updated">Parking mesto ažurirano</string>
+    <string name="backend_successfully_retrieved_parking_spot_statuses">Uspešno dobijeni statusi parking mesta</string>
+    <string name="backend_parking_zone_already_exists">Zona parkiranja već postoji</string>
+    <string name="backend_parking_zone_created_successfully">Zona parkiranja uspešno kreirana</string>
+    <string name="backend_parking_zone_not_found">Zona parkiranja nije pronađena</string>
+    <string name="backend_parking_zone_deleted_successfully">Zona parkiranja uspešno obrisana</string>
+    <string name="backend_parking_zone_found">Zona parkiranja pronađena</string>
+    <string name="backend_parking_zones_found">Zone parkiranja pronađene</string>
+    <string name="backend_parking_zone_updated_successfully">Zona parkiranja uspešno ažurirana</string>
+    <string name="backend_no_reservation_found_for_specified_vehicle">Nije pronađena rezervacija za navedeno vozilo.</string>
+    <string name="backend_reservation_not_confirmed">Rezervacija nije potvrđena.</string>
+    <string name="backend_no_vehicle_found_with_specified_id">Nije pronađeno vozilo sa navedenim ID-om.</string>
+    <string name="backend_no_parking_spot_found_with_specified_id">Nije pronađeno parking mesto sa navedenim ID-om.</string>
+    <string name="backend_no_parking_lot_found_with_specified_id">Nije pronađen parking sa navedenim ID-om.</string>
+    <string name="backend_no_parking_zone_found_with_specified_id">Nije pronađena zona parkiranja sa navedenim ID-om.</string>
+    <string name="backend_failed_to_add_reservation_history">Dodavanje istorije rezervacija nije uspelo.</string>
+    <string name="backend_failed_to_add_transaction">Dodavanje transakcije nije uspelo.</string>
+    <string name="backend_successfully_added_reservation_history">Istorija rezervacija uspešno dodata.</string>
+    <string name="backend_no_reservation_history_found_with_specified_id">Nije pronađena istorija rezervacija sa navedenim ID-om.</string>
+    <string name="backend_successfully_deleted_reservation_history">Istorija rezervacija uspešno obrisana.</string>
+    <string name="backend_failed_to_delete_reservation_history">Brisanje istorije rezervacija nije uspelo.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories">Uspešno dobijene sve istorije rezervacija.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_parking_spot">Uspešno dobijene sve istorije rezervacija za navedeno parking mesto.</string>
+    <string name="backend_parking_spot_with_provided_id_does_not_exist">Parking mesto sa navedenim ID-om ne postoji.</string>
+    <string name="backend_rating_calculated_successfully">Ocena uspešno izračunata.</string>
+    <string name="backend_comments_found_successfully">Komentari uspešno pronađeni.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_user">Uspešno dobijene sve istorije rezervacija za navedenog korisnika.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_vehicle">Uspešno dobijene sve istorije rezervacija za navedeno vozilo.</string>
+    <string name="backend_successfully_retrieved_the_reservation_history">Istorija rezervacija uspešno dobijena.</string>
+    <string name="backend_vehicle_not_found">Vozilo nije pronađeno</string>
+    <string name="backend_reservation_for_this_vehicle_already_exists">Rezervacija za ovo vozilo već postoji</string>
+    <string name="backend_user_not_found">Korisnik nije pronađen</string>
+    <string name="backend_you_already_have_active_reservation">Već imate aktivnu rezervaciju</string>
+    <string name="backend_parking_spot_is_not_available">Parking mesto nije dostupno</string>
+    <string name="backend_user_balance_is_below_allowed_value">Stanje korisnika je ispod dozvoljene vrednosti</string>
+    <string name="backend_failed_to_update_parking_spot_status">Ažuriranje statusa parking mesta nije uspelo</string>
+    <string name="backend_reservation_added_successfully">Rezervacija uspešno dodata</string>
+    <string name="backend_reservation_not_found">Rezervacija nije pronađena</string>
+    <string name="backend_reservation_deleted_successfully">Rezervacija uspešno obrisana</string>
+    <string name="backend_failed_to_delete_reservation">Brisanje rezervacije nije uspelo</string>
+    <string name="backend_reservations_retrieved_successfully">Rezervacije uspešno dobijene</string>
+    <string name="backend_reservation_retrieved_successfully">Rezervacija uspešno dobijena</string>
+    <string name="backend_not_your_reservation">Nije vaša rezervacija</string>
+    <string name="backend_reservation_is_already_confirmed">Rezervacija je već potvrđena</string>
+    <string name="backend_reservation_confirmed_successfully">Rezervacija uspešno potvrđena</string>
+    <string name="backend_transaction_not_found">Transakcija nije pronađena</string>
+    <string name="backend_cannot_add_transaction_with_amount_less_than_0_or_greater_than_10000">Ne može se dodati transakcija sa iznosom manjim od 0 ili većim od 10000</string>
+    <string name="backend_brand_with_provided_id_does_not_exist">Marka sa navedenim ID-om ne postoji</string>
+    <string name="backend_brand_name_must_be_between_2_and_50_characters">Naziv marke mora biti između 2 i 50 karaktera</string>
+    <string name="backend_brand_name_already_exists">Naziv marke već postoji</string>
+    <string name="backend_vehicle_brand_added_successfully">Marka vozila uspešno dodata</string>
+    <string name="backend_error_adding_vehicle_brand">Greška pri dodavanju marke vozila</string>
+    <string name="backend_vehicle_brand_updated_successfully">Marka vozila uspešno ažurirana</string>
+    <string name="backend_error_updating_vehicle_brand">Greška pri ažuriranju marke vozila</string>
+    <string name="backend_vehicle_brand_deleted_successfully">Marka vozila uspešno obrisana</string>
+    <string name="backend_error_deleting_vehicle_brand">Greška pri brisanju marke vozila</string>
+    <string name="backend_model_with_provided_id_does_not_exist">Model sa navedenim ID-om ne postoji</string>
+    <string name="backend_vehicle_model_added_successfully">Model vozila uspešno dodat</string>
+    <string name="backend_error_adding_vehicle_model">Greška pri dodavanju modela vozila</string>
+    <string name="backend_vehicle_model_updated_successfully">Model vozila uspešno ažuriran</string>
+    <string name="backend_error_updating_vehicle_model">Greška pri ažuriranju modela vozila</string>
+    <string name="backend_vehicle_model_deleted_successfully">Model vozila uspešno obrisan</string>
+    <string name="backend_error_deleting_vehicle_model">Greška pri brisanju modela vozila</string>
+    <string name="backend_you_have_reached_the_vehicle_limit">Oops! Dostigli ste limit vozila.</string>
+    <string name="backend_provided_model_does_not_exist">Navedeni model ne postoji</string>
+    <string name="backend_vehicle_with_specified_license_plate_already_exists">Vozilo sa navedenom registracionom tablicom već postoji.</string>
+    <string name="backend_vehicle_added_successfully">Vozilo uspešno dodato.</string>
+    <string name="backend_error_adding_vehicle">Došlo je do greške prilikom dodavanja vozila.</string>
+    <string name="backend_vehicle_does_not_exist_or_does_not_belong_to_this_user">Vozilo ne postoji ili ne pripada ovom korisniku</string>
+    <string name="backend_vehicle_model_does_not_exist">Model vozila ne postoji</string>
+    <string name="backend_vehicle_updated_successfully">Vozilo uspešno ažurirano</string>
+    <string name="backend_error_updating_vehicle">Greška prilikom ažuriranja vozila</string>
+    <string name="backend_you_have_active_reservations_for_this_vehicle">Imate aktivne rezervacije za ovo vozilo</string>
+    <string name="backend_vehicle_successfully_deleted">Vozilo uspešno obrisano</string>
+    <string name="backend_error_removing_vehicle">Greška prilikom brisanja vozila</string>
+    <string name="backend_unknown_error">Nepoznata greška</string>
+    <string name="backend_no_file_uploaded">Nijedan fajl nije otpremljen</string>
+    <string name="backend_invalid_file_type">Nevažeći tip fajla</string>
+    <string name="backend_invalid_file_extension">Nevažeća ekstenzija fajla</string>
+    <string name="backend_user_with_provided_id_does_not_exist">Korisnik sa navedenim ID-om ne postoji</string>
+    <string name="backend_user_profile_image_updated_successfully">Slika profila korisnika uspešno ažurirana</string>
+    <string name="backend_user_profile_image_uploaded_successfully">Slika profila korisnika uspešno otpremljena</string>
+    <string name="backend_access_to_this_file_is_not_allowed">Pristup ovom fajlu nije dozvoljen</string>
+    <string name="backend_image_deleted_successfully">Slika uspešno obrisana</string>
+    <string name="backend_file_does_not_exist">Fajl ne postoji</string>
+    <string name="backend_user_does_not_have_profile_picture">Korisnik nema sliku profila</string>
+    <string name="backend_image_found_successfully">Slika uspešno pronađena</string>
+    <string name="backend_invalid_old_access_token">Nevažeći stari token za pristup</string>
+    <string name="backend_invalid_refresh_token">Nevažeći token za osvežavanje</string>
+    <string name="backend_token_refreshed_successfully">Token uspešno osvežen</string>
+    <string name="backend_invalid_token_claim">Nevažeća tvrdnja tokena</string>
+    <string name="backend_refresh_token_deleted_successfully">Token za osvežavanje uspešno obrisan</string>
+    <string name="backend_parking_spot_is_not_available_for_reservation">Parking mesto nije dostupno za rezervaciju</string>
+    <string name="backend_verification_code_sent">Kod za verifikaciju poslat</string>
+    <string name="backend_registration_successful">Registracija uspešna</string>
+    <string name="backend_vehicle_deleted_successfully">Vozilo uspešno obrisano</string>
+    <string name="backend_reservation_cancelled">Rezervacija otkazana</string>
+    <string name="backend_reservation_completed">Rezervacija završena</string>
+    <string name="backend_name_changed_successfully">Ime uspešno promenjeno</string>
+    <string name="backend_password_reset_failed">Resetovanje lozinke nije uspelo</string>
+    <string name="backend_passwords_are_not_valid_format_or_do_not_match">Lozinke nisu u važećem formatu ili se ne poklapaju</string>
+
+</resources>

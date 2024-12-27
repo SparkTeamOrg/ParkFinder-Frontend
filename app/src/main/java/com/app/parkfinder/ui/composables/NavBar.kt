@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.parkfinder.ui.BottomNavItem
+import com.app.parkfinder.ui.bottomNavItemLabel
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -48,7 +49,7 @@ fun BottomNavigationBar(navController: NavController) {
                         ) {
                             Icon(
                                 imageVector = item.icon,
-                                contentDescription = item.label,
+                                contentDescription = bottomNavItemLabel(item),
                                 tint = Color.Gray
                             )
                         }
@@ -56,14 +57,14 @@ fun BottomNavigationBar(navController: NavController) {
                         // Unselected item icon
                         Icon(
                             imageVector = item.icon,
-                            contentDescription = item.label,
+                            contentDescription = bottomNavItemLabel(item),
                             tint = Color.White
                         )
                     }
                 },
                 label = {
                     Text(
-                        text = item.label,
+                        text = bottomNavItemLabel(item),
                         color = if (isSelected) Color.Cyan else Color.White,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                         fontSize = 12.sp

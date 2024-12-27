@@ -6,9 +6,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -28,6 +32,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
+
+        <service
+            android:name=".foreground.NotificationService"
+            android:exported="false"
+            android:enabled="true"
+            android:foregroundServiceType="dataSync"
+            >
+        </service>
+
+
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -108,8 +126,49 @@
             android:theme="@style/Theme.ParkFinder">
         </activity>
         <activity
+            android:name=".ui.activities.parking.ReservationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.parking.ParkingSpotListActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.HelpCenterActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.BalanceActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.AddBalanceActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.statistic.StatisticsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.parking.ReservationHistoryActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
+            android:name=".ui.activities.SettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ParkFinder">
+        </activity>
+        <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/CustomCropTheme" />
+
     </application>
 
 </manifest>
