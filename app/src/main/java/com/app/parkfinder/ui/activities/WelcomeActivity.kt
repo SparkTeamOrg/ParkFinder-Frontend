@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
@@ -18,7 +19,7 @@ import com.app.parkfinder.ui.screens.auth.WelcomeScreen
 import com.app.parkfinder.utilis.LocaleHelper
 import com.bumptech.glide.Glide
 
-class WelcomeActivity: BaseActivity() {
+class WelcomeActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -3,7 +3,6 @@ package com.app.parkfinder.ui.activities.statistic
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,12 +11,13 @@ import com.app.parkfinder.R
 import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.StatisticDto
 import com.app.parkfinder.logic.view_models.StatisticsViewModel
+import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.activities.parking.ReservationHistoryActivity
 import com.app.parkfinder.ui.screens.statistic.UserStatisticsPage
 
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 
-class StatisticsActivity: ComponentActivity() {
+class StatisticsActivity: BaseActivity() {
     private val statisticViewModel: StatisticsViewModel by viewModels()
     private var isLoading = mutableStateOf(false)
 
