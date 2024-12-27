@@ -28,6 +28,7 @@ import com.app.parkfinder.ui.theme.ParkFinderTheme
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import com.app.parkfinder.ui.screens.auth.register.VerificationCodeScreen
 
 @Composable
@@ -87,7 +88,7 @@ fun ResetPasswordVerificationCodeScreen(
         Spacer(modifier = Modifier.height(100.dp))
 
         Text(
-            text = "Verification Code",
+            text = stringResource(id = R.string.reset_password_verification_code_verification_code),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -96,7 +97,7 @@ fun ResetPasswordVerificationCodeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "We've sent the code to your mail address that you provided:",
+            text = stringResource(id = R.string.reset_password_verification_code_hint),
             fontSize = 16.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
@@ -140,7 +141,7 @@ fun ResetPasswordVerificationCodeScreen(
 
         // Resend Button
         Text(
-            text = "Resend",
+            text = stringResource(id = R.string.common_resend),
             fontSize = 16.sp,
             color = Color(0xFF0FCFFF),
             modifier = Modifier.clickable { onResendClick() },
@@ -161,7 +162,7 @@ fun ResetPasswordVerificationCodeScreen(
             )
         ) {
             Text(
-                text = "Next",
+                text = stringResource(id = R.string.common_next),
                 fontSize = 20.sp,
             )
         }

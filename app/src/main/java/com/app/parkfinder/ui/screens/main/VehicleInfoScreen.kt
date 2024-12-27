@@ -46,6 +46,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun VehicleInfoScreen(
@@ -110,7 +111,7 @@ fun VehicleInfoScreen(
         ) {
             Spacer(modifier = Modifier.weight(0.25f))
             Text(
-                text = "My Vehicles",
+                text = stringResource(id = R.string.vehicle_info_my_vehicles),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = White,
@@ -175,10 +176,34 @@ fun VehicleInfoScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(15.dp))
-                VehicleLabel("Vehicle Company", vehicle.vehicleModelVehicleBrandName)
-                VehicleLabel("VehicleModel", vehicle.vehicleModelName)
-                VehicleLabel("Registration number", vehicle.licencePlate)
-                VehicleLabel("Color", vehicle.color)
+                VehicleLabel(
+                    label = stringResource(id = R.string.vehicle_info_vehicle_company),
+                    value = vehicle.vehicleModelVehicleBrandName
+                )
+                VehicleLabel(
+                    label = stringResource(id = R.string.vehicle_info_vehicle_model),
+                    value = vehicle.vehicleModelName
+                )
+                VehicleLabel(
+                    label = stringResource(id = R.string.vehicle_info_registration_plate),
+                    value = vehicle.licencePlate
+                )
+                VehicleLabel(
+                    label = stringResource(id = R.string.common_color),
+                    value = when (vehicle.color) {
+                        "Red" -> stringResource(id = R.string.color_red)
+                        "Green" -> stringResource(id = R.string.color_green)
+                        "Blue" -> stringResource(id = R.string.color_blue)
+                        "Yellow" -> stringResource(id = R.string.color_yellow)
+                        "Cyan" -> stringResource(id = R.string.color_cyan)
+                        "Magenta" -> stringResource(id = R.string.color_magenta)
+                        "Gray" -> stringResource(id = R.string.color_gray)
+                        "Black" -> stringResource(id = R.string.color_black)
+                        else -> {
+                            "Unknown"
+                        }
+                    }
+                )
             }
         }
         Row(
@@ -257,13 +282,13 @@ fun DeleteButton(vehicleId: Int, onCanClick: (Int) -> Unit) {
             onDismissRequest = { showDialog.value = false }, // Dismiss on outside click
             title = {
                 Text(
-                    text = "Confirm Deletion",
+                    text = stringResource(id = R.string.vehicle_info_delete_vehicle),
                     color = White
                 )
             },
             text = {
                 Text(
-                    text = "Are you sure you want to delete this vehicle?",
+                    text = stringResource(id = R.string.vehicle_info_confirm_removal),
                     color = White,
                     fontSize = 16.sp
                 )
@@ -280,7 +305,9 @@ fun DeleteButton(vehicleId: Int, onCanClick: (Int) -> Unit) {
                         containerColor = Color.Red
                     )
                 ) {
-                    Text("Yes, Delete")
+                    Text(
+                        text = stringResource(id = R.string.common_delete)
+                    )
                 }
             },
             dismissButton = {
@@ -292,7 +319,9 @@ fun DeleteButton(vehicleId: Int, onCanClick: (Int) -> Unit) {
                         containerColor = Color(0xFF0FCFFF)
                     )
                 ) {
-                    Text("Cancel")
+                    Text(
+                        text = stringResource(id = R.string.common_cancel)
+                    )
                 }
             }
         )

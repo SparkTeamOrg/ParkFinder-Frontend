@@ -1,8 +1,8 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.FloatingActionButton
@@ -26,25 +28,35 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.parkfinder.R
+import com.app.parkfinder.logic.NavigationStatus
 import com.app.parkfinder.logic.models.NavigationStep
+import com.app.parkfinder.logic.models.dtos.ParkingLotDto
+import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UserDto
 import com.app.parkfinder.logic.view_models.MapViewModel
 import com.app.parkfinder.ui.composables.DirectionsPanel
@@ -52,28 +64,69 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.MapView
+import kotlin.math.round
 
+@SuppressLint("OpaqueUnitKey")
 @Composable
 fun HomeScreen(
     user: UserDto,
-    viewModel: MapViewModel = viewModel()
+    navigateToReservation: (ParkingSpotDto, ParkingLotDto, String) -> Unit,
+    confirmReservation: (Int) -> Unit,
+    cancelReservation: (Int) -> Unit,
+    mapViewModel: MapViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val cycle = LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     var isSidebarVisible by remember { mutableStateOf(false) }
     var steps = mutableListOf<NavigationStep>()
+    var showModal by remember { mutableStateOf(false) }
 
-    viewModel.getAllInstructions.observe(cycle){ instructions->
+    mapViewModel.getAllInstructions.observe(lifecycleOwner) { instructions ->
         steps = instructions.toMutableList()
-        Log.d("monkey","proslo je " + steps.size)
     }
 
+    mapViewModel.navigationActive.observe(lifecycleOwner) { active ->
+        if (!active) {
+            // Reset the sidebar visibility when navigation is over
+            isSidebarVisible = false
+
+            // Reset the instructions
+            steps.clear()
+        }
+    }
+
+    val currentStep by mapViewModel.currentNavigationStep.observeAsState()
+    val navigationActive by mapViewModel.navigationActive.observeAsState()
+
+    val show by mapViewModel.showConfirmReservationModal.observeAsState()
+    LaunchedEffect(show) {
+        if (show != null) {
+            showModal = true
+            mapViewModel.resetShowModalSignal()
+        }
+    }
+
+    val reservationId by NavigationStatus.isParkingSpotReserved.observeAsState(null)
+    val spot by NavigationStatus.isSpotSelected.observeAsState(null)
+    LaunchedEffect(reservationId) {
+        if(reservationId != null && spot != null){
+            mapViewModel.startNavigation(spot!!)
+        }
+    }
+
+    LaunchedEffect(mapViewModel.parkingSpotClicked) {
+        mapViewModel.parkingSpotClicked.collect { spot ->
+            mapViewModel.clickedLot?.let {
+                navigateToReservation(spot, it, mapViewModel.clickedSpotNumber)
+            }
+        }
+    }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted: Boolean ->
             if (isGranted) {
-                viewModel.enableMyLocation()
+                mapViewModel.enableMyLocation()
             }
         }
     )
@@ -82,7 +135,7 @@ fun HomeScreen(
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
-            viewModel.enableMyLocation()
+            mapViewModel.enableMyLocation()
         }
     }
 
@@ -108,12 +161,36 @@ fun HomeScreen(
                 controller.setZoom(20)
                 minZoomLevel = 8.0
 
-                viewModel.initializeMap(this)
+                mapViewModel.initializeMap(this)
             }
         },
             update = {
 
             })
+
+        // Display the current navigation step at the bottom of the screen
+        // if navigation is active and there is a current step
+        navigationActive?.let {
+            currentStep?.let { step ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.Black.copy(alpha = 0.7f))
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter)
+                ) {
+                    Text(
+                        text = step.instruction + " in " + round(step.distance * 100) / 100 + " meters" + " (" + round(
+                            step.duration * 100
+                        ) / 100 + " seconds)",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
         // Sidebar
         AnimatedVisibility(
             visible = isSidebarVisible,
@@ -130,83 +207,191 @@ fun HomeScreen(
                     .align(Alignment.CenterStart)
             )
         }
-        // Toggle Sidebar Button
-        FloatingActionButton(
-            onClick = { isSidebarVisible = !isSidebarVisible },
+
+        if(navigationActive == true) {
+            // Toggle Sidebar Button
+            FloatingActionButton(
+                onClick = { isSidebarVisible = !isSidebarVisible },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = if (isSidebarVisible) Icons.Default.Close else Icons.Default.Menu,
+                    contentDescription = "Toggle Sidebar"
+                )
+            }
+        }
+    }
+
+    if(navigationActive == true) {
+        Button(
+            onClick = {
+                reservationId?.let { cancelReservation(it) }
+                mapViewModel.stopNavigation()
+            },
             modifier = Modifier
-                .padding(300.dp,16.dp,0.dp,0.dp)
-                .align(Alignment.TopStart)
+                .padding(160.dp, 16.dp, 0.dp, 0.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Red,
+            ),
+            shape = RoundedCornerShape(8.dp)
         ) {
-            Icon(
-                imageVector = if (isSidebarVisible) Icons.Default.Close else Icons.Default.Menu,
-                contentDescription = "Toggle Sidebar"
+            Text(
+                text = stringResource(id = R.string.common_cancel),
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
             )
         }
     }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
-                .padding(end = 16.dp, top = 16.dp, start = 5.dp)
+    Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier
+            .padding(end = 16.dp, top = 16.dp, start = 5.dp)
+    ) {
+
+        // Button to zoom in
+        Button(
+            onClick = { mapViewModel.zoomIn() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
         ) {
-
-            // Button to zoom in
-            Button(
-                onClick = { viewModel.zoomIn() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
+            Box(
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "+",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                }
+                Text(
+                    text = "+",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
             }
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Button to zoom out
-            Button(
-                onClick = { viewModel.zoomOut() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
+        // Button to zoom out
+        Button(
+            onClick = { mapViewModel.zoomOut() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "-",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                }
+                Text(
+                    text = "-",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
             }
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Button to return to the current location
-            Button(
-                onClick = { viewModel.setCenterToMyLocation() },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-                border = null,
-                modifier = Modifier.size(40.dp)
+        // Button to return to the current location
+        Button(
+            onClick = { mapViewModel.setCenterToMyLocation() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+            border = null,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MyLocation,
-                        contentDescription = null,
-                        tint = Color.Black
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = null,
+                    tint = Color.Black
+                )
             }
         }
     }
+
+    ConfirmModal(showModal,
+        onDismiss = { showModal = false },
+        confirmReservation,
+        cancelReservation,
+        reservationId,
+        mapViewModel
+    )
+}
+
+@Composable
+fun ConfirmModal(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    confirm: (Int) -> Unit,
+    cancel: (Int) -> Unit,
+    reservationId: Int?,
+    mapViewModel: MapViewModel,
+) {
+    if (show) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(id = R.string.home_screen_confirm_reservation),
+                    color = White,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.home_screen_confirm_reservation_text),
+                        color = White,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.home_screen_confirm_reservation_text_2),
+                        color = White.copy(alpha = 0.6f),
+                        fontSize = 12.sp
+                    )
+                }
+            },
+            containerColor = Color(0xFF151A24).copy(alpha = 0.8f),
+            confirmButton = {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        if (reservationId != null) {
+                            confirm(reservationId)
+                            mapViewModel.stopNavigation()
+                        }
+                        onDismiss()
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0FCFFF)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.common_confirm)
+                    )
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        if (reservationId != null) {
+                            cancel(reservationId)
+                            mapViewModel.stopNavigation()
+                        }
+                        onDismiss()
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.common_cancel)
+                    )
+                }
+            }
+        )
+    }
+}

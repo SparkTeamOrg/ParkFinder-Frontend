@@ -8,9 +8,12 @@ import com.app.parkfinder.logic.services.TokenService
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Logger
 
-class ApiInterceptor() : Interceptor {
+private var isRefreshing = AtomicBoolean(false)
+
+class ApiInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val tokenService = RetrofitConfig.createService(TokenService:: class.java)
         val originalRequest = chain.request()
@@ -21,7 +24,7 @@ class ApiInterceptor() : Interceptor {
             .build()
 
         var response = chain.proceed(newRequest)
-        if(response.code == 401)
+        if(response.code == 401 && isRefreshing.compareAndSet(false, true))
         {
             val refreshToken = AppPreferences.refreshToken
             val refreshResponse = runBlocking {
@@ -37,7 +40,7 @@ class ApiInterceptor() : Interceptor {
                         AppPreferences.accessToken = newTokens.accessToken
                         AppPreferences.refreshToken = newTokens.refreshToken
                         val retryRequest = originalRequest.newBuilder()
-                            .header("Authorization", "Bearer ${ newTokens.accessToken }")
+                            .header("Authorization", "Bearer ${newTokens.accessToken}")
                             .build()
                         Logger.getLogger("Interceptor").info("New Access Token: " +newTokens.accessToken)
                         Logger.getLogger("Interceptor").info("New Refresh Token: " +newTokens.refreshToken)
@@ -49,6 +52,7 @@ class ApiInterceptor() : Interceptor {
                     }
                 }
             }
+            isRefreshing.set(false)
         }
 
         return  response

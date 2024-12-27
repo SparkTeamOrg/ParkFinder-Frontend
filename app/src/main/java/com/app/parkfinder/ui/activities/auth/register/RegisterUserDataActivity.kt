@@ -4,11 +4,11 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.mutableStateOf
 import com.app.parkfinder.R
-import com.app.parkfinder.ui.activities.BaseActivity
 import com.app.parkfinder.ui.screens.auth.register.RegisterUserDataScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
@@ -16,7 +16,7 @@ import com.app.parkfinder.utilis.validatePhoneNumber
 import com.app.parkfinder.utilis.validateUserName
 import com.canhub.cropper.CropImageContract
 
-class RegisterUserDataActivity : BaseActivity() {
+class RegisterUserDataActivity : ComponentActivity() {
 
     private lateinit var email: String
     private lateinit var password: String

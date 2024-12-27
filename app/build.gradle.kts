@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.androidx.material3.v140alpha02)
     implementation(libs.generativeai)
     implementation(libs.androidx.runtime.livedata)
+    implementation ("androidx.paging:paging-compose:3.3.5")
+    implementation (libs.androidx.paging.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -103,4 +105,12 @@ dependencies {
 
     // SignalR
     implementation (libs.signalr)
+
+    //charts
+    implementation (libs.mpandroidchart)
+    implementation (libs.androidx.foundation)
+
+    // Glide for loading GIFs
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 }

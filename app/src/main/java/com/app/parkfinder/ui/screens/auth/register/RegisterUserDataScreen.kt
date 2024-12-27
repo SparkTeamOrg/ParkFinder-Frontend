@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,7 +112,7 @@ fun RegisterUserDataScreen(
         }
         Spacer(modifier = Modifier.height(70.dp))
         Text(
-            text = "Please set up your user\n profile",
+            text = stringResource(id = R.string.register_user_data_setup_your_account),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -184,7 +185,7 @@ fun RegisterUserDataScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Personal Information",
+                    text = stringResource(id = R.string.register_user_data_personal_information),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -207,7 +208,7 @@ fun RegisterUserDataScreen(
                     placeholder = {
                         if (nameError) {
                             Text(
-                                text = "Invalid full name",
+                                text = stringResource(id = R.string.error_invalid_full_name_format),
                                 color = Color.Red,
                             )
                         } else {
@@ -220,7 +221,11 @@ fun RegisterUserDataScreen(
                         onFullNameChange(it)
                         nameError = false
                     },
-                    label = { Text("Full Name", color = if (nameError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.register_user_data_full_name),
+                            color = if (nameError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -241,7 +246,7 @@ fun RegisterUserDataScreen(
                     placeholder = {
                         if (phoneError) {
                             Text(
-                                text = "Invalid phone number",
+                                text = stringResource(id = R.string.error_invalid_phone_number_format),
                                 color = Color.Red,
                             )
                         } else {
@@ -254,7 +259,11 @@ fun RegisterUserDataScreen(
                         onPhoneNumberChange(it)
                         phoneError = false
                     },
-                    label = { Text("Phone Number", color = if (phoneError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.register_user_data_phone_number),
+                            color = if (phoneError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -283,7 +292,9 @@ fun RegisterUserDataScreen(
                 contentColor = Color.White
             )
         ) {
-            Text("Next")
+            Text(
+                text = stringResource(id = R.string.common_next)
+            )
         }
     }
 }
