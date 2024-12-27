@@ -1,0 +1,355 @@
+<resources>
+    <string name="app_name">ParkFinder</string>
+
+    <!-- Menu items -->
+    <string name="menu_home">Inicio</string>
+    <string name="menu_search">Buscar</string>
+    <string name="menu_profile">Perfil</string>
+    <string name="menu_reserved">Reservado</string>
+
+    <!-- Common -->
+    <string name="common_edit">Editar</string>
+    <string name="common_update">Actualizar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_remove">Eliminar</string>
+    <string name="common_search">Buscar</string>
+    <string name="common_away">Lejos</string>
+    <string name="common_reserve">Reservar</string>
+    <string name="common_back">Atrás</string>
+    <string name="common_color">Color</string>
+    <string name="common_delete">Eliminar</string>
+    <string name="common_finish">Finalizar</string>
+    <string name="common_ok">Aceptar</string>
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_password">Contraseña</string>
+    <string name="common_email">Correo electrónico</string>
+    <string name="common_login">Iniciar sesión</string>
+    <string name="common_register">Registrarse</string>
+    <string name="common_resend">Reenviar</string>
+    <string name="common_next">Siguiente</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_balance">Saldo</string>
+    <string name="profile_vehicle_info">Información del vehículo</string>
+    <string name="profile_statistics">Estadísticas</string>
+    <string name="profile_favourites">Favoritos</string>
+    <string name="profile_settings">Ajustes</string>
+    <string name="profile_help_center">Centro de ayuda</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_find_parking_mode">Modo de búsqueda de estacionamiento</string>
+    <string name="profile_set_new_name">Establecer un nuevo nombre</string>
+    <string name="profile_name_requirements">Tanto el nombre como el apellido deben comenzar con una letra mayúscula y contener solo caracteres alfabéticos en minúscula.</string>
+    <string name="profile_confirm_removal">Confirmar eliminación</string>
+    <string name="profile_confirm_removal_text">¿Estás seguro de que deseas eliminar tu imagen de perfil?</string>
+
+    <!-- Search Screen -->
+    <string name="search_title">Buscar estacionamiento</string>
+    <string name="search_location_hint">Buscar ubicaciones…</string>
+    <string name="search_choose_radius">Elegir radio</string>
+
+    <!-- Parking spot status -->
+    <string name="parking_spot_status_free">Libre</string>
+    <string name="parking_spot_status_reserved">Reservado</string>
+    <string name="parking_spot_status_occupied">Ocupado</string>
+    <string name="parking_spot_status_temporarily_unavailable">Temporalmente no disponible</string>
+
+    <!-- Parking list screen -->
+    <string name="parking_list_no_parking_lots_found">No se encontraron estacionamientos</string>
+    <string name="parking_list_see_details">Ver detalles</string>
+
+    <!-- Parking spots list screen -->
+    <string name="parking_spots_list_spot_number">Número de plaza</string>
+
+    <!-- Balance screen -->
+    <string name="balance_current_balance">Saldo actual</string>
+    <string name="balance_make_payment">Realizar pago</string>
+    <string name="balance_transaction_history">Historial de transacciones</string>
+    <string name="balance_parking_fee">Tarifa de estacionamiento</string>
+    <string name="balance_payment_to_account">Pago a la cuenta</string>
+
+    <!-- Add Balance screen -->
+    <string name="add_balance_title">Agregar saldo a tu cuenta</string>
+    <string name="add_balance_amount">Cantidad</string>
+    <string name="add_balance_add_balance">Agregar saldo</string>
+
+    <!-- Vehicle Info screen -->
+    <string name="vehicle_info_my_vehicles">Mis vehículos</string>
+    <string name="vehicle_info_vehicle_company">Compañía de vehículos</string>
+    <string name="vehicle_info_vehicle_model">Modelo de vehículo</string>
+    <string name="vehicle_info_registration_plate">Placa de matrícula</string>
+    <string name="vehicle_info_delete_vehicle">Eliminar vehículo</string>
+    <string name="vehicle_info_confirm_removal">¿Estás seguro de que deseas eliminar este vehículo?</string>
+
+    <!-- Register Vehicle Info screen -->
+    <string name="register_vehicle_info_update_vehicle_information">Actualizar información del vehículo</string>
+    <string name="register_vehicle_info_setup_vehicle_information">Configurar información del vehículo</string>
+    <string name="register_vehicle_info_vehicle_information">Información del vehículo</string>
+    <string name="register_vehicle_info_brand">Marca</string>
+    <string name="register_vehicle_info_model">Modelo</string>
+    <string name="register_vehicle_info_color">Color</string>
+    <string name="register_vehicle_info_registration_plate">Placa de matrícula</string>
+    <string name="register_vehicle_info_select_a_brand">Seleccionar una marca</string>
+    <string name="register_vehicle_info_select_a_model">Seleccionar un modelo</string>
+    <string name="register_vehicle_info_select_a_color">Seleccionar un color</string>
+    <string name="register_vehicle_info_invalid_registration_plate">Placa de matrícula no válida</string>
+
+    <!-- Colors -->
+    <string name="color_red">Rojo</string>
+    <string name="color_green">Verde</string>
+    <string name="color_blue">Azul</string>
+    <string name="color_yellow">Amarillo</string>
+    <string name="color_cyan">Cian</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_gray">Gris</string>
+    <string name="color_black">Negro</string>
+
+    <!-- Statistics Screen -->
+    <string name="statistics_title">Estadísticas</string>
+    <string name="statistics_total_reservations">Total de Reservas</string>
+    <string name="statistics_total_money_spent">Total de dinero gastado</string>
+    <string name="statistics_average_reserved_time">Tiempo promedio reservado</string>
+    <string name="statistics_see_reservation_history">Ver historial de reservas</string>
+    <string name="statistics_last_6_months_money_spent">Dinero gastado en los últimos 6 meses</string>
+    <string name="statistics_last_6_months_reservation_per_vehicle">Reservas por vehículo en los últimos 6 meses</string>
+
+    <!-- Reservation History Screen -->
+    <string name="reservation_history_title">Historial de Reservas</string>
+    <string name="reservation_history_no_reservations">No hay reservas</string>
+    <string name="reservation_history_expand_filters">Expandir Filtros</string>
+    <string name="reservation_history_collapse_filters">Colapsar Filtros</string>
+    <string name="reservation_history_select_a_vehicle">Seleccionar un vehículo</string>
+    <string name="reservation_history_newer_than">Más reciente que</string>
+    <string name="reservation_history_earlier_than">Más antiguo que</string>
+    <string name="reservation_history_reset_filters">Restablecer Filtros</string>
+    <string name="reservation_history_apply">Aplicar</string>
+    <string name="reservation_history_your_review">Tu reseña: </string>
+    <string name="reservation_history_vehicle">Vehículo: </string>
+    <string name="reservation_history_time_span">Período: </string>
+    <string name="reservation_history_order">Orden</string>
+    <string name="reservation_history_order_ascending">Ascendente</string>
+    <string name="reservation_history_order_descending">Descendente</string>
+    <string name="reservation_history_sort_by">Ordenar por</string>
+    <string name="reservation_history_sort_by_date">Fecha</string>
+    <string name="reservation_history_sort_by_rating">Calificación</string>
+    <string name="reservation_history_sort_by_price">Precio</string>
+
+    <!-- Help Center Screen -->
+    <string name="help_center_title">Centro de Ayuda</string>
+    <string name="help_center_need_assistance">¿Necesitas ayuda?</string>
+    <string name="help_center_we_are_here_to_help">Estamos aquí para ayudarte</string>
+    <string name="help_center_contact_email">Correo electrónico de contacto</string>
+    <string name="help_center_contact_phone">Teléfono de contacto</string>
+
+    <!-- Reservation Screen -->
+    <string name="reservation_screen_space_details">Detalles del espacio</string>
+    <string name="reservation_screen_unknown_road">Calle desconocida</string>
+    <string name="reservation_screen_spot_number">Número de plaza</string>
+    <string name="reservation_screen_spot_status">Estado de la plaza</string>
+    <string name="reservation_screen_choose_vehicle">Elige tu vehículo</string>
+    <string name="reservation_screen_select_vehicle">Seleccionar un vehículo</string>
+    <string name="reservation_screen_reserve_and_navigate">Reservar y Navegar</string>
+    <string name="reservation_screen_reviews">Reseñas</string>
+    <string name="reservation_screen_no_reviews">No hay reseñas</string>
+    <string name="reservation_screen_not_rated_yet">Sin calificación aún</string>
+
+    <!-- Reserved Screen -->
+    <string name="reserved_screen_my_reservations">Mis Reservas</string>
+    <string name="reserved_screen_parking_zone">Zona de estacionamiento</string>
+    <string name="reserved_screen_start_time">Hora de inicio</string>
+    <string name="reserved_screen_vehicle">Vehículo</string>
+    <string name="reserved_screen_finish_reservation">Finalizar Reserva</string>
+    <string name="reserved_screen_rate_parking_spot">Calificar Plaza de Estacionamiento</string>
+    <string name="reserved_screen_leave_comment">Dejar un comentario</string>
+    <string name="reserved_screen_leave_comment_template">Escribe tu comentario aquí…</string>
+    <string name="reserved_screen_leave_comment_hint">Por favor, deja un comentario para una calificación inferior a 3 estrellas.</string>
+    <string name="reserved_screen_rate_and_leave">Calificar y dejar un comentario</string>
+    <string name="reserved_screen_no_active_reservations">No hay reservas activas</string>
+
+    <!-- Home Screen -->
+    <string name="home_screen_confirm_reservation">Confirmar Reserva</string>
+    <string name="home_screen_confirm_reservation_text">Has llegado a tu destino. Por favor, confirma tu reserva para continuar.</string>
+    <string name="home_screen_confirm_reservation_text_2">Al hacer clic en confirmar, la tarifa de estacionamiento comenzará a cobrarse por hora a partir de ahora.</string>
+
+    <!-- EnterNewPassword Screen -->
+    <string name="enter_new_password_forgot_password">Olvidé mi contraseña</string>
+    <string name="enter_new_password_hint">Introduce tu nueva contraseña</string>
+    <string name="enter_new_password_change_password">Cambiar contraseña</string>
+    <string name="enter_new_password_invalid_password_format">Formato de contraseña no válido</string>
+    <string name="enter_new_password_confirm_password">Confirmar contraseña</string>
+
+    <!-- ForgotPassword Screen -->
+    <string name="forgot_password_forgot_password">Olvidé mi contraseña</string>
+    <string name="forgot_password_hint">Introduce tu dirección de correo electrónico y te enviaremos un código de verificación para que puedas volver a acceder a tu cuenta.</string>
+    <string name="forgot_password_enter_email">Introduce tu correo electrónico</string>
+    <string name="forgot_password_send_verification_code">Enviar código de verificación</string>
+
+    <!-- Login Screen -->
+    <string name="login_enter_credentials_message">Introduce tus \ncredenciales para iniciar sesión</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_no_account">¿No tienes una cuenta?</string>
+
+    <!-- ResetPasswordVerificationCode Screen -->
+    <string name="reset_password_verification_code_verification_code">Código de verificación</string>
+    <string name="reset_password_verification_code_hint">Introduce el código de verificación que te hemos enviado a tu dirección de correo electrónico:</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_about">Tu asistente digital \n para encontrar estacionamientos rápidamente</string>
+
+    <!-- Register Screen -->
+    <string name="register_already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="register_enter_email_and_password">Introduce tu correo electrónico y contraseña \npara registrarte</string>
+    <string name="register_credentials">Credenciales</string>
+
+    <!-- Password Help -->
+    <string name="password_help_password_requirements">Requisitos de la contraseña</string>
+    <string name="password_help_requirement_1">◄ Al menos 8 caracteres</string>
+    <string name="password_help_requirement_2">◄ Al menos una letra mayúscula</string>
+    <string name="password_help_requirement_3">◄ Al menos una letra minúscula</string>
+    <string name="password_help_requirement_4">◄ Al menos un número</string>
+    <string name="password_help_requirement_5">◄ Al menos un carácter especial (por ejemplo, @, $, !, %, *, ?, &amp;, #, _)</string>
+
+    <!-- RegisterUserData Screen -->
+    <string name="register_user_data_setup_your_account">Configura tu cuenta</string>
+    <string name="register_user_data_personal_information">Información personal</string>
+    <string name="register_user_data_full_name">Nombre completo</string>
+    <string name="register_user_data_phone_number">Número de teléfono</string>
+
+    <!-- Errors -->
+    <string name="error_passwords_do_not_match">Las contraseñas no coinciden</string>
+    <string name="error_invalid_email_format">Formato de correo electrónico no válido</string>
+    <string name="error_invalid_password_format">Formato de contraseña no válido</string>
+    <string name="error_invalid_full_name_format">Formato de nombre completo no válido</string>
+    <string name="error_invalid_phone_number_format">Formato de número de teléfono no válido</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_select_language">Seleccionar idioma</string>
+
+    <!-- Backend Messages -->
+    <string name="backend_user_with_email_not_found">El usuario con la dirección de correo electrónico proporcionada no existe.</string>
+    <string name="backend_user_with_credentials_not_found">No se encontró ningún usuario con las credenciales proporcionadas</string>
+    <string name="backend_admin_with_credentials_not_found">No se encontró ningún administrador con las credenciales proporcionadas</string>
+    <string name="backend_user_logged_in">Usuario ha iniciado sesión con éxito</string>
+    <string name="backend_invalid_password">Contraseña inválida. Por favor, inténtelo de nuevo.</string>
+    <string name="backend_user_with_email_exists">El usuario con la dirección de correo electrónico especificada ya existe</string>
+    <string name="backend_user_with_email_not_found_2">El usuario con la dirección de correo electrónico especificada no existe.</string>
+    <string name="backend_user_with_email_exists_3">Registro fallido: El usuario con la dirección de correo electrónico especificada ya existe.</string>
+    <string name="backend_license_plate_exists">La placa de matrícula ya existe</string>
+    <string name="backend_invalid_verification_code">Registro fallido: Código de verificación inválido</string>
+    <string name="backend_code_verified">Código verificado con éxito</string>
+    <string name="backend_code_verification_failed">La verificación del código falló</string>
+    <string name="backend_password_reset_successful">Restablecimiento de contraseña exitoso</string>
+    <string name="backend_user_does_not_exist">El usuario no existe</string>
+    <string name="backend_user_name_updated">Nombre de usuario actualizado con éxito</string>
+    <string name="backend_not_valid_coordinates_format">Formato de coordenadas no válido</string>
+    <string name="backend_error_creating_parking_lot">Error al crear el estacionamiento</string>
+    <string name="backend_parking_created_successfully">Estacionamiento creado con éxito</string>
+    <string name="backend_parking_lot_with_some_of_provided_ids_does_not_exist">El estacionamiento con algunos de los IDs proporcionados no existe</string>
+    <string name="backend_operation_finished_with_success">Operación finalizada con éxito</string>
+    <string name="backend_error_deleting_parking_lots">Hubo un error al eliminar los estacionamientos</string>
+    <string name="backend_parking_spot_not_found">Plaza de estacionamiento no encontrada</string>
+    <string name="backend_parking_spot_found">Plaza de estacionamiento encontrada</string>
+    <string name="backend_invalid_parking_spot_status">Estado de la plaza de estacionamiento no válido</string>
+    <string name="backend_parking_spot_updated">Plaza de estacionamiento actualizada</string>
+    <string name="backend_successfully_retrieved_parking_spot_statuses">Estados de las plazas de estacionamiento recuperados con éxito</string>
+    <string name="backend_parking_zone_already_exists">La zona de estacionamiento ya existe</string>
+    <string name="backend_parking_zone_created_successfully">Zona de estacionamiento creada con éxito</string>
+    <string name="backend_parking_zone_not_found">Zona de estacionamiento no encontrada</string>
+    <string name="backend_parking_zone_deleted_successfully">Zona de estacionamiento eliminada con éxito</string>
+    <string name="backend_parking_zone_found">Zona de estacionamiento encontrada</string>
+    <string name="backend_parking_zones_found">Zonas de estacionamiento encontradas</string>
+    <string name="backend_parking_zone_updated_successfully">Zona de estacionamiento actualizada con éxito</string>
+    <string name="backend_no_reservation_found_for_specified_vehicle">No se encontró ninguna reserva para el vehículo especificado.</string>
+    <string name="backend_reservation_not_confirmed">La reserva no está confirmada.</string>
+    <string name="backend_no_vehicle_found_with_specified_id">No se encontró ningún vehículo con el ID especificado.</string>
+    <string name="backend_no_parking_spot_found_with_specified_id">No se encontró ninguna plaza de estacionamiento con el ID especificado.</string>
+    <string name="backend_no_parking_lot_found_with_specified_id">No se encontró ningún estacionamiento con el ID especificado.</string>
+    <string name="backend_no_parking_zone_found_with_specified_id">No se encontró ninguna zona de estacionamiento con el ID especificado.</string>
+    <string name="backend_failed_to_add_reservation_history">No se pudo agregar el historial de reservas.</string>
+    <string name="backend_failed_to_add_transaction">No se pudo agregar la transacción.</string>
+    <string name="backend_successfully_added_reservation_history">Historial de reservas agregado con éxito.</string>
+    <string name="backend_no_reservation_history_found_with_specified_id">No se encontró historial de reservas con el ID especificado.</string>
+    <string name="backend_successfully_deleted_reservation_history">Historial de reservas eliminado con éxito.</string>
+    <string name="backend_failed_to_delete_reservation_history">No se pudo eliminar el historial de reservas.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories">Todos los historiales de reservas recuperados con éxito.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_parking_spot">Todos los historiales de reservas para la plaza de estacionamiento especificada recuperados con éxito.</string>
+    <string name="backend_parking_spot_with_provided_id_does_not_exist">La plaza de estacionamiento con el ID proporcionado no existe.</string>
+    <string name="backend_rating_calculated_successfully">Calificación calculada con éxito.</string>
+    <string name="backend_comments_found_successfully">Comentarios encontrados con éxito.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_user">Todos los historiales de reservas para el usuario especificado recuperados con éxito.</string>
+    <string name="backend_successfully_retrieved_all_reservation_histories_for_specified_vehicle">Todos los historiales de reservas para el vehículo especificado recuperados con éxito.</string>
+    <string name="backend_successfully_retrieved_the_reservation_history">Historial de reservas recuperado con éxito.</string>
+    <string name="backend_vehicle_not_found">Vehículo no encontrado</string>
+    <string name="backend_reservation_for_this_vehicle_already_exists">Ya existe una reserva para este vehículo</string>
+    <string name="backend_user_not_found">Usuario no encontrado</string>
+    <string name="backend_you_already_have_active_reservation">Ya tienes una reserva activa</string>
+    <string name="backend_parking_spot_is_not_available">La plaza de estacionamiento no está disponible</string>
+    <string name="backend_user_balance_is_below_allowed_value">El saldo del usuario está por debajo del valor permitido</string>
+    <string name="backend_failed_to_update_parking_spot_status">Error al actualizar el estado de la plaza de estacionamiento</string>
+    <string name="backend_reservation_added_successfully">Reserva añadida con éxito</string>
+    <string name="backend_reservation_not_found">Reserva no encontrada</string>
+    <string name="backend_reservation_deleted_successfully">Reserva eliminada con éxito</string>
+    <string name="backend_failed_to_delete_reservation">Error al eliminar la reserva</string>
+    <string name="backend_reservations_retrieved_successfully">Reservas recuperadas con éxito</string>
+    <string name="backend_reservation_retrieved_successfully">Reserva recuperada con éxito</string>
+    <string name="backend_not_your_reservation">No es tu reserva</string>
+    <string name="backend_reservation_is_already_confirmed">La reserva ya está confirmada</string>
+    <string name="backend_reservation_confirmed_successfully">Reserva confirmada con éxito</string>
+    <string name="backend_transaction_not_found">Transacción no encontrada</string>
+    <string name="backend_cannot_add_transaction_with_amount_less_than_0_or_greater_than_10000">No se puede agregar una transacción con un monto menor a 0 o mayor a 10000</string>
+    <string name="backend_brand_with_provided_id_does_not_exist">La marca con el ID proporcionado no existe</string>
+    <string name="backend_brand_name_must_be_between_2_and_50_characters">El nombre de la marca debe tener entre 2 y 50 caracteres</string>
+    <string name="backend_brand_name_already_exists">El nombre de la marca ya existe</string>
+    <string name="backend_vehicle_brand_added_successfully">Marca de vehículo agregada con éxito</string>
+    <string name="backend_error_adding_vehicle_brand">Error al agregar la marca del vehículo</string>
+    <string name="backend_vehicle_brand_updated_successfully">Marca de vehículo actualizada con éxito</string>
+    <string name="backend_error_updating_vehicle_brand">Error al actualizar la marca del vehículo</string>
+    <string name="backend_vehicle_brand_deleted_successfully">Marca de vehículo eliminada con éxito</string>
+    <string name="backend_error_deleting_vehicle_brand">Error al eliminar la marca del vehículo</string>
+    <string name="backend_model_with_provided_id_does_not_exist">El modelo con el ID proporcionado no existe</string>
+    <string name="backend_vehicle_model_added_successfully">Modelo de vehículo agregado con éxito</string>
+    <string name="backend_error_adding_vehicle_model">Error al agregar el modelo de vehículo</string>
+    <string name="backend_vehicle_model_updated_successfully">Modelo de vehículo actualizado con éxito</string>
+    <string name="backend_error_updating_vehicle_model">Error al actualizar el modelo de vehículo</string>
+    <string name="backend_vehicle_model_deleted_successfully">Modelo de vehículo eliminado con éxito</string>
+    <string name="backend_error_deleting_vehicle_model">Error al eliminar el modelo de vehículo</string>
+    <string name="backend_you_have_reached_the_vehicle_limit">¡Vaya! Has alcanzado el límite de vehículos.</string>
+    <string name="backend_provided_model_does_not_exist">El modelo proporcionado no existe</string>
+    <string name="backend_vehicle_with_specified_license_plate_already_exists">El vehículo con la placa de matrícula especificada ya existe.</string>
+    <string name="backend_vehicle_added_successfully">Vehículo agregado con éxito.</string>
+    <string name="backend_error_adding_vehicle">Ocurrió un error al agregar el vehículo.</string>
+    <string name="backend_vehicle_does_not_exist_or_does_not_belong_to_this_user">El vehículo no existe o no pertenece a este usuario</string>
+    <string name="backend_vehicle_model_does_not_exist">El modelo de vehículo no existe</string>
+    <string name="backend_vehicle_updated_successfully">Vehículo actualizado con éxito</string>
+    <string name="backend_error_updating_vehicle">Error al actualizar el vehículo</string>
+    <string name="backend_you_have_active_reservations_for_this_vehicle">Tienes reservas activas para este vehículo</string>
+    <string name="backend_vehicle_successfully_deleted">Vehículo eliminado con éxito</string>
+    <string name="backend_error_removing_vehicle">Error al eliminar el vehículo</string>
+    <string name="backend_unknown_error">Error desconocido</string>
+    <string name="backend_no_file_uploaded">No se subió ningún archivo</string>
+    <string name="backend_invalid_file_type">Tipo de archivo no válido</string>
+    <string name="backend_invalid_file_extension">Extensión de archivo no válida</string>
+    <string name="backend_user_with_provided_id_does_not_exist">El usuario con el ID proporcionado no existe</string>
+    <string name="backend_user_profile_image_updated_successfully">Imagen de perfil del usuario actualizada con éxito</string>
+    <string name="backend_user_profile_image_uploaded_successfully">Imagen de perfil del usuario subida con éxito</string>
+    <string name="backend_access_to_this_file_is_not_allowed">No se permite el acceso a este archivo</string>
+    <string name="backend_image_deleted_successfully">Imagen eliminada con éxito</string>
+    <string name="backend_file_does_not_exist">El archivo no existe</string>
+    <string name="backend_user_does_not_have_profile_picture">El usuario no tiene una imagen de perfil</string>
+    <string name="backend_image_found_successfully">Imagen encontrada con éxito</string>
+    <string name="backend_invalid_old_access_token">Token de acceso antiguo no válido</string>
+    <string name="backend_invalid_refresh_token">Token de actualización no válido</string>
+    <string name="backend_token_refreshed_successfully">Token actualizado con éxito</string>
+    <string name="backend_invalid_token_claim">Reclamación de token no válida</string>
+    <string name="backend_refresh_token_deleted_successfully">Token de actualización eliminado con éxito</string>
+    <string name="backend_parking_spot_is_not_available_for_reservation">La plaza de estacionamiento no está disponible para reserva</string>
+    <string name="backend_verification_code_sent">Código de verificación enviado</string>
+    <string name="backend_registration_successful">Registro exitoso</string>
+    <string name="backend_vehicle_deleted_successfully">Vehículo eliminado con éxito</string>
+    <string name="backend_reservation_cancelled">Reserva cancelada</string>
+    <string name="backend_reservation_completed">Reserva completada</string>
+    <string name="backend_name_changed_successfully">Nombre cambiado con éxito</string>
+    <string name="backend_password_reset_failed">Error al restablecer la contraseña</string>
+    <string name="backend_passwords_are_not_valid_format_or_do_not_match">Las contraseñas no tienen un formato válido o no coinciden</string>
+
+</resources>

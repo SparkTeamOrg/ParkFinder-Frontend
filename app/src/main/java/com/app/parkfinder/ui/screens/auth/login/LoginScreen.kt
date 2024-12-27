@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -93,7 +94,7 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(100.dp))
         Text(
-            text = "Enter your \ncredentials to Login",
+            text = stringResource(id = R.string.login_enter_credentials_message),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -112,7 +113,7 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Login",
+                    text = stringResource(id = R.string.common_login),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -132,7 +133,7 @@ fun LoginScreen(
                     placeholder = {
                         if (emailError) {
                             Text(
-                                text = "Invalid email address format",
+                                text = stringResource(id = R.string.error_invalid_email_format),
                                 color = Color.Red,
                                 fontStyle = FontStyle.Italic
                             )
@@ -146,7 +147,11 @@ fun LoginScreen(
                         emailError = false
                     },
                     isError = emailError,
-                    label = { Text("Email", color = if (emailError) Color.Red else Color.White ) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.common_email),
+                            color = if (emailError) Color.Red else Color.White )
+                    },
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -163,7 +168,7 @@ fun LoginScreen(
                     placeholder = {
                         if (passwordError) {
                             Text(
-                                text = "Invalid password format",
+                                text = stringResource(id = R.string.error_invalid_password_format),
                                 color = Color.Red,
                                 fontStyle = FontStyle.Italic
                             )
@@ -177,7 +182,11 @@ fun LoginScreen(
                         passwordError = false
                     },
                     isError = passwordError,
-                    label = { Text("Password", color = if (passwordError) Color.Red else Color.White) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.common_password),
+                            color = if (passwordError) Color.Red else Color.White)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -196,7 +205,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = "Forgot password?",
+                    text = stringResource(id = R.string.login_forgot_password),
                     color = Color.White,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier
@@ -220,7 +229,9 @@ fun LoginScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Login")
+                    Text(
+                        text = stringResource(id = R.string.common_login)
+                    )
                 }
             }
         }
@@ -232,11 +243,11 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Don't have an account? ",
+                text = stringResource(id = R.string.login_no_account) + " ",
                 color = Color.White
             )
             Text(
-                text = "Register",
+                text = stringResource(id = R.string.common_register),
                 color = Color(0xFF0FCFFF),
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable { onRegisterClick() }

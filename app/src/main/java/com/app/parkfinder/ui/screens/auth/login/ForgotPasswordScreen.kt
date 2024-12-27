@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -100,7 +101,7 @@ fun ForgotPasswordScreen (
         }
         Spacer(modifier = Modifier.height(80.dp))
         Text(
-            text = "Forgot password",
+            text = stringResource(id = R.string.forgot_password_forgot_password),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -109,7 +110,7 @@ fun ForgotPasswordScreen (
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Enter your email address and we'll send you a verification code to get back into your account.",
+            text = stringResource(id = R.string.forgot_password_hint),
             fontSize = 20.sp,
             color = Color.White,
             textAlign = TextAlign.Center
@@ -128,7 +129,7 @@ fun ForgotPasswordScreen (
             ) {
 
                 Text(
-                    text = "Email",
+                    text = stringResource(id = R.string.common_email),
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     fontSize = 24.sp,
@@ -144,14 +145,14 @@ fun ForgotPasswordScreen (
                     placeholder = {
                         if(emailError){
                             Text(
-                                text = "Invalid email address format",
+                                text = stringResource(id = R.string.error_invalid_email_format),
                                 color = Color.Red,
                                 fontStyle = FontStyle.Italic
                             )
                         }
                         else{
                             Text(
-                                text = "Enter your email",
+                                text = stringResource(id = R.string.forgot_password_enter_email),
                                 color = Color.White,
                                 fontStyle = FontStyle.Italic
                             )
@@ -195,8 +196,9 @@ fun ForgotPasswordScreen (
                     )
                 ) {
                     Text(
-                        text = "Send Code",
-                        fontSize = 24.sp,
+                        text = stringResource(id = R.string.forgot_password_send_verification_code),
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
                 Spacer(Modifier.padding(20.dp))

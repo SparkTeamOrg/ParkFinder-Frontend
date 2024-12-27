@@ -36,6 +36,7 @@ import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 
@@ -92,7 +93,7 @@ fun HelpCenterScreen(
             contentAlignment = Alignment.Center
         ){
             Text(
-                text = "Help Center",
+                text = stringResource(id = R.string.help_center_title),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = White
@@ -135,7 +136,7 @@ fun HelpCenterScreen(
             }
         }
         Text(
-            text = "Need Assistance?\nWe're Here to Help!",
+            text = stringResource(id = R.string.help_center_need_assistance) + "\n" + stringResource(id = R.string.help_center_we_are_here_to_help),
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             color = White.copy(alpha = 0.6f),
@@ -148,7 +149,7 @@ fun HelpCenterScreen(
         Spacer(modifier = Modifier.height(230.dp))
 
         Text(
-            text = "Contact email",
+            text = stringResource(id = R.string.help_center_contact_email),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = White,
@@ -172,7 +173,7 @@ fun HelpCenterScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Contact phone",
+            text = stringResource(id = R.string.help_center_contact_phone),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = White,

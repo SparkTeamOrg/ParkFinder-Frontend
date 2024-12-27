@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,7 +73,7 @@ fun AddBalanceScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Add Balance To Your Account",
+            text = stringResource(id = R.string.add_balance_title),
             fontSize = 24.sp,
             color = White
         )
@@ -82,7 +83,11 @@ fun AddBalanceScreen(
         TextField(
             value = amount,
             onValueChange = { amount = it },
-            label = { Text("Amount") },
+            label = {
+                Text(
+                    text = stringResource(id = R.string.add_balance_amount),
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -100,7 +105,9 @@ fun AddBalanceScreen(
                 contentColor = White
             )
         ) {
-            Text("Add Balance")
+            Text(
+                text = stringResource(id = R.string.add_balance_add_balance),
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -112,7 +119,9 @@ fun AddBalanceScreen(
                 contentColor = White
             )
         ) {
-            Text("Back")
+            Text(
+                text = stringResource(id = R.string.common_back),
+            )
         }
     }
 }

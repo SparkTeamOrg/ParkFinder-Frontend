@@ -19,6 +19,7 @@ import com.app.parkfinder.ui.activities.auth.register.RegisterActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.app.parkfinder.ui.screens.auth.login.LoginScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
+import com.app.parkfinder.utilis.TranslationHelper
 import com.app.parkfinder.utilis.validateEmail
 import com.app.parkfinder.utilis.validatePassword
 
@@ -58,7 +59,8 @@ class LoginActivity: ComponentActivity() {
                 val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
                 startActivity(intent, options.toBundle())
             } else {
-                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
             }
         }
     }

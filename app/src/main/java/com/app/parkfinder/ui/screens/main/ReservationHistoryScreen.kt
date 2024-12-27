@@ -77,6 +77,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -182,7 +183,7 @@ fun ReservationHistoryScreen(
             contentAlignment = Center
         ){
             Text(
-                text = "Reservation History",
+                text = stringResource(id = R.string.reservation_history_title),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = White
@@ -260,7 +261,7 @@ fun ReservationHistoryScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "No reservations found",
+                                text = stringResource(id = R.string.reservation_history_no_reservations),
                                 fontSize = 18.sp,
                                 color = Gray
                             )
@@ -321,7 +322,7 @@ fun FilterBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (isExpanded) "Collapse Filters" else "Expand Filters",
+                text = if (isExpanded) stringResource(id = R.string.reservation_history_collapse_filters) else stringResource(id = R.string.reservation_history_expand_filters),
                 color = White,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
@@ -341,7 +342,7 @@ fun FilterBar(
         ) {
             Column {
                 VehicleDropdownMenu(
-                    label = "Select a vehicle",
+                    label = stringResource(id = R.string.reservation_history_select_a_vehicle),
                     selectedText = vehicleInfo,
                     options = vehicles,
                     icon = Icons.Default.DirectionsCar,
@@ -354,12 +355,12 @@ fun FilterBar(
                 ) {
                     DatePicker(
                         selectedDate = startDateInfo,
-                        showText = "Newer than",
+                        showText = stringResource(id = R.string.reservation_history_newer_than),
                         onDateSelected = onSelectedStartDateChanged
                     )
                     DatePicker(
                         selectedDate = endDateInfo,
-                        showText = "Earlier than",
+                        showText = stringResource(id = R.string.reservation_history_earlier_than),
                         onDateSelected = onSelectedEndDateChanged
                     )
                 }
@@ -398,7 +399,9 @@ fun FilterBar(
                         modifier = Modifier.padding(top = 10.dp)
                             .width(170.dp)
                     ) {
-                        Text(text = "Reset filters")
+                        Text(
+                            text = stringResource(id = R.string.reservation_history_reset_filters)
+                        )
                     }
                     Button(
                         onClick = {
@@ -416,7 +419,9 @@ fun FilterBar(
                         modifier = Modifier.padding(top = 10.dp)
                             .width(170.dp)
                     ) {
-                        Text(text = "Apply")
+                        Text(
+                            text = stringResource(id = R.string.reservation_history_apply)
+                        )
                     }
                 }
             }
@@ -460,7 +465,7 @@ fun ReservationHistoryItem(
                         color = White
                     )
                     Text(
-                        text = "${price.toInt()} rsd",
+                        text = "${price.toInt()} RSD",
                         fontSize = 14.sp,
                         color = Gray
                     )
@@ -483,7 +488,7 @@ fun ReservationHistoryItem(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "Your review: ",
+                        text = stringResource(id = R.string.reservation_history_your_review) + " ",
                         fontSize = 14.sp,
                         color = White
                     )
@@ -505,7 +510,7 @@ fun ReservationHistoryItem(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "Vehicle: ",
+                        text = stringResource(id = R.string.reservation_history_vehicle) + " ",
                         fontSize = 14.sp,
                         color = White
                     )
@@ -520,7 +525,7 @@ fun ReservationHistoryItem(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "Time span: ",
+                        text = stringResource(id = R.string.reservation_history_time_span) + " ",
                         fontSize = 14.sp,
                         color = White
                     )
@@ -552,7 +557,7 @@ fun AscDscGroup(
             .height(145.dp),
     ) {
         Text(
-            text = "Order",
+            text = stringResource(id = R.string.reservation_history_order),
             modifier = Modifier
                 .padding(start = 16.dp, top = 5.dp)
                 .align(Alignment.TopStart),
@@ -564,12 +569,12 @@ fun AscDscGroup(
             verticalArrangement = Arrangement.Center
         ) {
             RadioButtonWithTitle(
-                text = "Ascending",
+                text = stringResource(id = R.string.reservation_history_order_ascending),
                 selectedOption = selectedOption,
                 onOptionSelected = { onSelectedOptionChanged("Ascending") }
             )
             RadioButtonWithTitle(
-                text = "Descending",
+                text = stringResource(id = R.string.reservation_history_order_descending),
                 selectedOption = selectedOption,
                 onOptionSelected = { onSelectedOptionChanged("Descending") }
             )
@@ -588,7 +593,7 @@ fun SortByGroup(
             .width(170.dp),
     ) {
         Text(
-            text = "Sort by",
+            text = stringResource(id = R.string.reservation_history_sort_by),
             modifier = Modifier
                 .padding(start = 16.dp, top = 5.dp)
                 .align(Alignment.TopStart),
@@ -600,17 +605,17 @@ fun SortByGroup(
                 .padding(top = 30.dp, bottom = 10.dp)
         ) {
             RadioButtonWithTitle(
-                text = "Date",
+                text = stringResource(id = R.string.reservation_history_sort_by_date),
                 selectedOption = selectedOption,
                 onOptionSelected = { onSelectedOptionChanged("Date") }
             )
             RadioButtonWithTitle(
-                text = "Rating",
+                text = stringResource(id = R.string.reservation_history_sort_by_rating),
                 selectedOption = selectedOption,
                 onOptionSelected = { onSelectedOptionChanged("Rating") }
             )
             RadioButtonWithTitle(
-                text = "Price",
+                text = stringResource(id = R.string.reservation_history_sort_by_price),
                 selectedOption = selectedOption,
                 onOptionSelected = { onSelectedOptionChanged("Price") }
             )
@@ -717,7 +722,9 @@ fun DatePickerModal(
                     containerColor = Color(0xFF00AEEF)
                 )
             ) {
-                Text("OK")
+                Text(
+                    text = stringResource(id = R.string.common_ok)
+                )
             }
         },
         dismissButton = {
@@ -728,7 +735,9 @@ fun DatePickerModal(
                     containerColor = Color.Red
                 )
             ) {
-                Text("Cancel")
+                Text(
+                    text = stringResource(id = R.string.common_cancel)
+                )
             }
         },
         colors = DatePickerDefaults.colors(

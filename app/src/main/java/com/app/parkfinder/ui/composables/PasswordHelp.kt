@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Close
@@ -22,9 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
+import com.app.parkfinder.R
 import com.app.parkfinder.utilis.digitCheck
 import com.app.parkfinder.utilis.lengthCheck
 import com.app.parkfinder.utilis.lowercaseCheck
@@ -57,14 +61,15 @@ fun PasswordHelp(password: String)
                     modifier = Modifier
                         .background(Color.Black.copy(alpha = 0.8f), shape = RoundedCornerShape(8.dp))
                         .padding(8.dp)
-                        .size(280.dp,180.dp),
+                        .size(280.dp,180.dp)
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(1.dp)
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Password must:",
+                            text = stringResource(id = R.string.password_help_password_requirements),
                             color = Color.White,
                             fontSize = 14.sp,
                             modifier = Modifier.size(270.dp,20.dp)
@@ -82,27 +87,27 @@ fun PasswordHelp(password: String)
                         }
                     }
                     Text(
-                        text = "◄ have between 8 and 20 characters",
+                        text = stringResource(id = R.string.password_help_requirement_1),
                         color = if(lengthCheck(password)) Color.Green else Color.Red,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "◄ contain at least one uppercase letter",
+                        text = stringResource(id = R.string.password_help_requirement_2),
                         color = if(uppercaseCheck(password)) Color.Green else Color.Red,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "◄ contain at least one lowercase letter",
+                        text = stringResource(id = R.string.password_help_requirement_3),
                         color = if(lowercaseCheck(password)) Color.Green else Color.Red,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "◄ contain at least one number",
+                        text = stringResource(id = R.string.password_help_requirement_4),
                         color = if(digitCheck(password)) Color.Green else Color.Red,
                         fontSize = 14.sp
                     )
                     Text(
-                        text = "◄ contain at least one special character from @, \$, !, %, *, ?, &, #, _",
+                        text = stringResource(id = R.string.password_help_requirement_5),
                         color = if(specialCharCheck(password)) Color.Green else Color.Red,
                         fontSize = 14.sp
                     )

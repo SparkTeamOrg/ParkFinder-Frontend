@@ -44,7 +44,8 @@ fun NavigationScreen (
     reservationViewModel: ReservationViewModel,
     updateUserName: (String) -> Unit,
     navigateToStatistics: ()->Unit = {},
-    navigateToBalanceScreen: () -> Unit
+    navigateToBalanceScreen: () -> Unit,
+    navigateToSettings: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -57,20 +58,6 @@ fun NavigationScreen (
             startDestination = BottomNavItem.Home.route,
             Modifier.padding(innerPadding)
         ) {
-//            val currentRoute = navController.currentBackStackEntry?.destination?.route
-//            currentRoute?.let { route ->
-//                // Perform specific logic for the clicked navigation item
-//                when (route) {
-//                    BottomNavItem.Home.route ->{
-//                        Log.d("Serviceee","Home route")
-//                        mapViewModel.startLocationTrack()
-//                    }
-//                    else -> {
-//                        Log.d("Serviceee","Other routes")
-//                        mapViewModel.stopLocationTrack()
-//                    }
-//                }
-//            }
             //UI for Home
             composable(BottomNavItem.Home.route) {
                 HomeScreen(user, navigateToReservation,confirmReservation, cancelReservation, mapViewModel)
@@ -96,7 +83,8 @@ fun NavigationScreen (
                     navigateToHelpCenter = navigateToHelpCenter,
                     updateUserName = updateUserName,
                     navigateToBalanceScreen = navigateToBalanceScreen,
-                    navigateToStatistics = navigateToStatistics
+                    navigateToStatistics = navigateToStatistics,
+                    navigateToSettings = navigateToSettings
                 )
             }
             //UI for Reserved
@@ -108,20 +96,3 @@ fun NavigationScreen (
     }
 
 }
-
-
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    NavigationScreen(
-//        logout = {},
-//        user = UserDto(),
-//        currentImageUrl = null,
-//        openImagePicker = {},
-//        removeImage = {},
-//        navigateToVehicleInfo = {},
-//        navigateToReservation = {}
-//    )
-//}
