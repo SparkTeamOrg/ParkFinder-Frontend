@@ -1,6 +1,7 @@
 package com.app.parkfinder.ui.screens.main
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,6 +59,7 @@ import com.app.parkfinder.logic.view_models.ProfileViewModel
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -80,6 +82,7 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel = viewModel(),
     updateUserName: (String) -> Unit,
     navigateToBalanceScreen: () -> Unit = {},
+    isPictureLoading: Boolean,
     navigateToSettings: () -> Unit = {}
     ) {
     var showUpdateModal by remember { mutableStateOf(false) }
@@ -97,11 +100,7 @@ fun ProfileScreen(
         Box(
             modifier = Modifier.size(180.dp)
         ){
-            currentImageUrl?.let { uri ->
-                ProfileImage(uri)
-            } ?: run {
-                ProfileImage(null)
-            }
+            ProfileImage(currentImageUrl, isPictureLoading)
             Box(
                 modifier = Modifier
                     .padding(bottom = 17.dp)
@@ -283,19 +282,35 @@ fun MenuItem(icon: ImageVector, title: String, notificationCount: Int? = null, h
 }
 
 @Composable
-fun ProfileImage(profileImage: Uri?) {
+fun ProfileImage(profileImage: Uri?, isPictureLoading: Boolean) {
     val imagePainter = rememberAsyncImagePainter(
         model = profileImage ?: R.drawable.default_profile_picture
     )
-    Image(
-        painter = imagePainter,
-        contentDescription = "Profile Image",
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
             .clip(CircleShape)
-            .border(4.dp, Color(0xFF0FCFFF), CircleShape),
-        contentScale = ContentScale.Crop
-    )
+            .border(4.dp, Color(0xFF0FCFFF), CircleShape)
+    ) {
+        if (isPictureLoading) {
+            CircularProgressIndicator(
+                color = Color(0xFF0FCFFF),
+                strokeWidth = 3.dp,
+                modifier = Modifier
+                    .size(48.dp)
+            )
+        } else {
+            Image(
+                painter = imagePainter,
+                contentDescription = "Profile Image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
 }
 
 @Composable

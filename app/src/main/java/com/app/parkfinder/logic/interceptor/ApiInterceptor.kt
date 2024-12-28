@@ -55,6 +55,6 @@ class ApiInterceptor : Interceptor {
             isRefreshing.set(false)
         }
 
-        return  response
+        return response
     }
 }
