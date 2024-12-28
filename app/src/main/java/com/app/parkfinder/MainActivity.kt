@@ -5,17 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import com.app.parkfinder.logic.AppPreferences
-import com.app.parkfinder.logic.RetrofitConfig
 import com.app.parkfinder.logic.models.dtos.TokenDto
-import com.app.parkfinder.logic.services.TokenService
+import com.app.parkfinder.logic.view_models.TokenViewModel
 import com.app.parkfinder.ui.activities.NavigationActivity
 import com.app.parkfinder.ui.activities.WelcomeActivity
 import com.app.parkfinder.utilis.LocaleHelper
 import com.auth0.android.jwt.JWT
 import kotlinx.coroutines.runBlocking
+import com.app.parkfinder.utilis.isTokenExpired
 
 class MainActivity : ComponentActivity() {
+    private val tokenViewModel: TokenViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val language = getPreferredLanguage()
@@ -29,12 +32,36 @@ class MainActivity : ComponentActivity() {
             navigateToNavigationPage()
         } else if(refreshToken != null) {
             // Optionally, use the refresh token to get a new access token
-            val refreshSuccess = refreshToken(accessToken,refreshToken)
-            if(refreshSuccess) navigateToNavigationPage() else logOutUser()
-
+            tryTokenRefresh(accessToken, refreshToken)
         } else {
             logOutUser()
         }
+
+        tokenViewModel.refreshTokensResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                val newTokens = result.data
+                AppPreferences.accessToken = newTokens.accessToken
+                AppPreferences.refreshToken = newTokens.refreshToken
+                navigateToNavigationPage()
+            }
+            else {
+                logOutUser()
+            }
+        }
+    }
+
+    private fun tryTokenRefresh(accessToken: String?,refreshToken: String){
+        tokenViewModel.refreshTokens(TokenDto(accessToken, refreshToken))
+    }
+
+    private fun logOutUser(){
+        navigateToLogin()
+        AppPreferences.removeTokens()
+    }
+
+    private fun getPreferredLanguage(): String {
+        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("language", "en") ?: "en"
     }
 
     private fun navigateToLogin() {
@@ -47,41 +74,5 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, NavigationActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
-    }
-
-    private fun isTokenExpired(token: String): Boolean {
-        return try {
-            val jwt = JWT(token)
-            jwt.isExpired(10)   // 10 seconds lee-way to account for clock skew
-        } catch (e: Exception) {
-            true    // If there is an exception, the token is invalid
-        }
-    }
-
-    private fun refreshToken(accessToken: String?,refreshToken: String) : Boolean {
-        val tokenService = RetrofitConfig.createService(TokenService::class.java)
-        val refreshResponse = runBlocking {
-            tokenService.refresh(TokenDto(accessToken, refreshToken))
-        }
-        if (refreshResponse.isSuccessful) {
-            val body = refreshResponse.body()
-            if (body != null && body.isSuccessful) {
-                val newTokens = body.data
-                AppPreferences.accessToken = newTokens.accessToken
-                AppPreferences.refreshToken = newTokens.refreshToken
-                return true
-            }
-        }
-        return false
-    }
-
-    private fun logOutUser(){
-        navigateToLogin()
-        AppPreferences.removeTokens()
-    }
-
-    private fun getPreferredLanguage(): String {
-        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("language", "en") ?: "en"
     }
 }

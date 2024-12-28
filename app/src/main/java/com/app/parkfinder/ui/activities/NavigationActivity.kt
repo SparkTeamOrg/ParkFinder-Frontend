@@ -19,25 +19,25 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.app.parkfinder.R
 import com.app.parkfinder.foreground.Actions
 import com.app.parkfinder.foreground.NotificationService
 import com.app.parkfinder.logic.AppPreferences
+import com.app.parkfinder.logic.AuthStatus
 import com.app.parkfinder.logic.RetrofitConfig
-import com.app.parkfinder.logic.models.BackResponse
 import com.app.parkfinder.logic.models.dtos.CreateReservationHistoryDto
 import com.app.parkfinder.logic.models.dtos.ParkingLotDto
 import com.app.parkfinder.logic.models.dtos.ParkingSpotDto
 import com.app.parkfinder.logic.models.dtos.UpdateUserNameDto
 import com.app.parkfinder.logic.models.dtos.UserDto
-import com.app.parkfinder.logic.services.ImageService
 import com.app.parkfinder.logic.services.TokenService
 import com.app.parkfinder.logic.view_models.AuthViewModel
+import com.app.parkfinder.logic.view_models.ImageViewModel
 import com.app.parkfinder.logic.view_models.ReservationHistoryViewModel
 import com.app.parkfinder.logic.view_models.ReservationViewModel
+import com.app.parkfinder.logic.view_models.TokenViewModel
 import com.app.parkfinder.ui.activities.parking.FreeParkingSearchListActivity
 import com.app.parkfinder.ui.activities.parking.ReservationActivity
 import com.app.parkfinder.ui.activities.statistic.StatisticsActivity
@@ -46,26 +46,180 @@ import com.app.parkfinder.ui.screens.auth.NavigationScreen
 import com.app.parkfinder.ui.theme.ParkFinderTheme
 import com.app.parkfinder.utilis.ImageUtils
 import com.app.parkfinder.utilis.TranslationHelper
+import com.app.parkfinder.utilis.decodeJwt
 import com.auth0.android.jwt.JWT
 import com.canhub.cropper.CropImageContract
 import org.osmdroid.config.Configuration
 
 class NavigationActivity : BaseActivity() {
-    private val authViewModel: AuthViewModel by viewModels()
-    private val reservationViewModel: ReservationViewModel by viewModels()
-    private val reservationHistoryViewModel: ReservationHistoryViewModel by viewModels()
-
-    private val imageService = RetrofitConfig.createService(ImageService::class.java)
-    private var currentImageUrl by mutableStateOf<Uri?>(null)
+    //Logged user data
     private var user by mutableStateOf(UserDto())
 
+    //View models
+    private val authViewModel: AuthViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by viewModels()
+    private val reservationViewModel: ReservationViewModel by viewModels()
+    private val reservationHistoryViewModel: ReservationHistoryViewModel by viewModels()
+    private val tokenViewModel: TokenViewModel by viewModels()
+
+    //Profile image fields
+    private var currentImageUrl by mutableStateOf<Uri?>(null)
+    private var isPictureLoading by mutableStateOf(false)
+
+    //Open gallery activity
     private var pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) ImageUtils.openCropper(uri, cropImage)
-    }
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        if (result.isSuccessful) result.uriContent?.let { uploadImage(it) }
+        if (uri != null) {
+            ImageUtils.openCropper(uri, cropImage)
+        }
     }
 
+    //Open cropper activity
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful){
+            result.uriContent?.let { uploadImage(it) }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        checkAndRequestPermissions(this)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { /* This disables any action on back button click */}
+        })
+
+        Configuration.getInstance().userAgentValue = packageName
+
+        user = decodeJwt()
+        getProfileImage()
+        getConfirmedReservations()
+
+        setContent {
+            ParkFinderTheme {
+                NavigationScreen(
+                    user = user,
+                    startFpmNotificationService = { startFpmNotificationService() },
+                    stopFpmNotificationService = { stopFpmNotificationService() },
+                    openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
+                    isPictureLoading = isPictureLoading,
+                    removeImage = { removeImage() },
+                    currentImageUrl = currentImageUrl,
+                    reservationViewModel = reservationViewModel,
+                    confirmReservation = { id -> confirmReservation(id) },
+                    cancelReservation = { id -> cancelReservation(id) },
+                    addReservationHistory = { vehicleId, rating, comment -> addReservationHistory(vehicleId, rating, comment) },
+                    searchFreeParkingsAroundLocation = { loc, rad -> navigateToParkingList(loc,rad) },
+                    updateUserName = { fullName -> updateUserName(fullName) },
+                    navigateToVehicleInfo = { navigateToVehicleInfo() },
+                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
+                    navigateToHelpCenter = { navigateToHelpCenter() },
+                    navigateToStatistics = { navigateToStatistics() },
+                    navigateToBalanceScreen = { navigateToBalanceScreen() },
+                    navigateToSettings = { navigateToSettings() },
+                    logout = { logout() }
+                )
+            }
+        }
+
+        //Image observers
+        imageViewModel.getProfileImageResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                currentImageUrl = runCatching { Uri.parse(result.data) }.getOrNull()
+            }
+        }
+
+        imageViewModel.uploadProfileImageResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                currentImageUrl = Uri.parse(result.data)
+                isPictureLoading = false
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "User profile image updated successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                if(AuthStatus.isRefreshTokenExpired.value != false) {
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        imageViewModel.removeProfileImageResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                currentImageUrl = null
+                isPictureLoading = false
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Image deleted successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                if(AuthStatus.isRefreshTokenExpired.value != false) {
+                    val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                    Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        //Reservation observers
+        reservationViewModel.confirmReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation confirmed successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        reservationViewModel.deleteReservationResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation cancelled")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        //Reservation history observers
+        reservationHistoryViewModel.createReservationHistoryResult.observe(this) { result ->
+            if (result.item1.isSuccessful) {
+                reservationViewModel.getConfirmedReservation()
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation completed")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.item1.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        //Auth observers
+        authViewModel.updateUserNameResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                user = user.copy(Fullname = result.data)
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Name changed successfully")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+            else {
+                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
+                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        //Logout observer
+        tokenViewModel.deleteTokensResult.observe(this) { result ->
+            if (result.isSuccessful) {
+                AppPreferences.removeTokens()
+                navigateToWelcomeScreen()
+            }
+            else {
+                Toast.makeText(this, result.messages.joinToString(), Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    // Notification service functions
     @SuppressLint("NewApi")
     private fun startFpmNotificationService()
     {
@@ -100,194 +254,27 @@ class NavigationActivity : BaseActivity() {
         return true
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        checkAndRequestPermissions(this)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() { /* This disables any action on back button click */}
-        })
-
-        Configuration.getInstance().userAgentValue = packageName
-
-        user = decodeJwt()
-        lifecycleScope.launch {
-            val imageUriString = getProfileImageUrl()
-            currentImageUrl = if (imageUriString != null) Uri.parse(imageUriString) else null
-        }
-
-        reservationViewModel.getConfirmedReservation()
-
-        setContent {
-            val confirmedReservations by reservationViewModel.getConfirmedReservationResult.observeAsState(
-                BackResponse(isSuccessful = false, messages = emptyList(), data = emptyList())
-            )
-
-            ParkFinderTheme {
-                NavigationScreen(
-                    startFpmNotificationService = { startFpmNotificationService()},
-                    stopFpmNotificationService = {stopFpmNotificationService()},
-                    logout = { logout() },
-                    user = user,
-                    currentImageUrl = currentImageUrl,
-                    openImagePicker = { ImageUtils.openImagePicker(pickMedia) },
-                    removeImage = { removeImage() },
-                    searchFreeParkingsAroundLocation = { loc, rad ->
-                        navigateToParkingList(loc,rad)
-                    },
-                    confirmReservation = { id -> confirmReservation(id) },
-                    cancelReservation = { id -> cancelReservation(id) },
-                    addReservationHistory = { vehicleId, rating, comment -> addReservationHistory(vehicleId, rating, comment) },
-                    navigateToVehicleInfo = { navigateToVehicleInfo() },
-                    navigateToReservation = { spot, lot, num -> navigateToReservation(spot, lot, num) },
-                    navigateToHelpCenter = { navigateToHelpCenter() },
-                    reservationViewModel = reservationViewModel,
-                    updateUserName = { fullName -> updateUserName(fullName) },
-                    navigateToStatistics = { navigateToStatistics() },
-                    navigateToBalanceScreen = { navigateToBalanceScreen() },
-                    navigateToSettings = { navigateToSettings() }
-                )
-            }
-        }
-
-        reservationViewModel.confirmReservationResult.observe(this) { result ->
-            if (result.isSuccessful) {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation confirmed successfully")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-            else {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
-
-        reservationViewModel.deleteReservationResult.observe(this) { result ->
-            if (result.isSuccessful) {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation cancelled")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-            else {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
-
-        reservationHistoryViewModel.createReservationHistoryResult.observe(this) { result ->
-            if (result.item1.isSuccessful) {
-                reservationViewModel.getConfirmedReservation()
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Reservation completed")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-            else {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.item1.messages.firstOrNull() ?: "Unknown error")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
-
-        authViewModel.updateUserNameResult.observe(this) { result ->
-            if (result.isSuccessful) {
-                user = user.copy(Fullname = result.data)
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, "Name changed successfully")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-            else {
-                val translatedMessage = TranslationHelper.getTranslatedMessage(this, result.messages.firstOrNull() ?: "Unknown error")
-                Toast.makeText(this, translatedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun logout() {
-        val tokenService = RetrofitConfig.createService(TokenService::class.java)
-        lifecycleScope.launch {
-            val deleteResponse = tokenService.delete()
-            if(deleteResponse.isSuccessful) {
-                val body = deleteResponse.body()
-                if(body != null){
-                    if(body.isSuccessful){
-                        clearTokens()
-                    }
-                }else {
-                    Log.d("Error", "Error while deleting refresh token")
-                }
-            }
-        }
-        val intent = Intent(this, WelcomeActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    private fun clearTokens() {
-        AppPreferences.removeTokens()
-    }
-
-    private fun decodeJwt(): UserDto {
-        val token = AppPreferences.accessToken
-        val dto = UserDto()
-        try {
-            val jwt = JWT(token!!)
-            dto.Id = jwt.getClaim("UserId").asInt()!!
-            dto.Fullname = jwt.getClaim("Fullname").asString()!!
-            dto.Email = jwt.getClaim("Email").asString()!!
-        } catch (e: Exception) {
-            e.message?.let { Log.d("Debug", it) }
-            e.printStackTrace()
-        }
-        return dto
-    }
-
-    private suspend fun getProfileImageUrl(): String? {
-        val response = imageService.getProfileImage()
-        return if (response.isSuccessful) {
-            val body = response.body()
-            if (body != null && body.isSuccessful) {
-                body.data
-            } else {
-                null
-            }
-        } else {
-            null
-        }
+    //Image service functions
+    private fun getProfileImage() {
+        imageViewModel.getProfileImage()
     }
 
     private fun uploadImage(imageUrl: Uri) {
-        lifecycleScope.launch {
-            val profileImage = ImageUtils.createMultipartFromUri(contentResolver, imageUrl)
-
-            val response = if (profileImage != null) {
-                imageService.uploadImage(profileImage)
-            } else null
-
-            if (response != null && response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.isSuccessful) {
-                    currentImageUrl = Uri.parse(body.data)
-                } else {
-                    Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
-                }
-            }
+        isPictureLoading = true
+        val profileImage = ImageUtils.createMultipartFromUri(contentResolver, imageUrl)
+        if (profileImage != null) {
+            imageViewModel.uploadProfileImage(profileImage)
         }
     }
 
     private fun removeImage() {
-        lifecycleScope.launch {
-            val response = imageService.removeImage()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body.isSuccessful) {
-                    currentImageUrl = null
-                } else {
-                    Log.d("Error", body?.messages?.get(0) ?: "Unknown error")
-                }
-            }
-        }
+        isPictureLoading = true
+        imageViewModel.removeProfileImage()
     }
 
-    private fun updateUserName(fullName: String){
-        val updateUserNameDto = UpdateUserNameDto(
-            firstName = fullName.split(" ")[0],
-            lastName = fullName.split(" ")[1]
-        )
-        authViewModel.updateUserName(updateUserNameDto)
+    // Reservation service functions
+    private fun getConfirmedReservations(){
+        reservationViewModel.getConfirmedReservation()
     }
 
     private fun confirmReservation(id: Int){
@@ -298,6 +285,7 @@ class NavigationActivity : BaseActivity() {
         reservationViewModel.deleteReservation(id)
     }
 
+    //Reservation history service functions
     private fun addReservationHistory(vehicleId: Int, rating: Int, comment: String){
         var com : String? = comment
         if(comment.isEmpty()){
@@ -311,6 +299,20 @@ class NavigationActivity : BaseActivity() {
         reservationHistoryViewModel.addReservationHistory(createReservationHistoryDto)
     }
 
+    //Auth service functions
+    private fun updateUserName(fullName: String){
+        val updateUserNameDto = UpdateUserNameDto(
+            firstName = fullName.split(" ")[0],
+            lastName = fullName.split(" ")[1]
+        )
+        authViewModel.updateUserName(updateUserNameDto)
+    }
+
+    private fun logout() {
+        tokenViewModel.deleteTokens()
+    }
+
+    //Navigation functions
     private fun navigateToHelpCenter() {
         val intent = Intent(this, HelpCenterActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
@@ -329,18 +331,18 @@ class NavigationActivity : BaseActivity() {
         startActivity(intent, options.toBundle())
     }
 
+    private fun navigateToStatistics()
+    {
+        val intent = Intent(this, StatisticsActivity::class.java)
+        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
+        startActivity(intent, options.toBundle())
+    }
+
     private fun navigateToParkingList(location: String, radius: Int):Unit {
         val intent = Intent(this, FreeParkingSearchListActivity::class.java).apply {
             putExtra("location",location)
             putExtra("radius",radius)
         }
-        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
-        startActivity(intent, options.toBundle())
-    }
-
-    private fun navigateToStatistics()
-    {
-        val intent = Intent(this, StatisticsActivity::class.java)
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
     }
@@ -359,5 +361,11 @@ class NavigationActivity : BaseActivity() {
         }
         val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left)
         startActivity(intent, options.toBundle())
+    }
+
+    private fun navigateToWelcomeScreen() {
+        val intent = Intent(this, WelcomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
