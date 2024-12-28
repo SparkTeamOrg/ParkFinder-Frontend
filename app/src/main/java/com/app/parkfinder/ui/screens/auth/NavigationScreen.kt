@@ -33,6 +33,7 @@ fun NavigationScreen (
     currentImageUrl: Uri?,
     openImagePicker: () -> Unit,
     removeImage: () -> Unit,
+    isPictureLoading: Boolean,
     searchFreeParkingsAroundLocation: (String,Int) -> Unit = { s: String, i: Int -> },
     confirmReservation: (Int) -> Unit,
     cancelReservation: (Int) -> Unit,
@@ -84,6 +85,7 @@ fun NavigationScreen (
                     updateUserName = updateUserName,
                     navigateToBalanceScreen = navigateToBalanceScreen,
                     navigateToStatistics = navigateToStatistics,
+                    isPictureLoading = isPictureLoading,
                     navigateToSettings = navigateToSettings
                 )
             }

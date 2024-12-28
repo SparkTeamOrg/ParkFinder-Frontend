@@ -377,7 +377,7 @@ fun CommentCard(comment: ReservationCommentDto) {
                     if(comment.userProfileImage != null) {
                         uri = Uri.parse(comment.userProfileImage)
                     }
-                    ProfileImage(uri)
+                    ProfileImage(uri, false)
                 }
                 Column(
                     modifier = Modifier.padding(start = 5.dp)
